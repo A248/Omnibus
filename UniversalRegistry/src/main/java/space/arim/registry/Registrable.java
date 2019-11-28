@@ -20,17 +20,13 @@ package space.arim.registry;
 
 public interface Registrable {
 	
-	default String getName() {
-		return "unnamed";
-	}
+	String getName();
 	
 	default String getAuthor() {
 		return "anonymous";
 	}
 	
-	default String getVersion() {
-		return "unknown";
-	}
+	String getVersion();
 	
 	byte getPriority();
 	

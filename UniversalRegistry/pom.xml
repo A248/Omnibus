@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>space.arim</groupId>
   <artifactId>registry</artifactId>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.3.1-SNAPSHOT</version>
   <name>UniversalRegistry</name>
   <description>UniversalRegistry is an environment-independent Spigot/BungeeCord bridge for registering similar kinds of plugins similar to the Bukkit Services API.</description>
   <build>
