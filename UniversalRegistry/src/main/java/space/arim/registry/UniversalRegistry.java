@@ -24,6 +24,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * <b>UniversalRegistry</b>: Main class
+ * 
+ * <br><br>Used for registering all services, as well as checking/listing registrations.
+ * 
+ * <br><br>All methods throw <code>IllegalArgumentException</code> if the parameter passed for a service is not an interface.
+ * 
+ * @author anandbeh
+ *
+ */
 public class UniversalRegistry {
 	
 	private static final ConcurrentHashMap<Class<?>, List<Registrable>> REGISTRY = new ConcurrentHashMap<Class<?>, List<Registrable>>();
@@ -35,13 +45,14 @@ public class UniversalRegistry {
 		}
 	};
 	
+	private UniversalRegistry() {}
+	
 	/**
 	 * Register a resource as a specific service
 	 * 
 	 * @param <T> - the service type
 	 * @param service - the service interface to register as
 	 * @param provider - the resource to register
-	 * @throws IllegalArgumentException - if the service parameter is not an interface
 	 */
 	public static <T extends Registrable> void register(Class<T> service, T provider) throws IllegalArgumentException {
 		if (!service.isInterface()) {
@@ -61,7 +72,6 @@ public class UniversalRegistry {
 	 * @param <T> - the service type
 	 * @param service - the service to check for
 	 * @return true if the service is provided for
-	 * @throws IllegalArgumentException if the service is not an interface
 	 */
 	public static <T extends Registrable> boolean isProvidedFor(Class<T> service) {
 		if (!service.isInterface()) {
