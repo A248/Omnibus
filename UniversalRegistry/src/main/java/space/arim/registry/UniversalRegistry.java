@@ -18,10 +18,12 @@
  */
 package space.arim.registry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,15 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * <br><br>Used for registering all services, as well as checking/listing registrations.
  * 
- * <br><br>All methods throw <code>IllegalArgumentException</code> if the parameter passed for a service is not an interface.
- * 
  * @author anandbeh
  *
  */
 public class UniversalRegistry {
 	
 	private static final ConcurrentHashMap<Class<?>, List<Registrable>> REGISTRY = new ConcurrentHashMap<Class<?>, List<Registrable>>();
-	
 	private static final Comparator<Registrable> COMPARATOR = new Comparator<Registrable>() {
 		@Override
 		public int compare(Registrable r1, Registrable r2) {
@@ -45,6 +44,7 @@ public class UniversalRegistry {
 		}
 	};
 	
+	// Prevent instantiation
 	private UniversalRegistry() {}
 	
 	/**
@@ -54,10 +54,8 @@ public class UniversalRegistry {
 	 * @param service - the service interface to register as
 	 * @param provider - the resource to register
 	 */
-	public static <T extends Registrable> void register(Class<T> service, T provider) throws IllegalArgumentException {
-		if (!service.isInterface()) {
-			throw new IllegalArgumentException("Service must be an interface!");
-		}
+	public static synchronized <T extends Registrable> void register(Class<T> service, T provider) throws IllegalArgumentException {
+		Objects.requireNonNull(provider, "Provider must not be null!");
 		if (REGISTRY.containsKey(service)) {
 			REGISTRY.get(service).add(provider);
 			REGISTRY.get(service).sort(COMPARATOR);
@@ -65,7 +63,21 @@ public class UniversalRegistry {
 			REGISTRY.put(service, Arrays.asList(provider));
 		}
 	}
-
+	
+	/**
+	 * Unregister a resource
+	 * 
+	 * @param <T> - the service type
+	 * @param service - the service interface registered
+	 * @param provider - the resource to unregister
+	 */
+	public static synchronized <T extends Registrable> void unregister(Class<T> service, T provider) throws IllegalArgumentException {
+		if (REGISTRY.containsKey(service)) {
+			REGISTRY.get(service).remove(provider);
+			REGISTRY.get(service).sort(COMPARATOR);
+		}
+	}
+	
 	/**
 	 * Checks whether a service has any accompanying provider
 	 * 
@@ -74,9 +86,6 @@ public class UniversalRegistry {
 	 * @return true if the service is provided for
 	 */
 	public static <T extends Registrable> boolean isProvidedFor(Class<T> service) {
-		if (!service.isInterface()) {
-			throw new IllegalArgumentException("Service must be an interface!");
-		}
 		return REGISTRY.containsKey(service);
 	}
 	
@@ -88,10 +97,7 @@ public class UniversalRegistry {
 	 * @return the service asked. Use {@link #isProvidedFor(Class)} to avoid null values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Registrable> T getRegistration(Class<T> service) {
-		if (!service.isInterface()) {
-			throw new IllegalArgumentException("Service must be an interface!");
-		}
+	public static synchronized <T extends Registrable> T getRegistration(Class<T> service) {
 		return REGISTRY.containsKey(service) ? (T) REGISTRY.get(service).get(0) : null;
 	}
 	
@@ -100,14 +106,11 @@ public class UniversalRegistry {
 	 * 
 	 * @param <T> - the service type
 	 * @param service - the service to get registrations for
-	 * @return List sorted according to priority of registrations
+	 * @return Unmodifiable list sorted according to priority of registrations. Empty if no registrations exist.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Registrable> List<T> getRegistrations(Class<T> service) {
-		if (!service.isInterface()) {
-			throw new IllegalArgumentException("Service must be an interface!");
-		}
-		return REGISTRY.containsKey(service) ? Collections.unmodifiableList((List<T>) REGISTRY.get(service)) : null;
+	public static synchronized <T extends Registrable> List<T> getRegistrations(Class<T> service) {
+		return Collections.unmodifiableList(REGISTRY.containsKey(service) ?  (List<T>) REGISTRY.get(service) : new ArrayList<T>());
 	}
 	
 }
