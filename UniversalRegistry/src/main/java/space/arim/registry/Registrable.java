@@ -28,6 +28,13 @@ public interface Registrable {
 	
 	String getVersion();
 	
+	/**
+	 * The priority of this resource when it is registered.<br>
+	 * <br>
+	 * If multiple resources are registered for one service,
+	 * 
+	 * @return
+	 */
 	byte getPriority();
 	
 }
