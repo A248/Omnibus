@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * <br><br>Used for registering all services, as well as checking/listing registrations.
  * 
- * @author anandbeh
+ * @author A248
  *
  */
 public class UniversalRegistry {

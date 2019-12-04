@@ -23,7 +23,7 @@ package space.arim.registry;
  * 
  * <br><br>See {@link space.arim.registry.Registrable#getPriority() Registrable.getPriority()}
  * 
- * @author anandbeh
+ * @author A248
  */
 public final class RegistryPriority {
 	public static final byte LOWEST = Byte.MIN_VALUE + (byte) 32;
