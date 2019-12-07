@@ -1,5 +1,5 @@
 /*
- * UniversalRegistry, a Bukkit/BungeeCord bridge service registration API
+ * UniversalRegistry, a simple Bukkit/Spigot/BungeeCord service registration API
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify

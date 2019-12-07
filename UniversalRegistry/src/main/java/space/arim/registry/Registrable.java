@@ -1,5 +1,5 @@
 /*
- * UniversalRegistry, a Bukkit/BungeeCord bridge service registration API
+ * UniversalRegistry, a simple Bukkit/Spigot/BungeeCord service registration API
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify
@@ -32,8 +32,9 @@ public interface Registrable {
 	 * The priority of this resource when it is registered.<br>
 	 * <br>
 	 * If multiple resources are registered for one service,
+	 * the highest-priority resource will be returned in {@link space.arim.registry.UniversalRegistry#getRegistration(Class) UniversalRegistry#getRegistration(Class)}
 	 * 
-	 * @return
+	 * @return the priority of this resource
 	 */
 	byte getPriority();
 	

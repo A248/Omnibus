@@ -1,5 +1,5 @@
 /*
- * UniversalRegistry, a Bukkit/BungeeCord bridge service registration API
+ * UniversalRegistry, a simple Bukkit/Spigot/BungeeCord service registration API
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify
@@ -17,9 +17,6 @@
  * and navigate to version 3 of the GNU General Public License.
  */
 package space.arim.registry;
-
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,14 +44,8 @@ public class UniversalRegistry {
 	
 	/**
 	 * Used to sort the registry based on priority
-	 * 
 	 */
-	private static final Comparator<Registrable> COMPARATOR = new Comparator<Registrable>() {
-		@Override
-		public int compare(Registrable r1, Registrable r2) {
-			return r1.getPriority() - r2.getPriority();
-		}
-	};
+	private static final Comparator<Registrable> COMPARATOR = (r1, r2) -> r1.getPriority() - r2.getPriority();
 	
 	// Prevent instantiation
 	private UniversalRegistry() {}
@@ -66,11 +57,12 @@ public class UniversalRegistry {
 	 * @param service - the service class, e.g. Economy.class for Vault economy
 	 * @param provider - the resource to register
 	 */
-	public static synchronized <T extends Registrable> void register(Class<T> service, @NonNull T provider) {
+	public static synchronized <T extends Registrable> void register(Class<T> service, T provider) {
 		Objects.requireNonNull(provider, "Provider must not be null!");
 		if (REGISTRY.containsKey(service)) {
-			REGISTRY.get(service).add(provider);
-			REGISTRY.get(service).sort(COMPARATOR);
+			if (REGISTRY.get(service).add(provider)) {
+				REGISTRY.get(service).sort(COMPARATOR);
+			}
 		} else {
 			REGISTRY.put(service, new ArrayList<Registrable>(Arrays.asList(provider)));
 		}
@@ -83,7 +75,7 @@ public class UniversalRegistry {
 	 * @param service - the service class
 	 * @param provider - the resource to unregister
 	 */
-	public static synchronized <T extends Registrable> void unregister(Class<T> service, @NonNull T provider) {
+	public static synchronized <T extends Registrable> void unregister(Class<T> service, T provider) {
 		if (REGISTRY.containsKey(service)) {
 			if (REGISTRY.get(service).remove(provider)) {
 				REGISTRY.get(service).sort(COMPARATOR);
@@ -110,7 +102,6 @@ public class UniversalRegistry {
 	 * @return the service asked. Use {@link #isProvidedFor(Class)} to avoid null values.
 	 */
 	@SuppressWarnings("unchecked")
-	@Nullable
 	public static synchronized <T extends Registrable> T getRegistration(Class<T> service) {
 		return REGISTRY.containsKey(service) ? (T) REGISTRY.get(service).get(0) : null;
 	}
@@ -122,8 +113,7 @@ public class UniversalRegistry {
 	 * @param service - the service class
 	 * @return immutable list sorted according to priority of registrations. Empty if no registrations exist.
 	 */
-	@SuppressWarnings({ "unchecked", "null" })
-	@NonNull
+	@SuppressWarnings("unchecked")
 	public static synchronized <T extends Registrable> List<T> getRegistrations(Class<T> service) {
 		return REGISTRY.containsKey(service) ?  Collections.unmodifiableList((List<T>) REGISTRY.get(service)) : Collections.emptyList();
 	}
