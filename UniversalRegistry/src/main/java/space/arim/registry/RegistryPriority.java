@@ -26,11 +26,11 @@ package space.arim.registry;
  * @author A248
  */
 public final class RegistryPriority {
-	public static final byte LOWEST = Byte.MIN_VALUE + (byte) 32;
+	public static final byte LOWEST = (byte) -96;
 	public static final byte LOWER = (byte) -64;
 	public static final byte LOW = (byte) -32;
 	public static final byte NORMAL = (byte) 0;
 	public static final byte HIGH = (byte) 31;
 	public static final byte HIGHER = (byte) 63;
-	public static final byte HIGHEST = Byte.MAX_VALUE - (byte) 32;
+	public static final byte HIGHEST = (byte) 95;
 }

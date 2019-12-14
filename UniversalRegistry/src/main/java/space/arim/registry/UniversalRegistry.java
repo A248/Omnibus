@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author A248
  *
  */
-public class UniversalRegistry {
+public final class UniversalRegistry {
 	
 	/**
 	 * The registry itself
@@ -84,7 +85,13 @@ public class UniversalRegistry {
 	}
 	
 	/**
-	 * Checks whether a service has any accompanying provider
+	 * Checks whether a service has any accompanying provider <br>
+	 * <br>
+	 * This method should only be called in the rare case where
+	 * you need to check whether a service is registered but you do not
+	 * need to retrieve the registration itself. <br>
+	 * <br>
+	 * If you need to retrive a registration use {@link #getRegistration(Class)}
 	 * 
 	 * @param <T> - the service
 	 * @param service - the service class
@@ -95,11 +102,17 @@ public class UniversalRegistry {
 	}
 	
 	/**
-	 * Retrieves the highest-priority registration for a service
+	 * Retrieves the highest-priority registration for a service. <br>
+	 * <br>
+	 * The proper way to retrieve registrations is to call this method once,
+	 * check if the returned value is non-null. If not null, proceed normally.
+	 * If null, there is no registration for the service. (You could then print an explanatory error message)<br>
+	 * <br>
+	 * <b>Do not use {@link #isProvidedFor(Class)} and then this method, or you may experience concurrency problems.</b>
 	 * 
 	 * @param <T> - the service
 	 * @param service - the service class
-	 * @return the service asked. Use {@link #isProvidedFor(Class)} to avoid null values.
+	 * @return the service asked.
 	 */
 	@SuppressWarnings("unchecked")
 	public static synchronized <T extends Registrable> T getRegistration(Class<T> service) {
@@ -107,7 +120,10 @@ public class UniversalRegistry {
 	}
 	
 	/**
-	 * Retrieves all registrations for a service
+	 * Retrieves all registrations for a service. <br>
+	 * <br>
+	 * If there are no registrations for the service parameter, an empty list is returned.
+	 * Otherwise, the returned list is backed by the internal registry.
 	 * 
 	 * @param <T> - the service
 	 * @param service - the service class
@@ -116,6 +132,15 @@ public class UniversalRegistry {
 	@SuppressWarnings("unchecked")
 	public static synchronized <T extends Registrable> List<T> getRegistrations(Class<T> service) {
 		return REGISTRY.containsKey(service) ?  Collections.unmodifiableList((List<T>) REGISTRY.get(service)) : Collections.emptyList();
+	}
+	
+	/**
+	 * Retrieves a map of service types to registrations backed by the internal registry.
+	 * 
+	 * @return the map of service classes to registrable lists
+	 */
+	public static Map<Class<?>, List<Registrable>> getRegistrations() {
+		return Collections.unmodifiableMap(REGISTRY);
 	}
 	
 }
