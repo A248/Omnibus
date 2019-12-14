@@ -28,9 +28,13 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * <b>UniversalRegistry</b>: Main class
- * 
- * <br><br>Used for registering all services, as well as checking/listing registrations.
+ * <b>UniversalRegistry</b>: Main class <br>
+ * <br>
+ * Used for registering all services, as well as checking/listing registrations. <br>
+ * <br>
+ * The most common usage of this class is to register resources and retrieve registrations. <br>
+ * To register resources: {@link #register(Class, Registrable)} <br>
+ * To retrieve registrations: {@link #getRegistration(Class)}
  * 
  * @author A248
  *
@@ -56,7 +60,7 @@ public final class UniversalRegistry {
 	 * 
 	 * @param <T> - the service
 	 * @param service - the service class, e.g. Economy.class for Vault economy
-	 * @param provider - the resource to register
+	 * @param provider - the resource to register, cannot be null
 	 */
 	public static synchronized <T extends Registrable> void register(Class<T> service, T provider) {
 		Objects.requireNonNull(provider, "Provider must not be null!");
@@ -135,7 +139,9 @@ public final class UniversalRegistry {
 	}
 	
 	/**
-	 * Retrieves a map of service types to registrations backed by the internal registry.
+	 * Retrieves a map of service types to registrations backed by the internal registry. <br>
+	 * <br>
+	 * Changes to the registry itself are reflected in the returned map.
 	 * 
 	 * @return the map of service classes to registrable lists
 	 */
