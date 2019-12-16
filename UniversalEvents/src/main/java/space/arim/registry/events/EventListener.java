@@ -20,10 +20,23 @@ package space.arim.registry.events;
 
 public interface EventListener {
 	
+	/**
+	 * The priority of the listener. Optional field.
+	 * 
+	 * @return -32 by default
+	 */
 	default byte getPriority() {
 		return (byte) -32;
 	}
 	
+	/**
+	 * Listening the event. <br>
+	 * <br>
+	 * This method is called on the listener if the listener has been registered
+	 * to listen for the specific type of event fired.
+	 * 
+	 * @param event - the event in question. Use casting and instanceof checks to narrow the type.
+	 */
 	void listen(Event event);
 	
 }
