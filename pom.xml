@@ -6,6 +6,10 @@
 	<groupId>space.arim</groupId>
 	<artifactId>universal</artifactId>
 	<version>0.5.0-SNAPSHOT</version>
+	<!-- Remember to update versions: 
+		1. Update property core.version
+		2. Update versions in all child modules
+	-->
 	<packaging>pom</packaging>
 	
 	<name>Universal</name>
@@ -15,6 +19,7 @@
 	
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<core.version>0.5.0</core.version>
     </properties>
     
     <licenses>
@@ -50,11 +55,6 @@
 						<source>1.8</source>
 						<target>1.8</target>
 					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.2-beta-5</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

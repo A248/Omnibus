@@ -12,4 +12,9 @@
 	<artifactId>universal-util</artifactId>
 	<name>UniversalUtil</name>
 	<description>Provides simple utilities for all kinds of server plugins.</description>
+	
+	<build>
+		<finalName>${project.name}_v${core.version}</finalName>
+	</build>
+	
 </project>
