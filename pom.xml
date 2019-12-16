@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim</groupId>
 	<artifactId>universal</artifactId>
-	<version>0.5.0-SNAPSHOT</version>
+	<version>0.5.1-SNAPSHOT</version>
 	<!-- Remember to update versions: 
 		1. Update property core.version
 		2. Update versions in all child modules
@@ -19,7 +19,7 @@
 	
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<core.version>0.5.0</core.version>
+    	<core.version>0.5.1</core.version>
     </properties>
     
     <licenses>
