@@ -61,6 +61,7 @@
 	</build>
 	
 	<modules>
+		<module>UniversalGNU</module>
 		<module>UniversalEvents</module>
 		<module>UniversalRegistry</module>
 		<module>UniversalUtil</module>
