@@ -11,7 +11,7 @@
 	
 	<artifactId>universal-registry</artifactId>
 	<name>UniversalRegistry</name>
-	<description>UniversalRegistry is a simple Bukkit/Spigot/BungeeCord service registration API.</description>
+	<description>UniversalRegistry is a common registry for Bukkit/Spigot/BungeeCord plugin resources, much like Bukkit's service registration API.</description>
 	
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
