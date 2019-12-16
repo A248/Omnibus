@@ -13,7 +13,7 @@
 	<packaging>pom</packaging>
 	
 	<name>Universal</name>
-	<description>Parent module for UniversalRegistry, UniversalEvents, and UniversalUtil</description>
+	<description>Parent module for UniversalEvents, UniversalRegistry, UniversalUtil, UniversalGPL, and UniversalPlugin</description>
 	<url>https://github.com/A248/UniversalRegistry</url>
 	<inceptionYear>2019</inceptionYear>
 	
@@ -61,7 +61,7 @@
 	</build>
 	
 	<modules>
-		<module>UniversalGNU</module>
+		<module>UniversalGPL</module>
 		<module>UniversalEvents</module>
 		<module>UniversalRegistry</module>
 		<module>UniversalUtil</module>
