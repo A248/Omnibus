@@ -13,10 +13,6 @@
 	<name>UniversalRegistry</name>
 	<description>UniversalRegistry is a simple Bukkit/Spigot/BungeeCord service registration API.</description>
 	
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-	
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>${project.name}_v${project.version}</finalName>

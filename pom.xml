@@ -61,8 +61,8 @@
 	</build>
 	
 	<modules>
-		<module>UniversalRegistry</module>
 		<module>UniversalEvents</module>
+		<module>UniversalRegistry</module>
 		<module>UniversalUtil</module>
 		<module>UniversalPlugin</module>
 	</modules>
@@ -72,6 +72,16 @@
 			<dependency>
 				<groupId>space.arim</groupId>
 				<artifactId>universal-events</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim</groupId>
+				<artifactId>universal-registry</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim</groupId>
+				<artifactId>universal-util</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
