@@ -31,20 +31,19 @@ public class LogFormatter extends Formatter {
 
 	@Override
 	public String format(LogRecord record) {
-		StringBuilder builder = new StringBuilder(date.format(record.getMillis()));
-		builder.append(' ').append('[');
-		builder.append(record.getLevel().getLocalizedName());
-		builder.append(']').append(' ');
-		builder.append(formatMessage(record));
-		builder.append('\n');
+		StringBuilder formatted = new StringBuilder();
+		formatted.append(date.format(record.getMillis()));
+		formatted.append(" [");
+		formatted.append(record.getLevel().getLocalizedName());
+		formatted.append("] ");
+		formatted.append(formatMessage(record));
+		formatted.append('\n');
 		if (record.getThrown() != null) {
-			StringWriter writer1 = new StringWriter();
-			try (PrintWriter writer2 = new PrintWriter(writer1)){
-				record.getThrown().printStackTrace(writer2);
-			}
-			builder.append(writer1);
+			StringWriter writer = new StringWriter();
+			record.getThrown().printStackTrace(new PrintWriter(writer));
+			formatted.append(writer);
 		}
-		return builder.toString();
+		return formatted.toString();
 	}
 	
 }
