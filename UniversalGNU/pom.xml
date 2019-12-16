@@ -9,8 +9,8 @@
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>universal-gnu</artifactId>
-	<name>UniversalGNU</name>
+	<artifactId>universal-gpl</artifactId>
+	<name>UniversalGPL</name>
 	<description>Incredibly basic license distributor to be utilised by other projects.</description>
 	<packaging>pom</packaging>
 	
