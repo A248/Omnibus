@@ -67,4 +67,14 @@
 		<module>UniversalPlugin</module>
 	</modules>
 	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>space.arim</groupId>
+				<artifactId>universal-events</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 </project>

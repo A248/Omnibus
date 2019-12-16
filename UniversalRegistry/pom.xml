@@ -21,4 +21,11 @@
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<finalName>${project.name}_v${project.version}</finalName>
 	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>space.arim</groupId>
+			<artifactId>universal-events</artifactId>
+		</dependency>
+	</dependencies>
 </project>

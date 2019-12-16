@@ -1,5 +1,5 @@
-/*
- * UniversalRegistry, a simple Bukkit/Spigot/BungeeCord service registration API
+/* 
+ * UniversalRegistry, a common registry for plugin resources
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify
@@ -20,12 +20,27 @@ package space.arim.registry;
 
 public interface Registrable {
 	
+	/**
+	 * The name of this resource. It is recommended to use a user-friendly name
+	 * 
+	 * @return the name
+	 */
 	String getName();
 	
+	/**
+	 * The author of this resource for common reference
+	 * 
+	 * @return the author
+	 */
 	default String getAuthor() {
 		return "anonymous";
 	}
 	
+	/**
+	 * The version of this resource for common reference
+	 * 
+	 * @return the version
+	 */
 	String getVersion();
 	
 	/**

@@ -1,6 +1,6 @@
 /* 
  * UniversalRegistry, a common registry for plugin resources
- * Copyright © 2019 Anand Beh <https://www.arim.space>
+ * Copyright © 2019 Anand Beh <https://www.arim.space
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,24 @@
  */
 package space.arim.registry;
 
-/**
- * Class containing priority constants for referential use
- * 
- * <br><br>See {@link space.arim.registry.Registrable#getPriority() Registrable.getPriority()}
- * 
- * @author A248
- */
-public final class RegistryPriority {
+import space.arim.registry.events.Event;
+
+public class RegistrationEvent<T extends Registrable> extends Event {
+
+	private final Class<T> service;
+	private final T provider;
 	
-	public static final byte LOWEST = (byte) -96;
-	public static final byte LOWER = (byte) -64;
-	public static final byte LOW = (byte) -32;
-	public static final byte NORMAL = (byte) 0;
-	public static final byte HIGH = (byte) 31;
-	public static final byte HIGHER = (byte) 63;
-	public static final byte HIGHEST = (byte) 95;
+	RegistrationEvent(Class<T> service, T provider) {
+		this.service = service;
+		this.provider = provider;
+	}
+	
+	public Class<T> getService() {
+		return service;
+	}
+	
+	public T getProvider() {
+		return provider;
+	}
 	
 }

@@ -1,5 +1,5 @@
-/*
- * UniversalRegistry, a simple Bukkit/Spigot/BungeeCord service registration API
+/* 
+ * UniversalRegistry, a common registry for plugin resources
  * Copyright © 2019 Anand Beh <https://www.arim.space>
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify
@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+import space.arim.registry.events.UniversalEvents;
+
 /**
  * <b>UniversalRegistry</b>: Main class <br>
  * <br>
@@ -50,7 +52,7 @@ public final class UniversalRegistry {
 	/**
 	 * Used to sort the registry based on priority
 	 */
-	private static final Comparator<Registrable> COMPARATOR = (r1, r2) -> r1.getPriority() - r2.getPriority();
+	private static final Comparator<Registrable> PRIORITY_COMPARATOR = (r1, r2) -> r1.getPriority() - r2.getPriority();
 	
 	// Prevent instantiation
 	private UniversalRegistry() {}
@@ -66,11 +68,17 @@ public final class UniversalRegistry {
 		Objects.requireNonNull(provider, "Provider must not be null!");
 		if (REGISTRY.containsKey(service)) {
 			if (REGISTRY.get(service).add(provider)) {
-				REGISTRY.get(service).sort(COMPARATOR);
+				REGISTRY.get(service).sort(PRIORITY_COMPARATOR);
+				fireRegistrationEvent(service, provider);
 			}
 		} else {
 			REGISTRY.put(service, new ArrayList<Registrable>(Arrays.asList(provider)));
+			fireRegistrationEvent(service, provider);
 		}
+	}
+	
+	private static <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
+		UniversalEvents.fireEvent(new RegistrationEvent<T>(service, provider));
 	}
 	
 	/**
@@ -83,9 +91,14 @@ public final class UniversalRegistry {
 	public static synchronized <T extends Registrable> void unregister(Class<T> service, T provider) {
 		if (REGISTRY.containsKey(service)) {
 			if (REGISTRY.get(service).remove(provider)) {
-				REGISTRY.get(service).sort(COMPARATOR);
+				REGISTRY.get(service).sort(PRIORITY_COMPARATOR);
+				fireUnregistrationEvent(service, provider);
 			}
 		}
+	}
+	
+	private static <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
+		UniversalEvents.fireEvent(new UnregistrationEvent<T>(service, provider));
 	}
 	
 	/**
