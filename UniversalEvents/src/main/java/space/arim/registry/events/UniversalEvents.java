@@ -91,7 +91,7 @@ public final class UniversalEvents {
 				});
 			}
 		});
-		return (!(event instanceof CancellableEvent)) || !((CancellableEvent) event).isCancelled();
+		return (!(event instanceof Cancellable)) || !((Cancellable) event).isCancelled();
 	}
 	
 }

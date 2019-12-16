@@ -24,40 +24,20 @@ package space.arim.registry.events;
  * @author A248
  *
  */
-public abstract class CancellableEvent extends Event {
-
-	private boolean cancelled = false;
+public interface Cancellable {
 	
-	public CancellableEvent() {
-		super();
-	}
-	
-	/**
-	 * Use this constructor for asynchronous events with parameter true <br>
-	 * Calls super constructor {@link Event#Event(boolean)} with same parameter.
-	 * 
-	 * @param asynchronous - whether the event is asynchronous
-	 */
-	public CancellableEvent(boolean asynchronous) {
-		super(asynchronous);
-	}
-
 	/**
 	 * Whether the event has been cancelled, presumably by another listener
 	 * 
 	 * @return true if and only if the event is cancelled
 	 */
-	public boolean isCancelled() {
-		return cancelled;
-	}
+	boolean isCancelled();
 	
 	/**
 	 * Cancels/uncancels an event
 	 * 
 	 * @param cancelled - whether or not to cancel
 	 */
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
+	void setCancelled(boolean cancelled);
 	
 }
