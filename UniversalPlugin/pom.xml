@@ -36,7 +36,7 @@
 						<artifactItem>
 							<groupId>space.arim</groupId>
 							<artifactId>universal-gpl</artifactId>
-							<version>${universal.version}</version>
+							<version>${project.version}</version>
 							<classifier>resources</classifier>
 						</artifactItem>
 					</artifactItems>
@@ -73,7 +73,6 @@
 									<include>space.arim:universal-util</include>
 								</includes>
 							</artifactSet>
-							<minimizeJar>true</minimizeJar>
 						</configuration>
 					</execution>
 				</executions>
@@ -89,6 +88,13 @@
 		<dependency>
 			<groupId>space.arim</groupId>
 			<artifactId>universal-util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>space.arim</groupId>
+			<artifactId>universal-gpl</artifactId>
+			<classifier>resources</classifier>
+			<type>zip</type>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
