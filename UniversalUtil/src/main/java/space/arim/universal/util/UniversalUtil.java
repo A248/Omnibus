@@ -20,7 +20,11 @@ package space.arim.universal.util;
 
 import java.util.Map;
 
+import com.google.gson.Gson;
+
 public class UniversalUtil {
+	
+	public static final Gson COMMON_GSON = new Gson();
 	
 	private static final long mainThread = Thread.currentThread().getId();
 
