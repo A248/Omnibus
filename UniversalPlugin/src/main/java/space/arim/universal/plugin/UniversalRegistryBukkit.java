@@ -16,7 +16,7 @@
  * along with UniversalPlugin. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.plugin;
+package space.arim.universal.plugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

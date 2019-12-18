@@ -16,27 +16,28 @@
  * along with UniversalEvents. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.events;
+package space.arim.universal.events;
 
-public interface EventListener {
+/**
+ * An event which may be cancelled via {@link #setCancelled(boolean)}
+ * 
+ * @author A248
+ *
+ */
+public interface Cancellable {
 	
 	/**
-	 * The priority of the listener. Optional field.
+	 * Whether the event has been cancelled, presumably by another listener
 	 * 
-	 * @return -32 by default
+	 * @return true if and only if the event is cancelled
 	 */
-	default byte getPriority() {
-		return (byte) -32;
-	}
+	boolean isCancelled();
 	
 	/**
-	 * Listening the event. <br>
-	 * <br>
-	 * This method is called on the listener if the listener has been registered
-	 * to listen for the specific type of event fired.
+	 * Cancels/uncancels an event
 	 * 
-	 * @param event - the event in question. Use casting and instanceof checks to narrow the type.
+	 * @param cancelled - whether or not to cancel
 	 */
-	void listen(Event event);
+	void setCancelled(boolean cancelled);
 	
 }

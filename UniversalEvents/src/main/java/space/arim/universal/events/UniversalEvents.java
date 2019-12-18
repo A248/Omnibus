@@ -16,7 +16,7 @@
  * along with UniversalEvents. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.events;
+package space.arim.universal.events;
 
 import java.util.ArrayList;
 import java.util.Arrays;

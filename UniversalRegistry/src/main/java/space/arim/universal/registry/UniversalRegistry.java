@@ -16,7 +16,7 @@
  * along with UniversalRegistry. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry;
+package space.arim.universal.registry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import space.arim.registry.events.UniversalEvents;
+import space.arim.universal.events.UniversalEvents;
 
 /**
  * <b>UniversalRegistry</b>: Main class <br>

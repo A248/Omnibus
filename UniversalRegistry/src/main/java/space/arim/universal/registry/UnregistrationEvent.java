@@ -16,9 +16,9 @@
  * along with UniversalRegistry. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry;
+package space.arim.universal.registry;
 
-import space.arim.registry.events.Event;
+import space.arim.universal.events.Event;
 
 public class UnregistrationEvent<T extends Registrable> extends Event {
 

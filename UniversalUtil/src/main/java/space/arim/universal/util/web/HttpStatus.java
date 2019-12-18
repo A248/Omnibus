@@ -16,7 +16,7 @@
  * along with ArimBansLib. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.util.web;
+package space.arim.universal.util.web;
 
 // possible todo: Add more from https://httpstatuses.com
 public enum HttpStatus {

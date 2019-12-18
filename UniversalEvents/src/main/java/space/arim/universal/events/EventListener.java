@@ -16,34 +16,27 @@
  * along with UniversalEvents. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.events;
+package space.arim.universal.events;
 
-public abstract class Event {
-	
-	private final boolean asynchronous;
-	
-	public Event() {
-		this(false);
-	}
+public interface EventListener {
 	
 	/**
-	 * Use this constructor for asynchronous events with parameter true
+	 * The priority of the listener. Optional field.
 	 * 
-	 * @param asynchronous - whether the event is asynchronous
+	 * @return -32 by default
 	 */
-	public Event(boolean asynchronous) {
-		this.asynchronous = asynchronous;
+	default byte getPriority() {
+		return (byte) -32;
 	}
 	
 	/**
-	 * Checks whether an event is running asynchronously <br>
+	 * Listening the event. <br>
 	 * <br>
-	 * The invoker of {@link Event#Event(boolean)} or {@link CancellableEvent#CancellableEvent(boolean)} is trusted with setting this value.
+	 * This method is called on the listener if the listener has been registered
+	 * to listen for the specific type of event fired.
 	 * 
-	 * @return
+	 * @param event - the event in question. Use casting and instanceof checks to narrow the type.
 	 */
-	public boolean isAsynchronous() {
-		return asynchronous;
-	}
+	void listen(Event event);
 	
 }

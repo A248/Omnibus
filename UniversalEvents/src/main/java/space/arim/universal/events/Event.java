@@ -16,28 +16,34 @@
  * along with UniversalEvents. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.events;
+package space.arim.universal.events;
 
-/**
- * An event which may be cancelled via {@link #setCancelled(boolean)}
- * 
- * @author A248
- *
- */
-public interface Cancellable {
+public abstract class Event {
+	
+	private final boolean asynchronous;
+	
+	public Event() {
+		this(false);
+	}
 	
 	/**
-	 * Whether the event has been cancelled, presumably by another listener
+	 * Use this constructor for asynchronous events with parameter true
 	 * 
-	 * @return true if and only if the event is cancelled
+	 * @param asynchronous - whether the event is asynchronous
 	 */
-	boolean isCancelled();
+	public Event(boolean asynchronous) {
+		this.asynchronous = asynchronous;
+	}
 	
 	/**
-	 * Cancels/uncancels an event
+	 * Checks whether an event is running asynchronously <br>
+	 * <br>
+	 * The invoker of {@link Event#Event(boolean)} or {@link CancellableEvent#CancellableEvent(boolean)} is trusted with setting this value.
 	 * 
-	 * @param cancelled - whether or not to cancel
+	 * @return
 	 */
-	void setCancelled(boolean cancelled);
+	public boolean isAsynchronous() {
+		return asynchronous;
+	}
 	
 }

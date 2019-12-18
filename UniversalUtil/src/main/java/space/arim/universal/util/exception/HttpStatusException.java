@@ -16,9 +16,9 @@
  * along with ArimBansLib. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry.util.exception;
+package space.arim.universal.util.exception;
 
-import space.arim.registry.util.web.HttpStatus;
+import space.arim.universal.util.web.HttpStatus;
 
 public class HttpStatusException extends Exception {
 

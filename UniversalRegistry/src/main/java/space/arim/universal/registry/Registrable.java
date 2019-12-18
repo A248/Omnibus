@@ -16,23 +16,41 @@
  * along with UniversalRegistry. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.registry;
+package space.arim.universal.registry;
 
-/**
- * Class containing priority constants for referential use
- * 
- * <br><br>See {@link space.arim.registry.Registrable#getPriority() Registrable.getPriority()}
- * 
- * @author A248
- */
-public final class RegistryPriority {
+public interface Registrable {
 	
-	public static final byte LOWEST = (byte) -96;
-	public static final byte LOWER = (byte) -64;
-	public static final byte LOW = (byte) -32;
-	public static final byte NORMAL = (byte) 0;
-	public static final byte HIGH = (byte) 31;
-	public static final byte HIGHER = (byte) 63;
-	public static final byte HIGHEST = (byte) 95;
+	/**
+	 * The name of this resource. It is recommended to use a user-friendly name
+	 * 
+	 * @return the name
+	 */
+	String getName();
+	
+	/**
+	 * The author of this resource for common reference
+	 * 
+	 * @return the author
+	 */
+	default String getAuthor() {
+		return "anonymous";
+	}
+	
+	/**
+	 * The version of this resource for common reference
+	 * 
+	 * @return the version
+	 */
+	String getVersion();
+	
+	/**
+	 * The priority of this resource when it is registered.<br>
+	 * <br>
+	 * If multiple resources are registered for one service,
+	 * the highest-priority resource will be returned in {@link space.arim.universal.registry.UniversalRegistry#getRegistration(Class) UniversalRegistry#getRegistration(Class)}
+	 * 
+	 * @return the priority of this resource
+	 */
+	byte getPriority();
 	
 }
