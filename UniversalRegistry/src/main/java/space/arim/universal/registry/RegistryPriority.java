@@ -27,6 +27,8 @@ package space.arim.universal.registry;
  */
 public final class RegistryPriority {
 	
+	private RegistryPriority() {}
+	
 	public static final byte LOWEST = (byte) -96;
 	public static final byte LOWER = (byte) -64;
 	public static final byte LOW = (byte) -32;

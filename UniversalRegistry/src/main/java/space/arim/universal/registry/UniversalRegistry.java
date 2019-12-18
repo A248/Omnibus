@@ -89,11 +89,9 @@ public final class UniversalRegistry {
 	 * @param provider - the resource to unregister
 	 */
 	public static synchronized <T extends Registrable> void unregister(Class<T> service, T provider) {
-		if (REGISTRY.containsKey(service)) {
-			if (REGISTRY.get(service).remove(provider)) {
-				REGISTRY.get(service).sort(PRIORITY_COMPARATOR);
-				fireUnregistrationEvent(service, provider);
-			}
+		if (REGISTRY.containsKey(service) && REGISTRY.get(service).remove(provider)) {
+			REGISTRY.get(service).sort(PRIORITY_COMPARATOR);
+			fireUnregistrationEvent(service, provider);
 		}
 	}
 	
