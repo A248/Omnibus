@@ -28,17 +28,61 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class UniversalEvents {
 	
 	/**
-	 * All listeners
+	 * The id of the instance
+	 * 
 	 */
-	private static final ConcurrentHashMap<Class<? extends Event>, List<EventListener>> LISTENERS = new ConcurrentHashMap<Class<? extends Event>, List<EventListener>>();
+	private final String id;
+	
+	/**
+	 * All listeners
+	 * 
+	 */
+	private final ConcurrentHashMap<Class<? extends Event>, List<EventListener>> listeners = new ConcurrentHashMap<Class<? extends Event>, List<EventListener>>();
 	
 	/**
 	 * Used to sort listeners based on priority
 	 */
 	private static final Comparator<EventListener> PRIORITY_COMPARATOR = (l1, l2) -> l1.getPriority() - l2.getPriority();
 	
-	// Prevent instantiation
-	private UniversalEvents() {}
+	/**
+	 * Instances map to prevent duplicate ids
+	 * 
+	 */
+	private static final ConcurrentHashMap<String, UniversalEvents> INSTANCES = new ConcurrentHashMap<String, UniversalEvents>();
+	
+	/**
+	 * The default instance id
+	 * 
+	 */
+	public static final String DEFAULT_ID = "main";
+	
+	// Control instantiation
+	private UniversalEvents(String id) {
+		this.id = id;
+	}
+	
+	public static UniversalEvents get(String id) {
+		if (!INSTANCES.containsKey(id)) {
+			UniversalEvents events = new UniversalEvents(id);
+			INSTANCES.put(id, events);
+		}
+		return INSTANCES.get(id);
+	}
+	
+	public static UniversalEvents get() {
+		return get(DEFAULT_ID);
+	}
+	
+	/**
+	 * Returns the id of this UniversalEvents instance. <br>
+	 * <br>
+	 * For the main instance, it is {@link #DEFAULT_ID}
+	 * 
+	 * @return String - the id
+	 */
+	public String getId() {
+		return id;
+	}
 	
 	/**
 	 * Adds/registers an event listener
@@ -47,12 +91,12 @@ public final class UniversalEvents {
 	 * @param eventType - event class
 	 * @param listener - the listener to register
 	 */
-	public static synchronized <E extends Event> void addListener(Class<E> eventType, EventListener listener) {
-		if (LISTENERS.containsKey(eventType)) {
-			LISTENERS.get(eventType).add(listener);
-			LISTENERS.get(eventType).sort(PRIORITY_COMPARATOR);
+	public synchronized <E extends Event> void addListener(Class<E> eventType, EventListener listener) {
+		if (listeners.containsKey(eventType)) {
+			listeners.get(eventType).add(listener);
+			listeners.get(eventType).sort(PRIORITY_COMPARATOR);
 		} else {
-			LISTENERS.put(eventType, new ArrayList<EventListener>(Arrays.asList(listener)));
+			listeners.put(eventType, new ArrayList<EventListener>(Arrays.asList(listener)));
 		}
 	}
 	
@@ -66,8 +110,8 @@ public final class UniversalEvents {
 	 * @param eventType - event class
 	 * @return immutable list sorted according to priority of listenes. Empty if no listeners exist.
 	 */
-	public static <E extends Event> List<EventListener> getListeners(Class<E> eventType) {
-		return (LISTENERS.containsKey(eventType)) ? Collections.unmodifiableList(LISTENERS.get(eventType)) : Collections.emptyList();
+	public <E extends Event> List<EventListener> getListeners(Class<E> eventType) {
+		return (listeners.containsKey(eventType)) ? Collections.unmodifiableList(listeners.get(eventType)) : Collections.emptyList();
 	}
 	
 	/**
@@ -79,8 +123,8 @@ public final class UniversalEvents {
 	 * 
 	 * @see CancellableEvent
 	 */
-	public static <E extends Event> boolean fireEvent(E event) {
-		LISTENERS.forEach((eventType, listeners) -> {
+	public <E extends Event> boolean fireEvent(E event) {
+		listeners.forEach((eventType, listeners) -> {
 			if (eventType.isInstance(event)) {
 				listeners.forEach((listener) -> {
 					try {

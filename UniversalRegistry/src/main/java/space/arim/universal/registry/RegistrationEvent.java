@@ -18,24 +18,17 @@
  */
 package space.arim.universal.registry;
 
-import space.arim.universal.events.Event;
+/**
+ * Called for the registration of a resource
+ * 
+ * @author A248
+ *
+ * @param <T> - the service for which the resource was registered
+ */
+public class RegistrationEvent<T extends Registrable> extends AbstractRegistrationEvent<T> {
 
-public class RegistrationEvent<T extends Registrable> extends Event {
+	RegistrationEvent(String id, Class<T> service, T provider) {
+		super(id, service, provider);
+	}
 
-	private final Class<T> service;
-	private final T provider;
-	
-	RegistrationEvent(Class<T> service, T provider) {
-		this.service = service;
-		this.provider = provider;
-	}
-	
-	public Class<T> getService() {
-		return service;
-	}
-	
-	public T getProvider() {
-		return provider;
-	}
-	
 }

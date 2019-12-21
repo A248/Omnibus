@@ -44,18 +44,72 @@ import space.arim.universal.events.UniversalEvents;
 public final class UniversalRegistry {
 	
 	/**
+	 * The id of the instance
+	 * 
+	 */
+	private final String id;
+	
+	/**
 	 * The registry itself
 	 * 
 	 */
-	private static final ConcurrentHashMap<Class<?>, List<Registrable>> REGISTRY = new ConcurrentHashMap<Class<?>, List<Registrable>>();
+	private final ConcurrentHashMap<Class<?>, List<Registrable>> registry = new ConcurrentHashMap<Class<?>, List<Registrable>>();
 	
 	/**
 	 * Used to sort the registry based on priority
 	 */
 	private static final Comparator<Registrable> PRIORITY_COMPARATOR = (r1, r2) -> r1.getPriority() - r2.getPriority();
 	
-	// Prevent instantiation
-	private UniversalRegistry() {}
+	/**
+	 * Instances map to prevent duplicate ids
+	 * 
+	 */
+	private static final ConcurrentHashMap<String, UniversalRegistry> INSTANCES = new ConcurrentHashMap<String, UniversalRegistry>();
+	
+	/**
+	 * The default instance id <br>
+	 * <br>
+	 * Equivalent to {@link UniversalEvents#DEFAULT_ID}
+	 * 
+	 */
+	public static final String DEFAULT_ID = UniversalEvents.DEFAULT_ID;
+	
+	// Control instantiation
+	private UniversalRegistry(String id) {
+		this.id = id;
+	}
+	
+	public static synchronized UniversalRegistry get(String id) {
+		if (!INSTANCES.containsKey(id)) {
+			UniversalRegistry registry = new UniversalRegistry(id);
+			INSTANCES.put(id, registry);
+		}
+		return INSTANCES.get(id);
+	}
+	
+	public static UniversalRegistry get() {
+		return get(DEFAULT_ID);
+	}
+	
+	/**
+	 * Returns the {@link space.arim.universal.events.UniversalEvents UniversalEvents} which this registry uses to call events on
+	 * 
+	 * @return UniversalEvents - the corresponding UniversalEvents instance
+	 */
+	public UniversalEvents getEvents() {
+		return UniversalEvents.get(id);
+	}
+	
+	/**
+	 * Returns the id of this UniversalRegistry instance. <br>
+	 * <br>
+	 * For the main registry, it is {@link #DEFAULT_ID}
+	 * 
+	 * @return String - the id
+	 */
+	public String getId() {
+		return id;
+	}
 	
 	/**
 	 * Register a resource as a specific service
@@ -64,21 +118,21 @@ public final class UniversalRegistry {
 	 * @param service - the service class, e.g. Economy.class for Vault economy
 	 * @param provider - the resource to register, cannot be null
 	 */
-	public static synchronized <T extends Registrable> void register(Class<T> service, T provider) {
+	public synchronized <T extends Registrable> void register(Class<T> service, T provider) {
 		Objects.requireNonNull(provider, "Provider must not be null!");
-		if (REGISTRY.containsKey(service)) {
-			if (REGISTRY.get(service).add(provider)) {
-				REGISTRY.get(service).sort(PRIORITY_COMPARATOR);
+		if (registry.containsKey(service)) {
+			if (registry.get(service).add(provider)) {
+				registry.get(service).sort(PRIORITY_COMPARATOR);
 				fireRegistrationEvent(service, provider);
 			}
 		} else {
-			REGISTRY.put(service, new ArrayList<Registrable>(Arrays.asList(provider)));
+			registry.put(service, new ArrayList<Registrable>(Arrays.asList(provider)));
 			fireRegistrationEvent(service, provider);
 		}
 	}
 	
-	private static <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
-		UniversalEvents.fireEvent(new RegistrationEvent<T>(service, provider));
+	private <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
+		UniversalEvents.get(id).fireEvent(new RegistrationEvent<T>(id, service, provider));
 	}
 	
 	/**
@@ -88,15 +142,15 @@ public final class UniversalRegistry {
 	 * @param service - the service class
 	 * @param provider - the resource to unregister
 	 */
-	public static synchronized <T extends Registrable> void unregister(Class<T> service, T provider) {
-		if (REGISTRY.containsKey(service) && REGISTRY.get(service).remove(provider)) {
-			REGISTRY.get(service).sort(PRIORITY_COMPARATOR);
+	public synchronized <T extends Registrable> void unregister(Class<T> service, T provider) {
+		if (registry.containsKey(service) && registry.get(service).remove(provider)) {
+			registry.get(service).sort(PRIORITY_COMPARATOR);
 			fireUnregistrationEvent(service, provider);
 		}
 	}
 	
-	private static <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
-		UniversalEvents.fireEvent(new UnregistrationEvent<T>(service, provider));
+	private <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
+		UniversalEvents.get(id).fireEvent(new UnregistrationEvent<T>(id, service, provider));
 	}
 	
 	/**
@@ -112,8 +166,8 @@ public final class UniversalRegistry {
 	 * @param service - the service class
 	 * @return true if the service is provided for, false if not
 	 */
-	public static <T extends Registrable> boolean isProvidedFor(Class<T> service) {
-		return REGISTRY.containsKey(service);
+	public <T extends Registrable> boolean isProvidedFor(Class<T> service) {
+		return registry.containsKey(service);
 	}
 	
 	/**
@@ -130,8 +184,8 @@ public final class UniversalRegistry {
 	 * @return the service asked.
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized <T extends Registrable> T getRegistration(Class<T> service) {
-		return REGISTRY.containsKey(service) ? (T) REGISTRY.get(service).get(0) : null;
+	public synchronized <T extends Registrable> T getRegistration(Class<T> service) {
+		return registry.containsKey(service) ? (T) registry.get(service).get(0) : null;
 	}
 	
 	/**
@@ -145,8 +199,8 @@ public final class UniversalRegistry {
 	 * @return immutable list sorted according to priority of registrations. Empty if no registrations exist.
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized <T extends Registrable> List<T> getRegistrations(Class<T> service) {
-		return REGISTRY.containsKey(service) ?  Collections.unmodifiableList((List<T>) REGISTRY.get(service)) : Collections.emptyList();
+	public synchronized <T extends Registrable> List<T> getRegistrations(Class<T> service) {
+		return registry.containsKey(service) ?  Collections.unmodifiableList((List<T>) registry.get(service)) : Collections.emptyList();
 	}
 	
 	/**
@@ -156,8 +210,8 @@ public final class UniversalRegistry {
 	 * 
 	 * @return the map of service classes to registrable lists
 	 */
-	public static Map<Class<?>, List<Registrable>> getRegistrations() {
-		return Collections.unmodifiableMap(REGISTRY);
+	public Map<Class<?>, List<Registrable>> getRegistrations() {
+		return Collections.unmodifiableMap(registry);
 	}
 	
 }
