@@ -18,9 +18,9 @@
  */
 package space.arim.universal.plugin;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import net.md_5.bungee.api.plugin.Plugin;
 
-public class UniversalRegistryBukkit extends JavaPlugin {
+public class UniversalPluginBungee extends Plugin {
 
 	@Override
 	public void onEnable() {

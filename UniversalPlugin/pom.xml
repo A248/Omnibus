@@ -108,6 +108,18 @@
 			<version>1.15-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.spongepowered</groupId>
+			<artifactId>spongeapi</artifactId>
+			<version>7.1.0</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	
+	<repositories>
+		<repository>
+			<id>sponge-repo</id>
+			<url>https://repo.spongepowered.org/maven</url>
+		</repository>
+	</repositories>
 </project>
