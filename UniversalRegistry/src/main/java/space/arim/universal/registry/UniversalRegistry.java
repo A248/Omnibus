@@ -132,7 +132,7 @@ public final class UniversalRegistry {
 	}
 	
 	private <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
-		UniversalEvents.get(id).fireEvent(new RegistrationEvent<T>(id, service, provider));
+		UniversalEvents.get(id).fireEvent(new RegistrationEvent<T>(service, provider));
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public final class UniversalRegistry {
 	}
 	
 	private <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
-		UniversalEvents.get(id).fireEvent(new UnregistrationEvent<T>(id, service, provider));
+		UniversalEvents.get(id).fireEvent(new UnregistrationEvent<T>(service, provider));
 	}
 	
 	/**

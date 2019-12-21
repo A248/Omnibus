@@ -22,25 +22,12 @@ import space.arim.universal.events.Event;
 
 public abstract class AbstractRegistrationEvent<T extends Registrable> extends Event {
 
-	private final String id;
 	private final Class<T> service;
 	private final T provider;
 	
-	AbstractRegistrationEvent(String id, Class<T> service, T provider) {
-		this.id = id;
+	AbstractRegistrationEvent(Class<T> service, T provider) {
 		this.service = service;
 		this.provider = provider;
-	}
-	
-	/**
-	 * Gets the ID of the Registry for this event. <br>
-	 * <br>
-	 * For the main registry, it is simply <code>main</code>
-	 * 
-	 * @return String - the registry id
-	 */
-	public String getRegistryId() {
-		return id;
 	}
 	
 	/**

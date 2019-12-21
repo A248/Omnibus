@@ -27,8 +27,8 @@ package space.arim.universal.registry;
  */
 public class RegistrationEvent<T extends Registrable> extends AbstractRegistrationEvent<T> {
 
-	RegistrationEvent(String id, Class<T> service, T provider) {
-		super(id, service, provider);
+	RegistrationEvent(Class<T> service, T provider) {
+		super(service, provider);
 	}
 
 }
