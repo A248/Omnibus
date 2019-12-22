@@ -18,34 +18,19 @@
  */
 package space.arim.universal.events;
 
-public abstract class Event {
-	
-	private final boolean asynchronous;
-	
-	public Event() {
-		this(false);
-	}
+public interface Event {
 	
 	/**
-	 * Use this constructor for asynchronous events <br>
+	 * Whether an event is running asynchronously <br>
 	 * <br>
-	 * The contract of this constructor is that asynchronisation is guaranteed when using parameter true.
-	 * 
-	 * @param asynchronous - whether the event is guaranteed to be asynchronous
-	 */
-	public Event(boolean asynchronous) {
-		this.asynchronous = asynchronous;
-	}
-	
-	/**
-	 * Checks whether an event is running asynchronously <br>
+	 * The contract of this method:
+	 * * If true, event MUST NOT run synchronously with the main thread
+	 * * If false, event MUST run synchronously with the main thread <br>
 	 * <br>
-	 * The invoker of {@link Event#Event(boolean)} or {@link CancellableEvent#CancellableEvent(boolean)} is trusted with setting this value.
+	 * The main thread is generally taken as the thread doing the most work.
 	 * 
-	 * @return
+	 * @return true if and only if event is asynchronous
 	 */
-	public boolean isAsynchronous() {
-		return asynchronous;
-	}
+	boolean isAsynchronous();
 	
 }
