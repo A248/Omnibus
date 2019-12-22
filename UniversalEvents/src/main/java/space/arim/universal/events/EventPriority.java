@@ -18,25 +18,23 @@
  */
 package space.arim.universal.events;
 
-public interface EventListener {
+/**
+ * Class containing priority constants for referential use
+ * 
+ * <br><br>See {@link space.arim.universal.events.EventHandler#priority() EventHandler.priority()}
+ * 
+ * @author A248
+ */
+public final class EventPriority {
+
+	public static final byte LOWEST = (byte) -96;
+	public static final byte LOWER = (byte) -64;
+	public static final byte LOW = (byte) -32;
+	public static final byte NORMAL = (byte) 0;
+	public static final byte HIGH = (byte) 31;
+	public static final byte HIGHER = (byte) 63;
+	public static final byte HIGHEST = (byte) 95;
 	
-	/**
-	 * The priority of the listener. Optional field.
-	 * 
-	 * @return -32 by default
-	 */
-	default byte getPriority() {
-		return (byte) -32;
-	}
-	
-	/**
-	 * Listening the event. <br>
-	 * <br>
-	 * This method is called on the listener if the listener has been registered
-	 * to listen for the specific type of event fired.
-	 * 
-	 * @param event - the event in question. Use casting and instanceof checks to narrow the type.
-	 */
-	void listen(Event event);
+	private EventPriority() {}
 	
 }

@@ -18,34 +18,29 @@
  */
 package space.arim.universal.events;
 
-public abstract class Event {
-	
-	private final boolean asynchronous;
-	
-	public Event() {
-		this(false);
-	}
-	
-	/**
-	 * Use this constructor for asynchronous events <br>
-	 * <br>
-	 * The contract of this constructor is that asynchronisation is guaranteed when using parameter true.
-	 * 
-	 * @param asynchronous - whether the event is guaranteed to be asynchronous
-	 */
-	public Event(boolean asynchronous) {
-		this.asynchronous = asynchronous;
-	}
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface EventHandler {
 	
 	/**
-	 * Checks whether an event is running asynchronously <br>
+	 * The priority of an EventHandler <br>
 	 * <br>
-	 * The invoker of {@link Event#Event(boolean)} or {@link CancellableEvent#CancellableEvent(boolean)} is trusted with setting this value.
+	 * <b>Higher priorities are called last</b>
 	 * 
-	 * @return
+	 * @return byte - the priority
 	 */
-	public boolean isAsynchronous() {
-		return asynchronous;
-	}
+	byte priority() default 0;
+	
+	/**
+	 * Whether to ignore cancelled events
+	 * 
+	 * @return false by default, true if specified as such
+	 */
+	boolean ignoreCancelled() default false;
 	
 }

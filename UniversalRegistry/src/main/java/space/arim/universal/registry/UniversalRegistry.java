@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import space.arim.universal.events.UniversalEvents;
 
@@ -56,6 +57,12 @@ public final class UniversalRegistry {
 	private final ConcurrentHashMap<Class<?>, List<Registrable>> registry = new ConcurrentHashMap<Class<?>, List<Registrable>>();
 	
 	/**
+	 * The corresponding {@link UniversalEvents} instance
+	 * 
+	 */
+	private final UniversalEvents events;
+	
+	/**
 	 * Used to sort the registry based on priority
 	 */
 	private static final Comparator<Registrable> PRIORITY_COMPARATOR = (r1, r2) -> r1.getPriority() - r2.getPriority();
@@ -75,29 +82,63 @@ public final class UniversalRegistry {
 	public static final String DEFAULT_ID = UniversalEvents.DEFAULT_ID;
 	
 	// Control instantiation
-	private UniversalRegistry(String id) {
+	private UniversalRegistry(String id, UniversalEvents events) {
 		this.id = id;
+		this.events = events;
 	}
 	
-	public static synchronized UniversalRegistry get(String id) {
+	static synchronized UniversalRegistry demandRegistry(String id, UniversalEvents events) {
 		if (!INSTANCES.containsKey(id)) {
-			UniversalRegistry registry = new UniversalRegistry(id);
+			UniversalRegistry registry = new UniversalRegistry(id, events);
 			INSTANCES.put(id, registry);
 		}
 		return INSTANCES.get(id);
 	}
 	
-	public static UniversalRegistry get() {
-		return get(DEFAULT_ID);
+	/**
+	 * UniversalRegistry instances are thread-safe; however, you may wish for a thread-specific instance nonetheless.
+	 * 
+	 * @return ThreadLocal<UniversalRegistry> - a {@link ThreadLocal}
+	 */
+	public static ThreadLocal<UniversalRegistry> threadLocal() {
+		return ThreadLocal.withInitial(() -> demandRegistry("thread-".concat(Thread.currentThread().getName()), UniversalEvents.threadLocal().get()));
 	}
 	
 	/**
-	 * Returns the {@link space.arim.universal.events.UniversalEvents UniversalEvents} which this registry uses to call events on
+	 * Retrieves a UniversalRegistry instance by classname.
+	 * If no instance by the classname exists, a new one is created.<br>
+	 * <br>
+	 * This is the preferred approach to using your own UniversalRegistry instances.
 	 * 
-	 * @return UniversalEvents - the corresponding UniversalEvents instance
+	 * @param id - the classname. Use {@link Class#getName()}
+	 * @return UniversalRegistry - the instance if it exists, otherwise a new instance is created.
+	 * @throws ClassNotFoundException - if the classname is invalid
 	 */
-	public UniversalEvents getEvents() {
-		return UniversalEvents.get(id);
+	public static UniversalRegistry getByClassname(String id) throws ClassNotFoundException {
+		return demandRegistry("class-".concat(id), UniversalEvents.getByClassname(id));
+	}
+	
+	/**
+	 * Gets a UniversalRegistry by id. <br>
+	 * <br>
+	 * If no instance with the id exists, {@link Supplier#get()} is called and returned
+	 * 
+	 * @param id - the String-based id. See {@link #getId()}
+	 * @param defaultSupplier - from which to return back default values.
+	 * @return UniversalRegistry - a registered instance if the id exists, otherwise the default value
+	 */
+	public static UniversalRegistry getOrDefault(String id, Supplier<UniversalRegistry> defaultSupplier) {
+		UniversalRegistry registry = INSTANCES.get(id);
+		return registry != null ? registry : defaultSupplier.get();
+	}
+	
+	/**
+	 * Gets the main instance of UniversalREgistry
+	 * 
+	 * @return UniversalRegistry - the instance
+	 */
+	public static UniversalRegistry get() {
+		return demandRegistry(DEFAULT_ID, UniversalEvents.get());
 	}
 	
 	/**
@@ -132,7 +173,7 @@ public final class UniversalRegistry {
 	}
 	
 	private <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
-		UniversalEvents.get(id).fireEvent(new RegistrationEvent<T>(service, provider));
+		events.fireEvent(new RegistrationEvent<T>(service, provider));
 	}
 	
 	/**
@@ -150,7 +191,7 @@ public final class UniversalRegistry {
 	}
 	
 	private <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
-		UniversalEvents.get(id).fireEvent(new UnregistrationEvent<T>(service, provider));
+		events.fireEvent(new UnregistrationEvent<T>(service, provider));
 	}
 	
 	/**
