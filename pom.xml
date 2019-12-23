@@ -18,10 +18,10 @@
 	<inceptionYear>2019</inceptionYear>
 	
 	<properties>
+		<core.version>0.6.1</core.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<maven.compiler.source>1.8</maven.compiler.source>
     	<maven.compiler.target>1.8</maven.compiler.target>
-    	<core.version>0.5.1</core.version>
     </properties>
     
     <licenses>
