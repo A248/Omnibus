@@ -6,14 +6,15 @@
 	<groupId>space.arim</groupId>
 	<artifactId>universal</artifactId>
 	<version>0.6.1-SNAPSHOT</version>
-	<!-- Remember to update versions: 
+	<!--
+	Remember to update versions: 
 		1. Update property core.version
 		2. Update versions in all child modules
 	-->
 	<packaging>pom</packaging>
 	
 	<name>Universal</name>
-	<description>Parent module for UniversalEvents, UniversalRegistry, UniversalUtil, UniversalGPL, and UniversalPlugin</description>
+	<description>Parent module for UniversalGPL, UniversalUtil, UniversalEvents, UniversalRegistry, and UniversalPlugin</description>
 	<url>https://github.com/A248/UniversalRegistry</url>
 	<inceptionYear>2019</inceptionYear>
 	
@@ -64,9 +65,9 @@
 	
 	<modules>
 		<module>UniversalGPL</module>
+		<module>UniversalUtil</module>
 		<module>UniversalEvents</module>
 		<module>UniversalRegistry</module>
-		<module>UniversalUtil</module>
 		<module>UniversalPlugin</module>
 	</modules>
 	
@@ -85,13 +86,11 @@
 		<dependencies>
 			<dependency>
 				<groupId>space.arim</groupId>
-				<artifactId>universal-events</artifactId>
+				<artifactId>universal-gpl</artifactId>
 				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim</groupId>
-				<artifactId>universal-registry</artifactId>
-				<version>${project.version}</version>
+				<classifier>resources</classifier>
+				<type>zip</type>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>space.arim</groupId>
@@ -100,11 +99,13 @@
 			</dependency>
 			<dependency>
 				<groupId>space.arim</groupId>
-				<artifactId>universal-gpl</artifactId>
+				<artifactId>universal-events</artifactId>
 				<version>${project.version}</version>
-				<classifier>resources</classifier>
-				<type>zip</type>
-				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>space.arim</groupId>
+				<artifactId>universal-registry</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
