@@ -50,7 +50,7 @@ public abstract class AbstractRegistrationEvent<T extends Registrable> implement
 	
 	@Override
 	public boolean isAsynchronous() {
-		return true;
+		return false;
 	}
 	
 }
