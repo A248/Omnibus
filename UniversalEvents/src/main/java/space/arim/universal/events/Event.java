@@ -23,11 +23,13 @@ public interface Event {
 	/**
 	 * Whether an event is running asynchronously <br>
 	 * <br>
-	 * The contract of this method:
-	 * * If true, event MUST NOT run synchronously with the main thread
+	 * The contract of this method: <br>
+	 * * If true, event MUST NOT run synchronously with the main thread <br>
 	 * * If false, event MUST run synchronously with the main thread <br>
 	 * <br>
-	 * The main thread is generally taken as the thread doing the most work.
+	 * The main thread is generally taken as the thread doing the most work. <br>
+	 * <br>
+	 * <b>The event is vetted by UniversalEvents to ensure it complies with this specification</b>
 	 * 
 	 * @return true if and only if event is asynchronous
 	 */

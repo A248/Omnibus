@@ -20,7 +20,7 @@ package space.arim.universal.registry;
 
 import space.arim.universal.events.Event;
 
-public abstract class AbstractRegistrationEvent<T extends Registrable> extends Event {
+public abstract class AbstractRegistrationEvent<T extends Registrable> implements Event {
 
 	private final Class<T> service;
 	private final T provider;
@@ -46,6 +46,11 @@ public abstract class AbstractRegistrationEvent<T extends Registrable> extends E
 	 */
 	public T getResource() {
 		return provider;
+	}
+	
+	@Override
+	public boolean isAsynchronous() {
+		return true;
 	}
 	
 }

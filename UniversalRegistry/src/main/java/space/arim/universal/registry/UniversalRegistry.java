@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import space.arim.universal.events.Event;
 import space.arim.universal.events.UniversalEvents;
 
 /**
@@ -74,10 +75,9 @@ public final class UniversalRegistry {
 	private static final ConcurrentHashMap<String, UniversalRegistry> INSTANCES = new ConcurrentHashMap<String, UniversalRegistry>();
 	
 	/**
-	 * The default instance id <br>
+	 * The main instance id <br>
 	 * <br>
 	 * Equivalent to {@link UniversalEvents#DEFAULT_ID}
-	 * 
 	 */
 	public static final String DEFAULT_ID = UniversalEvents.DEFAULT_ID;
 	
@@ -87,12 +87,15 @@ public final class UniversalRegistry {
 		this.events = events;
 	}
 	
-	static synchronized UniversalRegistry demandRegistry(String id, UniversalEvents events) {
+	private static synchronized UniversalRegistry demandRegistry(String id, UniversalEvents events) {
 		if (!INSTANCES.containsKey(id)) {
-			UniversalRegistry registry = new UniversalRegistry(id, events);
-			INSTANCES.put(id, registry);
+			INSTANCES.put(id, new UniversalRegistry(id, events));
 		}
 		return INSTANCES.get(id);
+	}
+	
+	static UniversalRegistry byEvents(UniversalEvents events) {
+		return demandRegistry(events.getId(), events);
 	}
 	
 	/**
@@ -101,7 +104,7 @@ public final class UniversalRegistry {
 	 * @return ThreadLocal<UniversalRegistry> - a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalRegistry> threadLocal() {
-		return ThreadLocal.withInitial(() -> demandRegistry("thread-".concat(Thread.currentThread().getName()), UniversalEvents.threadLocal().get()));
+		return ThreadLocal.withInitial(() -> byEvents(UniversalEvents.threadLocal().get()));
 	}
 	
 	/**
@@ -110,12 +113,12 @@ public final class UniversalRegistry {
 	 * <br>
 	 * This is the preferred approach to using your own UniversalRegistry instances.
 	 * 
-	 * @param id - the classname. Use {@link Class#getName()}
+	 * @param classname - the classname. Use {@link Class#getName()}
 	 * @return UniversalRegistry - the instance if it exists, otherwise a new instance is created.
 	 * @throws ClassNotFoundException - if the classname is invalid
 	 */
-	public static UniversalRegistry getByClassname(String id) throws ClassNotFoundException {
-		return demandRegistry("class-".concat(id), UniversalEvents.getByClassname(id));
+	public static UniversalRegistry getByClassname(String classname) throws ClassNotFoundException {
+		return byEvents(UniversalEvents.getByClassname(classname));
 	}
 	
 	/**
@@ -133,18 +136,22 @@ public final class UniversalRegistry {
 	}
 	
 	/**
-	 * Gets the main instance of UniversalREgistry
+	 * Gets the main instance of UniversalRegistry
 	 * 
 	 * @return UniversalRegistry - the instance
 	 */
 	public static UniversalRegistry get() {
-		return demandRegistry(DEFAULT_ID, UniversalEvents.get());
+		return byEvents(UniversalEvents.get());
 	}
 	
 	/**
 	 * Returns the id of this UniversalRegistry instance. <br>
 	 * <br>
-	 * For the main registry, it is {@link #DEFAULT_ID}
+	 * The current implementation: <br>
+	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
+	 * * For classname instances retrieved with {@link #getByClassname(String)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" followed by the thread name <br>
+	 * However, these values may change.
 	 * 
 	 * @return String - the id
 	 */
@@ -173,7 +180,7 @@ public final class UniversalRegistry {
 	}
 	
 	private <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
-		events.fireEvent(new RegistrationEvent<T>(service, provider));
+		fireEvent(new RegistrationEvent<T>(service, provider));
 	}
 	
 	/**
@@ -191,7 +198,11 @@ public final class UniversalRegistry {
 	}
 	
 	private <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
-		events.fireEvent(new UnregistrationEvent<T>(service, provider));
+		fireEvent(new UnregistrationEvent<T>(service, provider));
+	}
+	
+	private void fireEvent(Event evt) {
+		events.fireEvent(evt);
 	}
 	
 	/**

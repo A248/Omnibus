@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import space.arim.universal.util.UniversalUtil;
+
 public final class UniversalEvents {
 	
 	/**
@@ -43,6 +45,12 @@ public final class UniversalEvents {
 	 * 
 	 */
 	private final ConcurrentHashMap<Class<?>, List<ListenerMethod>> eventListeners = new ConcurrentHashMap<Class<?>, List<ListenerMethod>>();
+	
+	/**
+	 * The corresponding {@link UniversalUtil} instance
+	 * 
+	 */
+	private final UniversalUtil util;
 	
 	/**
 	 * Used to sort all ListenerMethod wrappers by priority <br>
@@ -59,22 +67,27 @@ public final class UniversalEvents {
 	private static final ConcurrentHashMap<String, UniversalEvents> INSTANCES = new ConcurrentHashMap<String, UniversalEvents>();
 	
 	/**
-	 * The default instance id
-	 * 
+	 * The main instance id <br>
+	 * <br>
+	 * Equivalent to {@link UniversalUtil#DEFAULT_ID}
 	 */
-	public static final String DEFAULT_ID = "main";
+	public static final String DEFAULT_ID = UniversalUtil.DEFAULT_ID;
 	
 	// Control instantiation
-	private UniversalEvents(String id) {
+	private UniversalEvents(String id, UniversalUtil util) {
 		this.id = id;
+		this.util = util;
 	}
 	
-	static synchronized UniversalEvents demandEvents(String id) {
+	private static synchronized UniversalEvents demandEvents(String id, UniversalUtil util) {
 		if (!INSTANCES.containsKey(id)) {
-			UniversalEvents events = new UniversalEvents(id);
-			INSTANCES.put(id, events);
+			INSTANCES.put(id, new UniversalEvents(id, util));
 		}
 		return INSTANCES.get(id);
+	}
+	
+	static UniversalEvents byUtil(UniversalUtil util) {
+		return demandEvents(util.getId(), util);
 	}
 	
 	/**
@@ -83,7 +96,7 @@ public final class UniversalEvents {
 	 * @return ThreadLocal<UniversalEvents> - a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalEvents> threadLocal() {
-		return ThreadLocal.withInitial(() -> demandEvents("thread-".concat(Thread.currentThread().getName())));
+		return ThreadLocal.withInitial(() -> byUtil(UniversalUtil.threadLocal().get()));
 	}
 	
 	/**
@@ -92,13 +105,12 @@ public final class UniversalEvents {
 	 * <br>
 	 * This is the preferred approach to using your own UniversalEvents instances.
 	 * 
-	 * @param id - the classname. Use {@link Class#getName()}
+	 * @param classname - the classname. Use {@link Class#getName()}
 	 * @return UniversalEvents - the instance if it exists, otherwise a new instance is created.
 	 * @throws ClassNotFoundException - if the classname is invalid
 	 */
-	public static UniversalEvents getByClassname(String id) throws ClassNotFoundException {
-		Class.forName(id);
-		return demandEvents("class-".concat(id));
+	public static UniversalEvents getByClassname(String classname) throws ClassNotFoundException {
+		return byUtil(UniversalUtil.getByClassname(classname));
 	}
 	
 	/**
@@ -121,13 +133,13 @@ public final class UniversalEvents {
 	 * @return UniversalEvents - the instance
 	 */
 	public static UniversalEvents get() {
-		return demandEvents(DEFAULT_ID);
+		return byUtil(UniversalUtil.get());
 	}
 	
 	/**
 	 * Returns the id of this UniversalEvents instance. <br>
 	 * <br>
-	 * The current implementation: <Br>
+	 * The current implementation: <br>
 	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
 	 * * For classname instances retrieved with {@link #getByClassname(String)}, it is "class-" followed by the classname<br>
 	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" followed by the thread name <br>
@@ -149,6 +161,9 @@ public final class UniversalEvents {
 	 * @see Cancellable
 	 */
 	public <E extends Event> boolean fireEvent(E event) {
+		if (event.isAsynchronous() != util.isAsynchronous()) {
+			throw new IllegalStateException("Event#isAsynchronous returned untruthfully!");
+		}
 		eventListeners.forEach((clazz, listeners) -> {
 			if (clazz.isInstance(event)) {
 				listeners.forEach((listener) -> {
