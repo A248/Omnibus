@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 import com.google.gson.Gson;
 
-public class UniversalUtil {
+public final class UniversalUtil {
 	
 	/**
 	 * The id of the instance
