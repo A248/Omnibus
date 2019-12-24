@@ -32,6 +32,24 @@ import java.util.function.Supplier;
 
 import space.arim.universal.util.UniversalUtil;
 
+/**
+ * <b>UniversalEvents</b>: Main class <br>
+ * <br>
+ * Used for firing events and listening to them. <br>
+ * <br>
+ * The most common usage of this class is to fire and listen to events. <br>
+ * To fire events: {@link #fireEvent(Event)} <br>
+ * To listen to events: {@link EventHandler} <br>
+ * <br>
+ * To retrieve and instance: <br>
+ * * {@link #get()}
+ * * {@link #getByClassname(String)}
+ * * {@link #threadLocal()}
+ * * {@link #getOrDefault(String, Supplier)}
+ * 
+ * @author A248
+ *
+ */
 public final class UniversalEvents {
 	
 	/**
@@ -100,30 +118,32 @@ public final class UniversalEvents {
 	}
 	
 	/**
-	 * Retrieves a UniversalEvents instance by classname.
-	 * If no instance by the classname exists, a new one is created.<br>
+	 * Retrieves a UniversalEvents instance by class.
+	 * If no instance for the classname exists, a new one is created.<br>
 	 * <br>
 	 * This is the preferred approach to using your own UniversalEvents instances.
 	 * 
-	 * @param classname - the classname. Use {@link Class#getName()}
-	 * @return UniversalEvents - the instance if it exists, otherwise a new instance is created.
-	 * @throws ClassNotFoundException - if the classname is invalid
+	 * @param clazz - the class
+	 * @return UniversalEvents - the instance. If none exists, a new instance is created.
 	 */
-	public static UniversalEvents getByClassname(String classname) throws ClassNotFoundException {
-		return byUtil(UniversalUtil.getByClassname(classname));
+	public static UniversalEvents getByClass(Class<?> clazz) {
+		return byUtil(UniversalUtil.getByClass(clazz));
 	}
 	
 	/**
-	 * Gets a UniversalEvents by id. <br>
+	 * Gets a UniversalEvents by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
-	 * If no instance with the id exists, {@link Supplier#get()} is called and returned
+	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
+	 * E.g.: <br>
+	 * <code>UniversalEvents events = UniversalEvents.getOrDefault(AnotherClass.class, () -> UniversalEvents.get());</code> <br>
+	 * Would retrieve the UniversalEvents instance corresponding to AnotherClass.class if the instance exists, fetching the default UniversalEvents instance if not.
 	 * 
-	 * @param id - the String-based id. See {@link #getId()}
+	 * @param clazz - see {@link #getByClass(Class)}
 	 * @param defaultSupplier - from which to return back default values.
 	 * @return UniversalEvents - a registered instance if the id exists, otherwise the default value
 	 */
-	public static UniversalEvents getOrDefault(String id, Supplier<UniversalEvents> defaultSupplier) {
-		UniversalEvents events = INSTANCES.get(id);
+	public static UniversalEvents getOrDefault(Class<?> clazz, Supplier<UniversalEvents> defaultSupplier) {
+		UniversalEvents events = INSTANCES.get("class-" + clazz.getName());
 		return events != null ? events : defaultSupplier.get();
 	}
 	

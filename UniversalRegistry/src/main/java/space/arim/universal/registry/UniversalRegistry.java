@@ -108,30 +108,32 @@ public final class UniversalRegistry {
 	}
 	
 	/**
-	 * Retrieves a UniversalRegistry instance by classname.
-	 * If no instance by the classname exists, a new one is created.<br>
+	 * Retrieves a UniversalRegistry instance by class.
+	 * If no instance for the classname exists, a new one is created.<br>
 	 * <br>
 	 * This is the preferred approach to using your own UniversalRegistry instances.
 	 * 
-	 * @param classname - the classname. Use {@link Class#getName()}
-	 * @return UniversalRegistry - the instance if it exists, otherwise a new instance is created.
-	 * @throws ClassNotFoundException - if the classname is invalid
+	 * @param clazz - the class
+	 * @return UniversalRegistry - the instance. If none exists, a new instance is created.
 	 */
-	public static UniversalRegistry getByClassname(String classname) throws ClassNotFoundException {
-		return byEvents(UniversalEvents.getByClassname(classname));
+	public static UniversalRegistry getByClass(Class<?> clazz) {
+		return byEvents(UniversalEvents.getByClass(clazz));
 	}
 	
 	/**
-	 * Gets a UniversalRegistry by id. <br>
+	 * Gets a UniversalRegistry by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
-	 * If no instance with the id exists, {@link Supplier#get()} is called and returned
+	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
+	 * E.g.: <br>
+	 * <code>UniversalRegistry registry = UniversalRegistry.getOrDefault(AnotherClass.class, () -> UniversalRegistry.get());</code> <br>
+	 * Would retrieve the UniversalRegistry instance corresponding to AnotherClass.class if the instance exists, fetching the default UniversalRegistry instance if not.
 	 * 
-	 * @param id - the String-based id. See {@link #getId()}
+	 * @param clazz - see {@link #getByClass(Class)}
 	 * @param defaultSupplier - from which to return back default values.
 	 * @return UniversalRegistry - a registered instance if the id exists, otherwise the default value
 	 */
-	public static UniversalRegistry getOrDefault(String id, Supplier<UniversalRegistry> defaultSupplier) {
-		UniversalRegistry registry = INSTANCES.get(id);
+	public static UniversalRegistry getOrDefault(Class<?> clazz, Supplier<UniversalRegistry> defaultSupplier) {
+		UniversalRegistry registry = INSTANCES.get("class-" + clazz.getName());
 		return registry != null ? registry : defaultSupplier.get();
 	}
 	
@@ -256,11 +258,11 @@ public final class UniversalRegistry {
 	}
 	
 	/**
-	 * Retrieves a map of service types to registrations backed by the internal registry. <br>
+	 * Retrieves a the map of service types to registrations backed by the internal registry. <br>
 	 * <br>
-	 * Changes to the registry itself are reflected in the returned map.
+	 * <b>Changes to the internal registry are reflected in the map</b>
 	 * 
-	 * @return the map of service classes to registrable lists
+	 * @return a map of service classes to registrable lists
 	 */
 	public Map<Class<?>, List<Registrable>> getRegistrations() {
 		return Collections.unmodifiableMap(registry);

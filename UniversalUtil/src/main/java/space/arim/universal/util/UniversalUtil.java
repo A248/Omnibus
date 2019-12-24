@@ -24,6 +24,14 @@ import java.util.function.Supplier;
 
 import com.google.gson.Gson;
 
+/**
+ * <b>UniversalUtil</b>: Main class <br>
+ * <br>
+ * The most common usage of this class is to check synchronisation: {@link #isAsynchronous()}
+ * 
+ * @author A248
+ *
+ */
 public final class UniversalUtil {
 	
 	/**
@@ -83,31 +91,32 @@ public final class UniversalUtil {
 	}
 	
 	/**
-	 * Retrieves a UniversalUtil instance by classname.
-	 * If no instance by the classname exists, a new one is created.<br>
+	 * Retrieves a UniversalUtil instance by class.
+	 * If no instance for the classname exists, a new one is created.<br>
 	 * <br>
 	 * This is the preferred approach to using your own UniversalUtil instances.
 	 * 
-	 * @param classname - the classname. Use {@link Class#getName()}
-	 * @return UniversalUtil - the instance if it exists, otherwise a new instance is created.
-	 * @throws ClassNotFoundException - if the classname is invalid
+	 * @param clazz - the class
+	 * @return UniversalUtil - the instance. If none exists, a new instance is created.
 	 */
-	public static UniversalUtil getByClassname(String classname) throws ClassNotFoundException {
-		Class.forName(classname);
-		return demandUtil("class-" + classname);
+	public static UniversalUtil getByClass(Class<?> clazz) {
+		return demandUtil("class-" + clazz.getName());
 	}
 	
 	/**
-	 * Gets a UniversalUtil by id. <br>
+	 * Gets a UniversalUtil by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
-	 * If no instance with the id exists, {@link Supplier#get()} is called and returned
+	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
+	 * E.g.: <br>
+	 * <code>UniversalUtil util = UniversalUtil.getOrDefault(AnotherClass.class, () -> UniversalUtil.get());</code> <br>
+	 * Would retrieve the UniversalUtil instance corresponding to AnotherClass.class if the instance exists, fetching the default UniversalUtil instance if not.
 	 * 
-	 * @param id - the String-based id. See {@link #getId()}
+	 * @param clazz - see {@link #getByClass(Class)}
 	 * @param defaultSupplier - from which to return back default values.
 	 * @return UniversalUtil - a registered instance if the id exists, otherwise the default value
 	 */
-	public static UniversalUtil getOrDefault(String id, Supplier<UniversalUtil> defaultSupplier) {
-		UniversalUtil util = INSTANCES.get(id);
+	public static UniversalUtil getOrDefault(Class<?> clazz, Supplier<UniversalUtil> defaultSupplier) {
+		UniversalUtil util = INSTANCES.get("class-" + clazz.getName());
 		return util != null ? util : defaultSupplier.get();
 	}
 	
