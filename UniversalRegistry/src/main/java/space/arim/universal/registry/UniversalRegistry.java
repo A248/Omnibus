@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 
 import space.arim.universal.events.Event;
 import space.arim.universal.events.UniversalEvents;
+import space.arim.universal.util.collections.CollectionsUtil;
 
 /**
  * <b>UniversalRegistry</b>: Main class <br>
@@ -276,7 +277,9 @@ public final class UniversalRegistry {
 	 * @return a map of service classes to registrable lists
 	 */
 	public Map<Class<?>, List<Registrable>> getRegistrations() {
-		return Collections.unmodifiableMap(registry);
+		return CollectionsUtil.valueWrappedMap(registry, (list) -> {
+			return Collections.unmodifiableList(list);
+		});
 	}
 	
 }
