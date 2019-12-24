@@ -178,7 +178,7 @@ public final class UniversalEvents {
 	 * 
 	 * @return UniversalUtil - the accompanying utility instance
 	 */
-	public UniversalUtil getEvents() {
+	public UniversalUtil getUtil() {
 		return util;
 	}
 	
