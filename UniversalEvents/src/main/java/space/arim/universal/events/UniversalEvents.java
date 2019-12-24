@@ -172,6 +172,17 @@ public final class UniversalEvents {
 	}
 	
 	/**
+	 * Gets the {@link UniversalUtil} instance corresponding to this event manager. <br>
+	 * <br>
+	 * The returned UniversalUtil instance is the same one used to validate the truthfulness of {@link Event#isAsynchronous()} values.
+	 * 
+	 * @return UniversalUtil - the accompanying utility instance
+	 */
+	public UniversalUtil getEvents() {
+		return util;
+	}
+	
+	/**
 	 * Fires an event, invoking all applicable listeners
 	 * 
 	 * @param <E> - event

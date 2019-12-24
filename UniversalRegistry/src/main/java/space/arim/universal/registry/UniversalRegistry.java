@@ -162,6 +162,17 @@ public final class UniversalRegistry {
 	}
 	
 	/**
+	 * Gets the {@link UniversalEvents} instance corresponding to this registry. <br>
+	 * <br>
+	 * The returned UniversalEvents instance is the same one on which RegistrationEvents are fired.
+	 * 
+	 * @return UniversalEvents - the accompanying events instance
+	 */
+	public UniversalEvents getEvents() {
+		return events;
+	}
+	
+	/**
 	 * Register a resource as a specific service
 	 * 
 	 * @param <T> - the service
