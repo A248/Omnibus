@@ -21,10 +21,5 @@ package space.arim.universal.plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class UniversalPluginBukkit extends JavaPlugin {
-
-	@Override
-	public void onEnable() {
-		getLogger().info("Loaded all UniversalRegistry classes!");
-	}
 	
 }

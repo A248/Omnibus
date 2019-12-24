@@ -22,9 +22,4 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 public class UniversalPluginBungee extends Plugin {
 
-	@Override
-	public void onEnable() {
-		getLogger().info("Loaded all UniversalRegistry classes!");
-	}
-	
 }
