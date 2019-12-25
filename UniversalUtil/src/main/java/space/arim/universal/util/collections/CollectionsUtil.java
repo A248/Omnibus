@@ -127,6 +127,10 @@ public final class CollectionsUtil {
 			super(original, wrapper);
 		}
 		
+        private transient Set<K> keySet;
+        private transient Set<Map.Entry<K,V>> entrySet;
+        private transient Collection<V> values;
+		
 		@Override
 		public V get(Object key) {throw new UnsupportedOperationException();}
 		@Override
@@ -137,10 +141,6 @@ public final class CollectionsUtil {
 		public void putAll(Map<? extends K, ? extends V> m) {throw new UnsupportedOperationException();}
 		@Override
 		public void clear() {throw new UnsupportedOperationException();}
-		
-        private transient Set<K> keySet;
-        private transient Set<Map.Entry<K,V>> entrySet;
-        private transient Collection<V> values;
 		
 		@Override
 		public Set<K> keySet() {
