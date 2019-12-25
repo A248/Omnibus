@@ -29,6 +29,22 @@ public final class CollectionsUtil {
 
 	private CollectionsUtil() {}
 	
+	public static <T> T[] wrapAll(T[] original, Wrapper<T> wrapper) {
+		for (int n = 0; n < original.length; n++) {
+			original[n] = wrapper.wrap(original[n]);
+		}
+		return original;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <M, N> N[] convertAll(M[] original, Converter<M, N> converter) {
+		Object[] results = new Object[] {};
+		for (int n = 0; n < original.length; n++) {
+			results[n] = converter.convert(original[n]);
+		}
+		return (N[]) results;
+	}
+	
 	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
 		return new ValueWrappedMap<K, V>(original, wrapper);
 	}
