@@ -123,13 +123,13 @@ public final class CollectionsUtil {
 		 */
 		private static final long serialVersionUID = -3678280252223253513L;
 
-		UnmodifiableValueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
-			super(original, wrapper);
-		}
-		
         private transient Set<K> keySet;
         private transient Set<Map.Entry<K,V>> entrySet;
         private transient Collection<V> values;
+		
+		UnmodifiableValueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
+			super(original, wrapper);
+		}
 		
 		@Override
 		public V get(Object key) {throw new UnsupportedOperationException();}
