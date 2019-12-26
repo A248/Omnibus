@@ -165,7 +165,12 @@ public final class UniversalUtil {
 	 * <br>
 	 * This method is particularly useful for configuration loaded thorugh SnakeYAML. <br>
 	 * Specifically, if one must retrieve the yaml value key1.subkey.value as an Integer from the map <code>configValues</code>,
-	 * one should call use <code>getFromMapRecursive(configValues, "key1.subkey.value", Integer.class)</code>
+	 * one should call use <code>getFromMapRecursive(configValues, "key1.subkey.value", Integer.class)</code> <br>
+	 * <br>
+	 * E.g.: <br>
+	 * <code>Yaml yaml = new Yaml();<br>
+	 * Map<String, Object> cfg = (Map<String, Object>) yaml.load(FILE_INPUT);
+	 * String myConfigString = UniversalUtil.getFromMapRecursive(cfg, "settings.language.encoding", String.class);</code>
 	 * 
 	 * @param <T> - the type to retrieve. If the object found is not this type, <code>null</code> is returned
 	 * @param map - the map from which to retrieve recursively
@@ -177,7 +182,7 @@ public final class UniversalUtil {
 	public static <T> T getFromMapRecursive(Map<String, Object> map, String key, Class<T> type) {
 		if (!key.contains(".")) {
 			Object obj = map.get(key);
-			return (type.isInstance(obj)) ? (T) obj : null;
+			return type.isInstance(obj) ? (T) obj : null;
 		} else if (key.startsWith(".") || key.endsWith(".")) {
 			throw new IllegalArgumentException("Cannot retrieve value for invalid key " + key);
 		}

@@ -19,11 +19,13 @@
 package space.arim.universal.util.collections;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 public final class CollectionsUtil {
 
@@ -37,12 +39,8 @@ public final class CollectionsUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <M, N> N[] convertAll(M[] original, Converter<M, N> converter) {
-		Object[] results = new Object[] {};
-		for (int n = 0; n < original.length; n++) {
-			results[n] = converter.convert(original[n]);
-		}
-		return (N[]) results;
+	public static <M, N> N[] convertAll(M[] original, Function<M, N> mapper) {
+		return (N[]) Arrays.stream(original).map(mapper).toArray();
 	}
 	
 	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
