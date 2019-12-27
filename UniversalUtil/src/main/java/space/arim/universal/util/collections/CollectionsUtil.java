@@ -26,28 +26,29 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public final class CollectionsUtil {
 
 	private CollectionsUtil() {}
 	
-	public static <T> T[] wrapAll(T[] original, Wrapper<T> wrapper) {
+	public static <T> T[] wrapAll(T[] original, UnaryOperator<T> wrapper) {
 		for (int n = 0; n < original.length; n++) {
-			original[n] = wrapper.wrap(original[n]);
+			original[n] = wrapper.apply(original[n]);
 		}
 		return original;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <M, N> N[] convertAll(M[] original, Function<M, N> mapper) {
-		return (N[]) Arrays.stream(original).map(mapper).toArray();
+	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper) {
+		return (R[]) Arrays.stream(original).map(mapper).toArray();
 	}
 	
-	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
+	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
 		return new ValueWrappedMap<K, V>(original, wrapper);
 	}
 	
-	public static <K, V> Map<K, V> unmodifiableValueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
+	public static <K, V> Map<K, V> unmodifiableValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
 		return new UnmodifiableValueWrappedMap<K, V>(original, wrapper);
 	}
 	
@@ -99,9 +100,9 @@ public final class CollectionsUtil {
 		 */
 		private static final long serialVersionUID = 7086908298319638652L;
 		
-		private final Wrapper<V> wrapper;
+		private final UnaryOperator<V> wrapper;
 		
-		ValueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
+		ValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
 			super(original);
 			this.wrapper = wrapper;
 		}
@@ -109,7 +110,7 @@ public final class CollectionsUtil {
 		@SuppressWarnings("unlikely-arg-type")
 		@Override
 		public V get(Object key) {
-			return wrapper.wrap(super.get(key));
+			return wrapper.apply(super.get(key));
 		}
 		
 	}
@@ -125,7 +126,7 @@ public final class CollectionsUtil {
         private transient Set<Map.Entry<K,V>> entrySet;
         private transient Collection<V> values;
 		
-		UnmodifiableValueWrappedMap(Map<K, V> original, Wrapper<V> wrapper) {
+		UnmodifiableValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
 			super(original, wrapper);
 		}
 		

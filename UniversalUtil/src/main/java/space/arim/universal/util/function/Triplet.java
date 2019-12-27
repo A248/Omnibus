@@ -16,10 +16,39 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.collections;
+package space.arim.universal.util.function;
 
-public interface Wrapper<T> {
+/**
+ * A thread safe triplet with immutable components
+ * 
+ * @author A248
+ *
+ * @param <M> - the type of the first value
+ * @param <N> - the type of the second value
+ * @param <O> - the type of the third value
+ */
+public class Triplet<M, N, O> {
 
-	T wrap(T original);
+	private final M firstValue;
+	private final N secondValue;
+	private final O thirdValue;
+	
+	public Triplet(M firstValue, N secondValue, O thirdValue) {
+		this.firstValue = firstValue;
+		this.secondValue = secondValue;
+		this.thirdValue = thirdValue;
+	}
+	
+	public M firstValue() {
+		return firstValue;
+	}
+	
+	public N secondValue() {
+		return secondValue;
+	}
+	
+	public O thirdValue() {
+		return thirdValue;
+	}
 	
 }

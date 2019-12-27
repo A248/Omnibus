@@ -28,12 +28,20 @@ package space.arim.universal.util.function;
  */
 public class Pair<M, N> {
 
-	public final M firstValue;
-	public final N secondValue;
+	private final M firstValue;
+	private final N secondValue;
 	
 	public Pair(M firstValue, N secondValue) {
 		this.firstValue = firstValue;
 		this.secondValue = secondValue;
+	}
+	
+	public M firstValue() {
+		return firstValue;
+	}
+	
+	public N secondValue() {
+		return secondValue;
 	}
 	
 	public Pair<N, M> swapped() {
