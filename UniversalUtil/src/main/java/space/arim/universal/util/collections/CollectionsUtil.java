@@ -19,7 +19,7 @@
 package space.arim.universal.util.collections;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -40,8 +40,16 @@ public final class CollectionsUtil {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper) {
-		return (R[]) Arrays.stream(original).map(mapper).toArray();
+	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper, R...doNotPassThisVariable) {
+		if (doNotPassThisVariable.length > 0) {
+			throw new IllegalArgumentException("Do not pass the last parameter!");
+		}
+		R[] results = (R[]) Array.newInstance(doNotPassThisVariable.getClass().getComponentType(), original.length);
+		for (int n = 0; n < original.length; n++) {
+			T origin = original[n];
+			results[n] = mapper.apply(origin);
+		}
+		return results;
 	}
 	
 	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
