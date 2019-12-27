@@ -27,7 +27,13 @@ import com.google.gson.Gson;
 /**
  * <b>UniversalUtil</b>: Main class <br>
  * <br>
- * The most common usage of this class is to check synchronisation: {@link #isAsynchronous()}
+ * The most common usage of this class is to check synchronisation: {@link #isAsynchronous()} <br>
+ *  <br>
+ * To retrieve an instance: <br>
+ * * {@link #get()} <br>
+ * * {@link #getByClass(Class)} <br>
+ * * {@link #threadLocal()} <br>
+ * * {@link #getOrDefault(Class, Supplier)}
  * 
  * @author A248
  *
@@ -66,6 +72,12 @@ public final class UniversalUtil {
 	 */
 	public static final String DEFAULT_ID = "main";
 	
+	/**
+	 * The thread local
+	 * 
+	 */
+	private static final ThreadLocal<UniversalUtil> THREAD_LOCAL = ThreadLocal.withInitial(() -> demandUtil("thread-" + Long.toString(System.currentTimeMillis()) + "-" + Thread.currentThread().getName()));
+	
 	// Control instantiation
 	private UniversalUtil(String id) {
 		this.id = id;
@@ -84,10 +96,10 @@ public final class UniversalUtil {
 	 * A thread-specific instance of UniversalUtil will take the thread itself as the main thread.
 	 * Thus, <code>UniversalUtil.threadLocal().asynchronous()</code> will always return <code>false</code>.
 	 * 
-	 * @return ThreadLocal<UniversalUtil> - a {@link ThreadLocal}
+	 * @return ThreadLocal - a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalUtil> threadLocal() {
-		return ThreadLocal.withInitial(() -> demandUtil("thread-" + Long.toString(System.currentTimeMillis()) + "-" + Thread.currentThread().getName()));
+		return THREAD_LOCAL;
 	}
 	
 	/**
@@ -107,9 +119,6 @@ public final class UniversalUtil {
 	 * Gets a UniversalUtil by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
-	 * E.g.: <br>
-	 * <code>UniversalUtil util = UniversalUtil.getOrDefault(AnotherClass.class, () -> UniversalUtil.get());</code> <br>
-	 * Would retrieve the UniversalUtil instance corresponding to AnotherClass.class if the instance exists, fetching the default UniversalUtil instance if not.
 	 * 
 	 * @param clazz - see {@link #getByClass(Class)}
 	 * @param defaultSupplier - from which to return back default values.
@@ -134,8 +143,8 @@ public final class UniversalUtil {
 	 * <br>
 	 * The current implementation: <br>
 	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link #getByClassname(String)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" followed by the thread name <br>
+	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time + "-" + the thread name <br>
 	 * However, these values may change.
 	 * 
 	 * @return String - the id
@@ -148,7 +157,7 @@ public final class UniversalUtil {
 	 * Returns whether code is running asynchronously. <br>
 	 * <br>
 	 * Note that the "main thread" is taken to mean the thread on which the instance is initialised. <br>
-	 * It is thus recommended to fetch your own instance with {@link #getByClassname(String)} if you plan on using this method. <br>
+	 * It is thus recommended to fetch your own instance with {@link #getByClass(Class)} if you plan on using this method. <br>
 	 * E.g.: <br>
 	 * <code>UniversalUtil myUtil = UniversalUtil.getByClassname(MyClass.class.getName());</code> <br>
 	 * <b>By making your own instance on the main thread, you guarantee the validity of this method return</b>
@@ -166,11 +175,6 @@ public final class UniversalUtil {
 	 * This method is particularly useful for configuration loaded thorugh SnakeYAML. <br>
 	 * Specifically, if one must retrieve the yaml value key1.subkey.value as an Integer from the map <code>configValues</code>,
 	 * one should call use <code>getFromMapRecursive(configValues, "key1.subkey.value", Integer.class)</code> <br>
-	 * <br>
-	 * E.g.: <br>
-	 * <code>Yaml yaml = new Yaml();<br>
-	 * Map<String, Object> cfg = (Map<String, Object>) yaml.load(FILE_INPUT);
-	 * String myConfigString = UniversalUtil.getFromMapRecursive(cfg, "settings.language.encoding", String.class);</code>
 	 * 
 	 * @param <T> - the type to retrieve. If the object found is not this type, <code>null</code> is returned
 	 * @param map - the map from which to retrieve recursively

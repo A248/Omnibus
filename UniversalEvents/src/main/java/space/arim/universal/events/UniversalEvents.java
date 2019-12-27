@@ -41,11 +41,11 @@ import space.arim.universal.util.UniversalUtil;
  * To fire events: {@link #fireEvent(Event)} <br>
  * To listen to events: {@link EventHandler} <br>
  * <br>
- * To retrieve and instance: <br>
- * * {@link #get()}
- * * {@link #getByClassname(String)}
- * * {@link #threadLocal()}
- * * {@link #getOrDefault(String, Supplier)}
+ * To retrieve an instance: <br>
+ * * {@link #get()} <br>
+ * * {@link #getByClass(Class)} <br>
+ * * {@link #threadLocal()} <br>
+ * * {@link #getOrDefault(Class, Supplier)}
  * 
  * @author A248
  *
@@ -91,6 +91,12 @@ public final class UniversalEvents {
 	 */
 	public static final String DEFAULT_ID = UniversalUtil.DEFAULT_ID;
 	
+	/**
+	 * The thread local
+	 * 
+	 */
+	private static final ThreadLocal<UniversalEvents> THREAD_LOCAL = ThreadLocal.withInitial(() -> byUtil(UniversalUtil.threadLocal().get()));
+	
 	// Control instantiation
 	private UniversalEvents(String id, UniversalUtil util) {
 		this.id = id;
@@ -111,10 +117,10 @@ public final class UniversalEvents {
 	/**
 	 * UniversalEvents instances are thread-safe; however, you may wish for a thread-specific instance nonetheless.
 	 * 
-	 * @return ThreadLocal<UniversalEvents> - a {@link ThreadLocal}
+	 * @return ThreadLocal - a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalEvents> threadLocal() {
-		return ThreadLocal.withInitial(() -> byUtil(UniversalUtil.threadLocal().get()));
+		return THREAD_LOCAL;
 	}
 	
 	/**
@@ -134,9 +140,6 @@ public final class UniversalEvents {
 	 * Gets a UniversalEvents by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
-	 * E.g.: <br>
-	 * <code>UniversalEvents events = UniversalEvents.getOrDefault(AnotherClass.class, () -> UniversalEvents.get());</code> <br>
-	 * Would retrieve the UniversalEvents instance corresponding to AnotherClass.class if the instance exists, fetching the default UniversalEvents instance if not.
 	 * 
 	 * @param clazz - see {@link #getByClass(Class)}
 	 * @param defaultSupplier - from which to return back default values.
@@ -161,8 +164,8 @@ public final class UniversalEvents {
 	 * <br>
 	 * The current implementation: <br>
 	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link #getByClassname(String)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" followed by the thread name <br>
+	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalUtil} + "-" + the thread name <br>
 	 * However, these values may change.
 	 * 
 	 * @return String - the id

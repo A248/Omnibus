@@ -39,7 +39,13 @@ import space.arim.universal.util.collections.CollectionsUtil;
  * <br>
  * The most common usage of this class is to register resources and retrieve registrations. <br>
  * To register resources: {@link #register(Class, Registrable)} <br>
- * To retrieve registrations: {@link #getRegistration(Class)}
+ * To retrieve registrations: {@link #getRegistration(Class)} <br>
+ * <br>
+ * To retrieve an instance: <br>
+ * * {@link #get()} <br>
+ * * {@link #getByClass(Class)} <br>
+ * * {@link #threadLocal()} <br>
+ * * {@link #getOrDefault(Class, Supplier)}
  * 
  * @author A248
  *
@@ -82,6 +88,12 @@ public final class UniversalRegistry {
 	 */
 	public static final String DEFAULT_ID = UniversalEvents.DEFAULT_ID;
 	
+	/**
+	 * The thread local
+	 * 
+	 */
+	private static final ThreadLocal<UniversalRegistry> THREAD_LOCAL = ThreadLocal.withInitial(() -> byEvents(UniversalEvents.threadLocal().get()));
+	
 	// Control instantiation
 	private UniversalRegistry(String id, UniversalEvents events) {
 		this.id = id;
@@ -102,10 +114,10 @@ public final class UniversalRegistry {
 	/**
 	 * UniversalRegistry instances are thread-safe; however, you may wish for a thread-specific instance nonetheless.
 	 * 
-	 * @return ThreadLocal<UniversalRegistry> - a {@link ThreadLocal}
+	 * @return ThreadLocal - a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalRegistry> threadLocal() {
-		return ThreadLocal.withInitial(() -> byEvents(UniversalEvents.threadLocal().get()));
+		return THREAD_LOCAL;
 	}
 	
 	/**
@@ -125,9 +137,6 @@ public final class UniversalRegistry {
 	 * Gets a UniversalRegistry by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
-	 * E.g.: <br>
-	 * <code>UniversalRegistry registry = UniversalRegistry.getOrDefault(AnotherClass.class, () -> UniversalRegistry.get());</code> <br>
-	 * Would retrieve the UniversalRegistry instance corresponding to AnotherClass.class if the instance exists, fetching the default UniversalRegistry instance if not.
 	 * 
 	 * @param clazz - see {@link #getByClass(Class)}
 	 * @param defaultSupplier - from which to return back default values.
@@ -152,8 +161,8 @@ public final class UniversalRegistry {
 	 * <br>
 	 * The current implementation: <br>
 	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link #getByClassname(String)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" followed by the thread name <br>
+	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalEvents} + "-" + the thread name <br>
 	 * However, these values may change.
 	 * 
 	 * @return String - the id
