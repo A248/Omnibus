@@ -9,7 +9,26 @@ Download the plugin.
 
 ## For Developers ##
 
-Use the API.
+The javadoc may be found [here](https://git.arim.space/javadoc/UniversalRegistry).
+
+Maven dependency:
+
+```xml
+<dependency>
+	<groupId>space.arim</groupId>
+	<artifactId>universal-registry</artifactId>
+	<version>{INSERT_LATEST_VERSION}</version>
+</dependency>
+```
+
+Maven repository:
+
+``` xml
+<repository>
+  <id>arim-repo</id>
+  <url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+</repository>
+```
 
 ### License ###
 
