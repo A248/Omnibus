@@ -39,6 +39,10 @@ public final class CollectionsUtil {
 		return original;
 	}
 	
+	public static <T> String[] convertAllToString(T[] original) {
+		return convertAll(original, (object) -> object.toString());
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper, R...doNotPassThisVariable) {
 		if (doNotPassThisVariable.length > 0) {
