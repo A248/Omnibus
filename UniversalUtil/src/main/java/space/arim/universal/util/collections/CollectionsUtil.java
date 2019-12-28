@@ -50,8 +50,7 @@ public final class CollectionsUtil {
 		}
 		R[] results = (R[]) Array.newInstance(doNotPassThisVariable.getClass().getComponentType(), original.length);
 		for (int n = 0; n < original.length; n++) {
-			T origin = original[n];
-			results[n] = mapper.apply(origin);
+			results[n] = mapper.apply(original[n]);
 		}
 		return results;
 	}

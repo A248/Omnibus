@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim</groupId>
 	<artifactId>universal</artifactId>
-	<version>0.6.3-SNAPSHOT</version>
+	<version>0.6.4-SNAPSHOT</version>
 	<!--
 	Remember to update versions: 
 		1. Update property core.version
