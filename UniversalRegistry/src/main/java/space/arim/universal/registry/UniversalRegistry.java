@@ -18,19 +18,13 @@
  */
 package space.arim.universal.registry;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import space.arim.universal.events.Event;
 import space.arim.universal.events.UniversalEvents;
-import space.arim.universal.util.collections.CollectionsUtil;
 
 /**
  * <b>UniversalRegistry</b>: Main class <br>
@@ -62,18 +56,13 @@ public final class UniversalRegistry {
 	 * The registry itself
 	 * 
 	 */
-	private final ConcurrentHashMap<Class<?>, List<Registrable>> registry = new ConcurrentHashMap<Class<?>, List<Registrable>>();
+	private final ConcurrentHashMap<Class<?>, Registrable> registry = new ConcurrentHashMap<Class<?>, Registrable>();
 	
 	/**
 	 * The corresponding {@link UniversalEvents} instance
 	 * 
 	 */
 	private final UniversalEvents events;
-	
-	/**
-	 * Used to sort the registry based on priority
-	 */
-	private static final Comparator<Registrable> PRIORITY_COMPARATOR = (r1, r2) -> r1.getPriority() - r2.getPriority();
 	
 	/**
 	 * Instances map to prevent duplicate ids
@@ -191,41 +180,10 @@ public final class UniversalRegistry {
 	 */
 	public synchronized <T extends Registrable> void register(Class<T> service, T provider) {
 		Objects.requireNonNull(provider, "Provider must not be null!");
-		if (registry.containsKey(service)) {
-			if (registry.get(service).add(provider)) {
-				registry.get(service).sort(PRIORITY_COMPARATOR);
-				fireRegistrationEvent(service, provider);
-			}
-		} else {
-			registry.put(service, new ArrayList<Registrable>(Arrays.asList(provider)));
-			fireRegistrationEvent(service, provider);
+		if (!registry.containsKey(service) || provider.getPriority() > registry.get(service).getPriority()) {
+			registry.put(service, provider);
+			getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil(), service, provider));
 		}
-	}
-	
-	private <T extends Registrable> void fireRegistrationEvent(Class<T> service, T provider) {
-		fireEvent(new RegistrationEvent<T>(service, provider));
-	}
-	
-	/**
-	 * Unregister a resource
-	 * 
-	 * @param <T> - the service
-	 * @param service - the service class
-	 * @param provider - the resource to unregister
-	 */
-	public synchronized <T extends Registrable> void unregister(Class<T> service, T provider) {
-		if (registry.containsKey(service) && registry.get(service).remove(provider)) {
-			registry.get(service).sort(PRIORITY_COMPARATOR);
-			fireUnregistrationEvent(service, provider);
-		}
-	}
-	
-	private <T extends Registrable> void fireUnregistrationEvent(Class<T> service, T provider) {
-		fireEvent(new UnregistrationEvent<T>(service, provider));
-	}
-	
-	private void fireEvent(Event evt) {
-		events.fireEvent(evt);
 	}
 	
 	/**
@@ -259,23 +217,8 @@ public final class UniversalRegistry {
 	 * @return the service asked.
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized <T extends Registrable> T getRegistration(Class<T> service) {
-		return registry.containsKey(service) ? (T) registry.get(service).get(0) : null;
-	}
-	
-	/**
-	 * Retrieves all registrations for a service. <br>
-	 * <br>
-	 * If there are no registrations for the service parameter, an empty list is returned.
-	 * Otherwise, the returned list is backed by the internal registry.
-	 * 
-	 * @param <T> - the service
-	 * @param service - the service class
-	 * @return immutable list sorted according to priority of registrations. Empty if no registrations exist.
-	 */
-	@SuppressWarnings("unchecked")
-	public synchronized <T extends Registrable> List<T> getRegistrations(Class<T> service) {
-		return registry.containsKey(service) ?  Collections.unmodifiableList((List<T>) registry.get(service)) : Collections.emptyList();
+	public <T extends Registrable> T getRegistration(Class<T> service) {
+		return (T) registry.get(service);
 	}
 	
 	/**
@@ -285,10 +228,8 @@ public final class UniversalRegistry {
 	 * 
 	 * @return a map of service classes to registrable lists
 	 */
-	public Map<Class<?>, List<Registrable>> getRegistrations() {
-		return CollectionsUtil.valueWrappedMap(registry, (list) -> {
-			return Collections.unmodifiableList(list);
-		});
+	public Map<Class<?>, Registrable> getRegistrations() {
+		return Collections.unmodifiableMap(registry);
 	}
 	
 }

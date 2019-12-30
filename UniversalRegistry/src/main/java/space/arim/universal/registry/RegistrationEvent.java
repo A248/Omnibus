@@ -18,6 +18,9 @@
  */
 package space.arim.universal.registry;
 
+import space.arim.universal.events.Event;
+import space.arim.universal.util.UniversalUtil;
+
 /**
  * Called for the registration of a resource
  * 
@@ -25,10 +28,39 @@ package space.arim.universal.registry;
  *
  * @param <T> - the service for which the resource was registered
  */
-public class RegistrationEvent<T extends Registrable> extends AbstractRegistrationEvent<T> {
+public class RegistrationEvent<T extends Registrable> implements Event {
 
-	RegistrationEvent(Class<T> service, T provider) {
-		super(service, provider);
+	private final UniversalUtil util;
+	private final Class<T> service;
+	private final T provider;
+	
+	RegistrationEvent(UniversalUtil util, Class<T> service, T provider) {
+		this.util = util;
+		this.service = service;
+		this.provider = provider;
+	}
+	
+	/**
+	 * Returns the service for which the registration/unregistration occured.
+	 * 
+	 * @return Class - the service class
+	 */
+	public Class<T> getService() {
+		return service;
+	}
+	
+	/**
+	 * Returns the resource which was registered/unregistered
+	 * 
+	 * @return the resource
+	 */
+	public T getResource() {
+		return provider;
+	}
+
+	@Override
+	public boolean isAsynchronous() {
+		return util.isAsynchronous();
 	}
 
 }
