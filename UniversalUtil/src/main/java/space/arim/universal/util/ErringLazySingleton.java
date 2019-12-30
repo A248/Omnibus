@@ -18,6 +18,8 @@
  */
 package space.arim.universal.util;
 
+import java.util.Objects;
+
 import space.arim.universal.util.function.ErringSupplier;
 
 /**
@@ -35,13 +37,13 @@ public class ErringLazySingleton<T, X extends Exception> implements ErringSuppli
 	private final ErringSupplier<T, X> instantiator;
 	
 	public ErringLazySingleton(ErringSupplier<T, X> instantiator) {
-		this.instantiator = instantiator;
+		this.instantiator = Objects.requireNonNull(instantiator, "Instantiator must not be null!");
 	}
 	
 	@Override
 	public T get() throws X {
 		if (value == null) {
-			synchronized (value) {
+			synchronized (instantiator) {
 				if (value == null) {
 					value = instantiator.get();
 				}
