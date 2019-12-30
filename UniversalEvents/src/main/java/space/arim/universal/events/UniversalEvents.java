@@ -201,7 +201,7 @@ public final class UniversalEvents {
 		eventListeners.forEach((clazz, listeners) -> {
 			if (clazz.isInstance(event)) {
 				listeners.forEach((listener) -> {
-					if (!(event instanceof Cancellable) || !((Cancellable) event).isCancelled() || !listener.ignoreCancelled) {
+					if (!(event instanceof Cancellable) || !listener.ignoreCancelled || !((Cancellable) event).isCancelled()) {
 						listener.invoke(event);
 					}
 				});
@@ -219,12 +219,10 @@ public final class UniversalEvents {
 				if (parameters.length != 1) {
 					throw new IllegalArgumentException("Listening methods must have 1 parameter!");
 				}
-				Set<ListenerMethod> methods = methodMap.get(parameters[0]);
-				if (methods == null) {
-					methods = new HashSet<ListenerMethod>();
-					methodMap.put(parameters[0], methods);
+				if (!methodMap.containsKey(parameters[0])) {
+					methodMap.put(parameters[0], new HashSet<ListenerMethod>());
 				}
-				methods.add(new ListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
+				methodMap.get(parameters[0]).add(new ListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
 			}
 		}
 		return methodMap;
@@ -239,6 +237,9 @@ public final class UniversalEvents {
 	 */
 	public void register(Object listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
+		if (methodMap.isEmpty()) {
+			return;
+		}
 		synchronized (eventListeners) {
 			methodMap.forEach((clazz, methods) -> {
 				if (!eventListeners.containsKey(clazz)) {
@@ -261,6 +262,9 @@ public final class UniversalEvents {
 	 */
 	public void unregister(Object listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
+		if (methodMap.isEmpty()) {
+			return;
+		}
 		synchronized (eventListeners) {
 			methodMap.forEach((clazz, methods) -> {
 				if (eventListeners.containsKey(clazz) && eventListeners.get(clazz).removeAll(methods)) {
@@ -280,7 +284,7 @@ public final class UniversalEvents {
  */
 class ListenerMethod {
 
-	final Object listener;
+	private final Object listener;
 	private final Method method;
 	final byte priority;
 	final boolean ignoreCancelled;
