@@ -29,6 +29,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+import space.arim.universal.util.function.ErringFunction;
+
 /**
  * Utility class to apply operations to collections and arrays, as well as better unmodifiable collections support. <br>
  * <br>
@@ -73,25 +75,8 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Iterates across the input array, if {@link Function#apply(Object)} for any element returns <code>true</code>, the method returns true. Otherwise, returns false.
 	 * 
-	 * @param <T> the type of the array
-	 * @param array the array across which to iterate
-	 * @param checker used when checking an element
-	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
-	 */
-	public static <T> boolean checkForAnyMatches(T[] array, Function<T, Boolean> checker) {
-		for (T element : array) {
-			if (checker.apply(element)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * 
-	 * Same as {@link #checkForAnyMatches(Object[], UnaryOperator)} but accepts a <code>Collection</code> instead of an array.
+	 * Iterates across the collection, if {@link Function#apply(Object)} for any element returns <code>true</code>, the method returns true. Otherwise, returns false.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param collection the collection across which to iterate
@@ -108,7 +93,79 @@ public final class CollectionsUtil {
 	}
 	
 	/**
+	 * Same as {@link #checkForAnyMatches(Collection, Function)} but accepts an array instead.
+	 * 
+	 * @param <T> the type of the array
+	 * @param array the array across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
+	 */
+	public static <T> boolean checkForAnyMatches(T[] array, Function<T, Boolean> checker) {
+		for (T element : array) {
+			if (checker.apply(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Same as {@link #checkForAnyMatches(Collection, Function)} but possibly throws an exception.
+	 * 
+	 * @param <T> the type of the collection
+	 * @param <X> the type of the exception
+	 * @param collection the collection across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
+	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 */
+	public static <T, X extends Throwable> boolean checkForAnyMatchesErring(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
+		for (T element : collection) {
+			if (checker.apply(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Same as {@link #checkForAnyMatches(Object[], ErringFunction)} but possibly throws an exception.
+	 * 
+	 * @param <T> the type of the array
+	 * @param <X> the type of the exception
+	 * @param array the array across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
+	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 */
+	public static <T, X extends Throwable> boolean checkForAnyMatchesErring(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
+		for (T element : array) {
+			if (checker.apply(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Iterates across the input array, if {@link Function#apply(Object)} for any element returns <code>false</code>, the method returns false. Otherwise, returns true.
+	 * 
+	 * @param <T> the type of the collection
+	 * @param collection the collection across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
+	 */
+	public static <T> boolean checkForAllMatches(Collection<T> collection, Function<T, Boolean> checker) {
+		for (T element : collection) {
+			if (!checker.apply(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Same as {@link #checkForAllMatches(Collection, Function)} but accepts an array instead.
 	 * 
 	 * @param <T> the type of the array
 	 * @param array the array across which to iterate
@@ -125,15 +182,36 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link #checkForAllMatches(Object[], Function)} but accepts a <code>Collection</code> instead of an array.
+	 * Same as {@link #checkForAllMatches(Collection, Function)} but possibly throws an exception.
 	 * 
 	 * @param <T> the type of the collection
+	 * @param <X> the type of the exception
 	 * @param collection the collection across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
+	 * @throws X according to {@link ErringFunction#apply(Object)}
 	 */
-	public static <T> boolean checkForAllMatches(Collection<T> collection, Function<T, Boolean> checker) {
+	public static <T, X extends Throwable> boolean checkForAllMatchesErring(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
 		for (T element : collection) {
+			if (!checker.apply(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Same as {@link #checkForAllMatches(Object[], Function)} but possibly throws an exception.
+	 * 
+	 * @param <T> the type of the array
+	 * @param <X> the type of the exception
+	 * @param array the array across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
+	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 */
+	public static <T, X extends Throwable> boolean checkForAllMatchesErring(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
+		for (T element : array) {
 			if (!checker.apply(element)) {
 				return false;
 			}
