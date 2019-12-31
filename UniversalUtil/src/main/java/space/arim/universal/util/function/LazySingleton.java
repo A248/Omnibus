@@ -16,34 +16,31 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util;
+package space.arim.universal.util.function;
 
-import java.util.Objects;
-
-import space.arim.universal.util.function.ErringSupplier;
+import java.util.function.Supplier;
 
 /**
- * A thread-safe singleton supplier which may throw an error upon instantiation.
+ * A thread-safe singleton supplier.
  * 
  * @author A248
  *
  * @param <T> the type of the singleton
- * @param <X> the type of the exception
  */
-public class ErringLazySingleton<T, X extends Exception> implements ErringSupplier<T, X> {
-
+public class LazySingleton<T> implements Supplier<T> {
+	
 	private volatile T value;
 	
-	private final ErringSupplier<T, X> instantiator;
+	private final Supplier<T> instantiator;
 	
-	public ErringLazySingleton(ErringSupplier<T, X> instantiator) {
-		this.instantiator = Objects.requireNonNull(instantiator, "Instantiator must not be null!");
+	public LazySingleton(Supplier<T> instantiator) {
+		this.instantiator = instantiator;
 	}
 	
 	@Override
-	public T get() throws X {
+	public T get() {
 		if (value == null) {
-			synchronized (instantiator) {
+			synchronized (value) {
 				if (value == null) {
 					value = instantiator.get();
 				}
@@ -51,5 +48,5 @@ public class ErringLazySingleton<T, X extends Exception> implements ErringSuppli
 		}
 		return value;
 	}
-	
+
 }
