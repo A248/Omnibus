@@ -1,5 +1,5 @@
 name: ${project.name}
-main: ${project.groupId}.universal.plugin.UniversalRegistryBungee
+main: ${project.groupId}.universal.plugin.UniversalPluginBungee
 version: ${project.version}
 author: A248
 description: ${project.description}
