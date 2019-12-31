@@ -20,7 +20,7 @@ package space.arim.universal.plugin;
 
 import org.spongepowered.api.plugin.Plugin;
 
-@Plugin(id = "universalplugin", name = "UniversalPlugin", version = "see_plugin_jar_resource=plugin.yml")
+@Plugin(id = "universalregistryplugin", name = "UniversalRegistryPlugin", version = "see_plugin_jar_resource=plugin.yml")
 public class UniversalPluginSponge {
 	
 	/*
