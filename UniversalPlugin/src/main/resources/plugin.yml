@@ -1,4 +1,4 @@
-name: ${project.name}
+name: UniversalRegistryPlugin
 main: ${project.groupId}.universal.plugin.UniversalPluginBukkit
 version: ${project.version}
 author: A248
