@@ -25,11 +25,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
- * Utility class to apply operations to collections and arrays, as well as better unmodifiable collections support.
+ * Utility class to apply operations to collections and arrays, as well as better unmodifiable collections support. <br>
+ * <br>
+ * <b>Designed to reduce boilerplate operations</b>.
  * 
  * @author A248
  *
@@ -51,6 +54,22 @@ public final class CollectionsUtil {
 			original[n] = wrapper.apply(original[n]);
 		}
 		return original;
+	}
+	
+	/**
+	 * Applies an action to all elements of a collection where checker.apply(element) returns <code>true</code>
+	 * 
+	 * @param <T> the type of the collection
+	 * @param collection the collection
+	 * @param checker the checker function
+	 * @param action the action to apply if checker.apply(element) returns <code>true</code>
+	 */
+	public static <T> void forEachApplicable(Collection<T> collection, Function<T, Boolean> checker, Consumer<T> action) {
+		collection.forEach((element) -> {
+			if (checker.apply(element)) {
+				action.accept(element);
+			}
+		});
 	}
 	
 	/**
