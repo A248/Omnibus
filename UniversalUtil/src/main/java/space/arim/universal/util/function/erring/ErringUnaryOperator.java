@@ -26,6 +26,6 @@ package space.arim.universal.util.function.erring;
  * @param <T> the type of the operand and result
  * @param <X> the type of the exception
  */
-public interface ErringUnaryOperator<T, X extends Exception> extends ErringFunction<T, T, X> {
+public interface ErringUnaryOperator<T, X extends Throwable> extends ErringFunction<T, T, X> {
 
 }

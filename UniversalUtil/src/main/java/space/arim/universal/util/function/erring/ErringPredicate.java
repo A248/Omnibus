@@ -26,7 +26,7 @@ package space.arim.universal.util.function.erring;
  * @param <T> the type of the input object
  * @param <X> the type of the exception
  */
-public interface ErringPredicate<T, X extends Exception> {
+public interface ErringPredicate<T, X extends Throwable> {
 
 	/**
      * Evaluates the predicate on the given argument.

@@ -26,7 +26,7 @@ package space.arim.universal.util.function.erring;
  * @param <T> the type of the object supplied
  * @param <X> the type of the exception
  */
-public interface ErringSupplier<T, X extends Exception> {
+public interface ErringSupplier<T, X extends Throwable> {
 
 	/**
 	 * Retrieves the result, possibly throwing an exception

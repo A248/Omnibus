@@ -44,7 +44,7 @@ public final class ErringCollectionsUtil {
 	 * @return the mutated array where each element has been replaced with UnaryOperator.wrap(previous element)
 	 * @throws X according to {@link ErringUnaryOperator#apply}
 	 */
-	public static <T, X extends Exception> T[] wrapAll(T[] original, ErringUnaryOperator<T, X> wrapper) throws X {
+	public static <T, X extends Throwable> T[] wrapAll(T[] original, ErringUnaryOperator<T, X> wrapper) throws X {
 		for (int n = 0; n < original.length; n++) {
 			original[n] = wrapper.apply(original[n]);
 		}

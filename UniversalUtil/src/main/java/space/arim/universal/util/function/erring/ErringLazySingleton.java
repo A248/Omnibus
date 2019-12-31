@@ -28,7 +28,7 @@ import java.util.Objects;
  * @param <T> the type of the singleton
  * @param <X> the type of the exception
  */
-public class ErringLazySingleton<T, X extends Exception> implements ErringSupplier<T, X> {
+public class ErringLazySingleton<T, X extends Throwable> implements ErringSupplier<T, X> {
 
 	private volatile T value;
 	
