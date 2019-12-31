@@ -16,7 +16,7 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.function;
+package space.arim.universal.util.function.erring;
 
 /**
  * Similar to {@link java.util.function.Function} but throws a type of exception

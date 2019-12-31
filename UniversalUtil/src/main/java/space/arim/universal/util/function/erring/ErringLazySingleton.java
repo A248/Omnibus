@@ -16,24 +16,38 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.function;
+package space.arim.universal.util.function.erring;
+
+import java.util.Objects;
 
 /**
- * Similar to {@link java.util.function.Supplier} but throws a type of exception
+ * A thread-safe singleton supplier which may throw an error upon instantiation.
  * 
  * @author A248
  *
- * @param <T> the type of the object supplied
+ * @param <T> the type of the singleton
  * @param <X> the type of the exception
  */
-public interface ErringSupplier<T, X extends Exception> {
+public class ErringLazySingleton<T, X extends Exception> implements ErringSupplier<T, X> {
 
-	/**
-	 * Retrieves the supplied object, possibly throwing an exception
-	 * 
-	 * @return the supplied object
-	 * @throws X
-	 */
-	T get() throws X;
+	private volatile T value;
+	
+	private final ErringSupplier<T, X> instantiator;
+	
+	public ErringLazySingleton(ErringSupplier<T, X> instantiator) {
+		this.instantiator = Objects.requireNonNull(instantiator, "Instantiator must not be null!");
+	}
+	
+	@Override
+	public T get() throws X {
+		if (value == null) {
+			synchronized (instantiator) {
+				if (value == null) {
+					value = instantiator.get();
+				}
+			}
+		}
+		return value;
+	}
 	
 }
