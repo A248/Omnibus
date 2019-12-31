@@ -29,7 +29,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 /**
- * Utility class to apply operations to collections and arrays
+ * Utility class to apply operations to collections and arrays, as well as better unmodifiable collections support.
  * 
  * @author A248
  *
@@ -54,7 +54,7 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Iterates across the input array, if {@link Function#apply(Object)} returns <code>true</code>, the method returns true. Otherwise, returns false.
+	 * Iterates across the input array, if {@link Function#apply(Object)} for any element returns <code>true</code>, the method returns true. Otherwise, returns false.
 	 * 
 	 * @param <T> the type of the array
 	 * @param array the array across which to iterate
@@ -89,7 +89,7 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Iterates across the input array, if {@link Function#apply(Object)} returns <code>false</code>, the method returns false. Otherwise, returns true.
+	 * Iterates across the input array, if {@link Function#apply(Object)} for any element returns <code>false</code>, the method returns false. Otherwise, returns true.
 	 * 
 	 * @param <T> the type of the array
 	 * @param array the array across which to iterate
