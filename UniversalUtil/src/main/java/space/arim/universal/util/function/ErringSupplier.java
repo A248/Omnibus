@@ -18,8 +18,22 @@
  */
 package space.arim.universal.util.function;
 
+/**
+ * Similar to {@link java.util.function.Supplier} but throws a type of exception
+ * 
+ * @author A248
+ *
+ * @param <T> the type of the object supplied
+ * @param <X> the type of the exception
+ */
 public interface ErringSupplier<T, X extends Exception> {
 
+	/**
+	 * Retrieves the supplied object, possibly throwing an exception
+	 * 
+	 * @return the supplied object
+	 * @throws X
+	 */
 	T get() throws X;
 	
 }
