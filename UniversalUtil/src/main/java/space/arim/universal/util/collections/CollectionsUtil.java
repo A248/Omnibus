@@ -28,10 +28,24 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
+/**
+ * Utility class to apply operations to collections and arrays
+ * 
+ * @author A248
+ *
+ */
 public final class CollectionsUtil {
 
 	private CollectionsUtil() {}
 	
+	/**
+	 * Mutates the input array, setting each element to {@link UnaryOperator#apply(Object)}
+	 * 
+	 * @param <T> the type of the array
+	 * @param original the input array
+	 * @param wrapper the {@link UnaryOperator} to wrap each element
+	 * @return the mutated array where each element has been replaced with UnaryOperator.wrap(previous element)
+	 */
 	public static <T> T[] wrapAll(T[] original, UnaryOperator<T> wrapper) {
 		for (int n = 0; n < original.length; n++) {
 			original[n] = wrapper.apply(original[n]);
@@ -39,10 +53,96 @@ public final class CollectionsUtil {
 		return original;
 	}
 	
+	/**
+	 * Iterates across the input array, if {@link Function#apply(Object)} returns <code>true</code>, the method returns true. Otherwise, returns false.
+	 * 
+	 * @param <T> the type of the array
+	 * @param array the array across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
+	 */
+	public static <T> boolean checkForAnyMatches(T[] array, Function<T, Boolean> checker) {
+		for (T element : array) {
+			if (checker.apply(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 
+	 * Same as {@link #checkForAnyMatches(Object[], UnaryOperator)} but accepts a <code>Collection</code> instead of an array.
+	 * 
+	 * @param <T> the type of the collection
+	 * @param collection the collection across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
+	 */
+	public static <T> boolean checkForAnyMatches(Collection<T> collection, Function<T, Boolean> checker) {
+		for (T element : collection) {
+			if (checker.apply(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Iterates across the input array, if {@link Function#apply(Object)} returns <code>false</code>, the method returns false. Otherwise, returns true.
+	 * 
+	 * @param <T> the type of the array
+	 * @param array the array across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
+	 */
+	public static <T> boolean checkForAllMatches(T[] array, Function<T, Boolean> checker) {
+		for (T element : array) {
+			if (!checker.apply(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Same as {@link #checkForAllMatches(Object[], Function)} but accepts a <code>Collection</code> instead of an array.
+	 * 
+	 * @param <T> the type of the collection
+	 * @param collection the collection across which to iterate
+	 * @param checker used when checking an element
+	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
+	 */
+	public static <T> boolean checkForAllMatches(Collection<T> collection, Function<T, Boolean> checker) {
+		for (T element : collection) {
+			if (!checker.apply(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Converts an object array to a string array according to each object's {@link Object#toString()} method
+	 * 
+	 * @param <T> the type of the array
+	 * @param original the input array
+	 * @return a string array
+	 */
 	public static <T> String[] convertAllToString(T[] original) {
 		return convertAll(original, (object) -> object.toString());
 	}
 	
+	/**
+	 * Converts an array of type T to type R according to the given mapping function.
+	 * 
+	 * @param <T> the type of the original array
+	 * @param <R> the typoe of the target array
+	 * @param original the original array
+	 * @param mapper the mapping function
+	 * @param doNotPassThisVariable ignore this parameter and do not pass it. It is used for internal mechanics.
+	 * @return a converted array
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper, R...doNotPassThisVariable) {
 		if (doNotPassThisVariable.length > 0) {
@@ -55,10 +155,40 @@ public final class CollectionsUtil {
 		return results;
 	}
 	
+	/**
+	 * Creates a map whose {@link Map#get(Object)} is first wrapped according to the given wrapping function before being passed to the caller. <br>
+	 * <br>
+	 * This is useful for modifying returned values in an API if needed. Calling {@link Map#get(Object)} on a map created with this method is equivalent to calling <code>wrapper.apply(original.get(key))</code>.
+	 * 
+	 * @param <K> the type of a map key
+	 * @param <V> the type of a map value
+	 * @param original the original, backing map
+	 * @param wrapper the {@link UnaryOperator} to apply for retrievals
+	 * @return a map whose retrievals are wrapped accordingly
+	 */
 	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
 		return new ValueWrappedMap<K, V>(original, wrapper);
 	}
 	
+	/**
+	 * Similar to {@link #valueWrappedMap(Map, UnaryOperator)} in that it wraps all the values of the given map according to the wrapping function. <br>
+	 * This method differs in that the mutating methods (put, remove, putAll, clear) of the wrapped map throw {@link UnsupportedOperationException} if accessed. <br>
+	 * <br>
+	 * <b>Useful for creating unmodifiable maps with nested unmodifiable collections</b>. <br>
+	 * E.g., it is possible to return a map to a caller whose values are nested maps which are in themselves unmodifiable: <br>
+	 * <code>Map nestedUnmodifiable = CollectionsUtil.unmodifiableValueWrappedMap(original, new UnaryOperator() {
+	 * 
+	 * public void apply(Map map) {
+	 *   return Collections.unmodifiableMap(map);
+	 * }
+	 * }</code> <br>
+	 * 
+	 * @param <K> the type of a map key
+	 * @param <V> the type of a map value
+	 * @param original the original, backing map
+	 * @param wrapper the {@link UnaryOperator} to apply for retrievals
+	 * @return an unmodifiable map whose retrievals are wrapped accordingly.
+	 */
 	public static <K, V> Map<K, V> unmodifiableValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
 		return new UnmodifiableValueWrappedMap<K, V>(original, wrapper);
 	}
@@ -141,8 +271,6 @@ public final class CollectionsUtil {
 			super(original, wrapper);
 		}
 		
-		@Override
-		public V get(Object key) {throw new UnsupportedOperationException();}
 		@Override
 		public V put(K key, V value) {throw new UnsupportedOperationException();}
 		@Override
