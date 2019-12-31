@@ -20,7 +20,6 @@ package space.arim.universal.util.collections;
 
 import java.util.Collection;
 import java.util.function.Function;
-
 import space.arim.universal.util.function.erring.ErringFunction;
 import space.arim.universal.util.function.erring.ErringUnaryOperator;
 
@@ -62,7 +61,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 * @throws X according to {@link ErringFunction#apply(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAnyMatchesErring(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAnyMatches(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
 		for (T element : collection) {
 			if (checker.apply(element)) {
 				return true;
@@ -81,7 +80,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 * @throws X according to {@link ErringFunction#apply(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAnyMatchesErring(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAnyMatches(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
 		for (T element : array) {
 			if (checker.apply(element)) {
 				return true;
@@ -100,7 +99,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 * @throws X according to {@link ErringFunction#apply(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAllMatchesErring(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAllMatches(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
 		for (T element : collection) {
 			if (!checker.apply(element)) {
 				return false;
@@ -119,7 +118,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 * @throws X according to {@link ErringFunction#apply(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAllMatchesErring(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAllMatches(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
 		for (T element : array) {
 			if (!checker.apply(element)) {
 				return false;
