@@ -19,8 +19,12 @@
 package space.arim.universal.util.collections;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Function;
+
+import space.arim.universal.util.function.erring.ErringConsumer;
 import space.arim.universal.util.function.erring.ErringFunction;
+import space.arim.universal.util.function.erring.ErringPredicate;
 import space.arim.universal.util.function.erring.ErringUnaryOperator;
 
 /**
@@ -125,6 +129,38 @@ public final class ErringCollectionsUtil {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * An erring version of {@link Iterable#forEach(java.util.function.Consumer)}
+	 * 
+	 * @param <T> the type of the collection
+	 * @param <X> the type of the exception
+	 * @param collection the collection or iterable interface
+	 * @param action the ErringConsumer to use
+	 * @throws X according to {@link ErringConsumer#accept(Object)}
+	 */
+	public static <T, X extends Throwable> void forEach(Iterable<T> collection, ErringConsumer<T, X> action) throws X {
+        for (T object : collection) {
+            action.accept(object);
+        }
+	}
+	
+	/**
+	 * An erring version of {@link Collection#removeIf(java.util.function.Predicate)}
+	 * 
+	 * @param <T> the type of the collection
+	 * @param <X> the type of the exception
+	 * @param collection the collection or iterable interface
+	 * @param filter the ErringPredicate to use
+	 * @throws X according to {@link ErringPredicate#test(Object)}
+	 */
+	public static <T, X extends Throwable> void removeIf(Iterable<T> collection, ErringPredicate<T, X> filter) throws X {
+		for (Iterator<T> it = collection.iterator(); it.hasNext();) {
+			if (filter.test(it.next())) {
+				it.remove();
+			}
+		}
 	}
 	
 }
