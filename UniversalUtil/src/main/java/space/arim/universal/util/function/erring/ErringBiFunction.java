@@ -19,21 +19,25 @@
 package space.arim.universal.util.function.erring;
 
 /**
- * An erring version of {@link java.util.function.Consumer}
+ * An erring version of {@link java.util.function.BiFunction}
  * 
  * @author A248
  *
- * @param <T> the type of the input object
+ * @param <T> the type of the first object
+ * @param <U> the type of the second object
+ * @param <R> the type of the return value
  * @param <X> the type of the exception
  */
-public interface ErringConsumer<T, X extends Throwable> {
+public interface ErringBiFunction<T, U, R, X extends Throwable> {
 
-    /**
-     * Performs this operation on the given argument.
-     *
-     * @param object the input object
-     * @throws X possibly, as parameterised
-     */
-    void accept(T object) throws X;
+	/**
+	 * Applies this function to the given arguments
+	 * 
+	 * @param obj1 the first object
+	 * @param obj2 the second object
+	 * @return the result
+	 * @throws X possibly, as parameterised
+	 */
+	R apply(T obj1, U obj2) throws X;
 	
 }

@@ -34,7 +34,7 @@ public interface ErringFunction<T, R, X extends Throwable> {
      *
      * @param object the function argument
      * @return the function result
-     * @throws X a possible exception
+     * @throws X possibly, as parameterised
      */
 	R apply(T object) throws X;
 	

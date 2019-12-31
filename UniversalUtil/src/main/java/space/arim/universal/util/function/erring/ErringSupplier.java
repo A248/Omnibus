@@ -32,7 +32,7 @@ public interface ErringSupplier<T, X extends Throwable> {
 	 * Retrieves the result, possibly throwing an exception
 	 * 
 	 * @return a result
-	 * @throws X
+	 * @throws X possibly, as parameterised
 	 */
 	T get() throws X;
 	

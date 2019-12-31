@@ -18,8 +18,21 @@
  */
 package space.arim.universal.util.function;
 
+/**
+ * Like a {@link java.util.function.Supplier}, but returns two objects wrapped in a {@link Pair}
+ * 
+ * @author A248
+ *
+ * @param <M> the first object
+ * @param <N> the second object
+ */
 public interface BiSupplier<M, N> {
 	
+	/**
+	 * Retrieves the value
+	 * 
+	 * @return the supplied result
+	 */
 	public Pair<M, N> get();
 	
 }

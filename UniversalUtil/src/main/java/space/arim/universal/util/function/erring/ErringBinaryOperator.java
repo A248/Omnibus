@@ -19,21 +19,13 @@
 package space.arim.universal.util.function.erring;
 
 /**
- * An erring version of {@link java.util.function.Consumer}
+ * An erring version of {@link java.util.function.BinaryOperator}
  * 
  * @author A248
  *
  * @param <T> the type of the input object
  * @param <X> the type of the exception
  */
-public interface ErringConsumer<T, X extends Throwable> {
+public interface ErringBinaryOperator<T, X extends Throwable> extends ErringBiFunction<T, T, T, X> {
 
-    /**
-     * Performs this operation on the given argument.
-     *
-     * @param object the input object
-     * @throws X possibly, as parameterised
-     */
-    void accept(T object) throws X;
-	
 }

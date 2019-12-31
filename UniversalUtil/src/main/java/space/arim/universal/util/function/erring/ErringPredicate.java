@@ -33,6 +33,7 @@ public interface ErringPredicate<T, X extends Throwable> {
      *
      * @param object the input object
      * @return true if the input argument matches the predicate, false otherwise
+     * @throws X possibly, as parameterised
      */
     boolean test(T object) throws X;
 	
