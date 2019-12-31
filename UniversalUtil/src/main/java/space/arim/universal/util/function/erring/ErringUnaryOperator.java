@@ -19,7 +19,7 @@
 package space.arim.universal.util.function.erring;
 
 /**
- * An erring version of {@link java.util.functionUnaryOperator}
+ * An erring version of {@link java.util.function.UnaryOperator}
  * 
  * @author A248
  *
