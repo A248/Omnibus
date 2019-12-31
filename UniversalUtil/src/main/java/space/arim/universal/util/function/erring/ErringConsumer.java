@@ -33,6 +33,6 @@ public interface ErringConsumer<T, X extends Throwable> {
      *
      * @param object the input object
      */
-    void accept(T object);
+    void accept(T object) throws X;
 	
 }
