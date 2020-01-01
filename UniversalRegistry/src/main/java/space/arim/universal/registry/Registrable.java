@@ -46,8 +46,8 @@ public interface Registrable {
 	/**
 	 * The priority of this resource when it is registered.<br>
 	 * <br>
-	 * If multiple resources are registered for one service,
-	 * the highest-priority resource will be returned in {@link space.arim.universal.registry.UniversalRegistry#getRegistration(Class) UniversalRegistry#getRegistration(Class)}
+	 * If the registered resource's priority is greater than the existing provider,
+	 * the existing provider will be replaced with the new resource.
 	 * 
 	 * @return the priority of this resource
 	 */
