@@ -141,7 +141,7 @@ public final class UniversalEvents {
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
 	 * 
-	 * @param clazz - see {@link #getByClass(Class)}
+	 * @param clazz see {@link #getByClass(Class)}
 	 * @param defaultSupplier from which to return back default values.
 	 * @return UniversalEvents a registered instance if the id exists, otherwise the default value
 	 */
