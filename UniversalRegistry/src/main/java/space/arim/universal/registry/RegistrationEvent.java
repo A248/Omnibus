@@ -19,7 +19,6 @@
 package space.arim.universal.registry;
 
 import space.arim.universal.events.Event;
-import space.arim.universal.util.UniversalUtil;
 
 /**
  * Called for the registration of a resource
@@ -30,12 +29,12 @@ import space.arim.universal.util.UniversalUtil;
  */
 public class RegistrationEvent<T extends Registrable> implements Event {
 
-	private final UniversalUtil util;
+	private final boolean async;
 	private final Class<T> service;
 	private final T provider;
 	
-	RegistrationEvent(UniversalUtil util, Class<T> service, T provider) {
-		this.util = util;
+	RegistrationEvent(boolean async, Class<T> service, T provider) {
+		this.async = async;
 		this.service = service;
 		this.provider = provider;
 	}
@@ -60,7 +59,7 @@ public class RegistrationEvent<T extends Registrable> implements Event {
 
 	@Override
 	public boolean isAsynchronous() {
-		return util.isAsynchronous();
+		return async;
 	}
 
 }

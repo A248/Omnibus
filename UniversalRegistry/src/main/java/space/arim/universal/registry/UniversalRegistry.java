@@ -182,7 +182,7 @@ public final class UniversalRegistry {
 		Objects.requireNonNull(provider, "Provider must not be null!");
 		if (!registry.containsKey(service) || provider.getPriority() > registry.get(service).getPriority()) {
 			registry.put(service, provider);
-			getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil(), service, provider));
+			getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
 		}
 	}
 	
