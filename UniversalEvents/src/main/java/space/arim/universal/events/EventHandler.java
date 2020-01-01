@@ -23,6 +23,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used for detecting listener methods <br>
+ * <br>
+ * To mark a method for listening, annotate it with this annotation.
+ * 
+ * @author A248
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface EventHandler {
