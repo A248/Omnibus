@@ -96,7 +96,7 @@ public final class UniversalUtil {
 	 * A thread-specific instance of UniversalUtil will take the thread itself as the main thread.
 	 * Thus, <code>UniversalUtil.threadLocal().asynchronous()</code> will always return <code>false</code>.
 	 * 
-	 * @return ThreadLocal - a {@link ThreadLocal}
+	 * @return ThreadLocal a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalUtil> threadLocal() {
 		return THREAD_LOCAL;
@@ -108,8 +108,8 @@ public final class UniversalUtil {
 	 * <br>
 	 * This is the preferred approach to using your own UniversalUtil instances.
 	 * 
-	 * @param clazz - the class
-	 * @return UniversalUtil - the instance. If none exists, a new instance is created.
+	 * @param clazz the class
+	 * @return UniversalUtil the instance. If none exists, a new instance is created.
 	 */
 	public static UniversalUtil getByClass(Class<?> clazz) {
 		return demandUtil("class-" + clazz.getName());
@@ -120,9 +120,9 @@ public final class UniversalUtil {
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
 	 * 
-	 * @param clazz - see {@link #getByClass(Class)}
-	 * @param defaultSupplier - from which to return back default values.
-	 * @return UniversalUtil - a registered instance if the id exists, otherwise the default value
+	 * @param clazz see {@link #getByClass(Class)}
+	 * @param defaultSupplier from which to return back default values.
+	 * @return UniversalUtil a registered instance if the id exists, otherwise the default value
 	 */
 	public static UniversalUtil getOrDefault(Class<?> clazz, Supplier<UniversalUtil> defaultSupplier) {
 		UniversalUtil util = INSTANCES.get("class-" + clazz.getName());
@@ -132,7 +132,7 @@ public final class UniversalUtil {
 	/**
 	 * Gets the main instance of UniversalUtil
 	 * 
-	 * @return UniversalUtil - the instance
+	 * @return UniversalUtil the instance
 	 */
 	public static UniversalUtil get() {
 		return demandUtil(DEFAULT_ID);
@@ -147,7 +147,7 @@ public final class UniversalUtil {
 	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time + "-" + the thread name <br>
 	 * However, these values may change.
 	 * 
-	 * @return String - the id
+	 * @return String the id
 	 */
 	public String getId() {
 		return id;
@@ -178,10 +178,10 @@ public final class UniversalUtil {
 	 * Specifically, if one must retrieve the yaml value key1.subkey.value as an Integer from the map <code>configValues</code>,
 	 * one should call use <code>getFromMapRecursive(configValues, "key1.subkey.value", Integer.class)</code> <br>
 	 * 
-	 * @param <T> - the type to retrieve. If the object found is not this type, <code>null</code> is returned
-	 * @param map - the map from which to retrieve recursively
-	 * @param key - the key string
-	 * @param type - the type class
+	 * @param <T> the type to retrieve. If the object found is not this type, <code>null</code> is returned
+	 * @param map the map from which to retrieve recursively
+	 * @param key the key string
+	 * @param type the type class
 	 * @return the object if found, null if not
 	 */
 	@SuppressWarnings("unchecked")
