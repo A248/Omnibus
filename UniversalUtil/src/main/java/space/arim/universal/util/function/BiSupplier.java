@@ -23,16 +23,16 @@ package space.arim.universal.util.function;
  * 
  * @author A248
  *
- * @param <M> the first object
- * @param <N> the second object
+ * @param <T> the first object
+ * @param <U> the second object
  */
-public interface BiSupplier<M, N> {
+public interface BiSupplier<T, U> {
 	
 	/**
 	 * Retrieves the value
 	 * 
 	 * @return the supplied result
 	 */
-	public Pair<M, N> get();
+	public Pair<T, U> get();
 	
 }
