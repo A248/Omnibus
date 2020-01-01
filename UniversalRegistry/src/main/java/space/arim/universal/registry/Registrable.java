@@ -18,6 +18,12 @@
  */
 package space.arim.universal.registry;
 
+/**
+ * Service types must implement or extend this interface.
+ * 
+ * @author A248
+ *
+ */
 public interface Registrable {
 	
 	/**
@@ -25,7 +31,9 @@ public interface Registrable {
 	 * 
 	 * @return the name
 	 */
-	String getName();
+	default String getName() {
+		return "unknown";
+	}
 	
 	/**
 	 * The author of this resource for common reference
@@ -41,7 +49,9 @@ public interface Registrable {
 	 * 
 	 * @return the version
 	 */
-	String getVersion();
+	default String getVersion() {
+		return "unknown";
+	}
 	
 	/**
 	 * The priority of this resource when it is registered.<br>
