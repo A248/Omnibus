@@ -117,7 +117,7 @@ public final class UniversalEvents {
 	/**
 	 * UniversalEvents instances are thread-safe; however, you may wish for a thread-specific instance nonetheless.
 	 * 
-	 * @return ThreadLocal - a {@link ThreadLocal}
+	 * @return ThreadLocal a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalEvents> threadLocal() {
 		return THREAD_LOCAL;
@@ -129,8 +129,8 @@ public final class UniversalEvents {
 	 * <br>
 	 * This is the preferred approach to using your own UniversalEvents instances.
 	 * 
-	 * @param clazz - the class
-	 * @return UniversalEvents - the instance. If none exists, a new instance is created.
+	 * @param clazz the class
+	 * @return UniversalEvents the instance. If none exists, a new instance is created.
 	 */
 	public static UniversalEvents getByClass(Class<?> clazz) {
 		return byUtil(UniversalUtil.getByClass(clazz));
@@ -142,8 +142,8 @@ public final class UniversalEvents {
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
 	 * 
 	 * @param clazz - see {@link #getByClass(Class)}
-	 * @param defaultSupplier - from which to return back default values.
-	 * @return UniversalEvents - a registered instance if the id exists, otherwise the default value
+	 * @param defaultSupplier from which to return back default values.
+	 * @return UniversalEvents a registered instance if the id exists, otherwise the default value
 	 */
 	public static UniversalEvents getOrDefault(Class<?> clazz, Supplier<UniversalEvents> defaultSupplier) {
 		UniversalEvents events = INSTANCES.get("class-" + clazz.getName());
@@ -153,7 +153,7 @@ public final class UniversalEvents {
 	/**
 	 * Gets the main instance of UniversalEvents
 	 * 
-	 * @return UniversalEvents - the instance
+	 * @return UniversalEvents the instance
 	 */
 	public static UniversalEvents get() {
 		return byUtil(UniversalUtil.get());
@@ -168,7 +168,7 @@ public final class UniversalEvents {
 	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalUtil} + "-" + the thread name <br>
 	 * However, these values may change.
 	 * 
-	 * @return String - the id
+	 * @return String the id
 	 */
 	public String getId() {
 		return id;
@@ -179,7 +179,7 @@ public final class UniversalEvents {
 	 * <br>
 	 * The returned UniversalUtil instance is the same one used to validate the truthfulness of {@link Event#isAsynchronous()} values.
 	 * 
-	 * @return UniversalUtil - the accompanying utility instance
+	 * @return UniversalUtil the accompanying utility instance
 	 */
 	public UniversalUtil getUtil() {
 		return util;
@@ -188,8 +188,8 @@ public final class UniversalEvents {
 	/**
 	 * Fires an event, invoking all applicable listeners
 	 * 
-	 * @param <E> - event
-	 * @param event - the event itself
+	 * @param <E> event
+	 * @param event the event itself
 	 * @return false if the event is a Cancellable and was cancelled, true otherwise
 	 * 
 	 * @see Cancellable
@@ -233,7 +233,7 @@ public final class UniversalEvents {
 	 * <br>
 	 * In the object registered, methods must have the {@link EventHandler} annotation.
 	 * 
-	 * @param listener - the object to register
+	 * @param listener the object to register
 	 */
 	public void register(Object listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
@@ -258,7 +258,7 @@ public final class UniversalEvents {
 	 * <br>
 	 * Opposite of {@link #register(Object)}
 	 * 
-	 * @param listener - the object to unregister
+	 * @param listener the object to unregister
 	 */
 	public void unregister(Object listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
