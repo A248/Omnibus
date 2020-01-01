@@ -33,6 +33,15 @@ public class RegistrationEvent<T extends Registrable> implements Event {
 	private final Class<T> service;
 	private final T provider;
 	
+	/**
+	 * Constructs a RegistrationEvent for a service and provider <br>
+	 * <br>
+	 * The event will run async if the registration occured async.
+	 * 
+	 * @param async whether the event is running async
+	 * @param service the service type registered
+	 * @param provider the provider of the service
+	 */
 	RegistrationEvent(boolean async, Class<T> service, T provider) {
 		this.async = async;
 		this.service = service;
