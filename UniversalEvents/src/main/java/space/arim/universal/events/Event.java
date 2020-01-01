@@ -18,6 +18,18 @@
  */
 package space.arim.universal.events;
 
+/**
+ * A universal event <br>
+ * <br>
+ * Since this is an interface rather than an abstract class,
+ * you may create custom events in other event managers which double as a universal event,
+ * saving the hassle of making separate event classes for every environment. <br>
+ * <br>
+ * <b>Or, better yet, use UniversalEvents entirely</b>, and deal with such problems again!
+ * 
+ * @author A248
+ *
+ */
 public interface Event {
 	
 	/**
