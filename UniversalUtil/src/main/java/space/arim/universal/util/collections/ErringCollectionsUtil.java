@@ -37,6 +37,7 @@ import space.arim.universal.util.function.erring.ErringUnaryOperator;
  */
 public final class ErringCollectionsUtil {
 
+	// Prevent instantiation
 	private ErringCollectionsUtil() {}
 	
 	/**
