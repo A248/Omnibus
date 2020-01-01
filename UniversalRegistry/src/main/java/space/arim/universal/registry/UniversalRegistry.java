@@ -103,7 +103,7 @@ public final class UniversalRegistry {
 	/**
 	 * UniversalRegistry instances are thread-safe; however, you may wish for a thread-specific instance nonetheless.
 	 * 
-	 * @return ThreadLocal - a {@link ThreadLocal}
+	 * @return ThreadLocal a {@link ThreadLocal}
 	 */
 	public static ThreadLocal<UniversalRegistry> threadLocal() {
 		return THREAD_LOCAL;
@@ -115,8 +115,8 @@ public final class UniversalRegistry {
 	 * <br>
 	 * This is the preferred approach to using your own UniversalRegistry instances.
 	 * 
-	 * @param clazz - the class
-	 * @return UniversalRegistry - the instance. If none exists, a new instance is created.
+	 * @param clazz the class
+	 * @return UniversalRegistry the instance. If none exists, a new instance is created.
 	 */
 	public static UniversalRegistry getByClass(Class<?> clazz) {
 		return byEvents(UniversalEvents.getByClass(clazz));
@@ -127,9 +127,9 @@ public final class UniversalRegistry {
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
 	 * 
-	 * @param clazz - see {@link #getByClass(Class)}
-	 * @param defaultSupplier - from which to return back default values.
-	 * @return UniversalRegistry - a registered instance if the id exists, otherwise the default value
+	 * @param clazz see {@link #getByClass(Class)}
+	 * @param defaultSupplier from which to return back default values.
+	 * @return UniversalRegistry a registered instance if the id exists, otherwise the default value
 	 */
 	public static UniversalRegistry getOrDefault(Class<?> clazz, Supplier<UniversalRegistry> defaultSupplier) {
 		UniversalRegistry registry = INSTANCES.get("class-" + clazz.getName());
@@ -139,7 +139,7 @@ public final class UniversalRegistry {
 	/**
 	 * Gets the main instance of UniversalRegistry
 	 * 
-	 * @return UniversalRegistry - the instance
+	 * @return UniversalRegistry the instance
 	 */
 	public static UniversalRegistry get() {
 		return byEvents(UniversalEvents.get());
@@ -154,7 +154,7 @@ public final class UniversalRegistry {
 	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalEvents} + "-" + the thread name <br>
 	 * However, these values may change.
 	 * 
-	 * @return String - the id
+	 * @return String the id
 	 */
 	public String getId() {
 		return id;
@@ -165,7 +165,7 @@ public final class UniversalRegistry {
 	 * <br>
 	 * The returned UniversalEvents instance is the same one on which RegistrationEvents are fired.
 	 * 
-	 * @return UniversalEvents - the accompanying events instance
+	 * @return UniversalEvents the accompanying events instance
 	 */
 	public UniversalEvents getEvents() {
 		return events;
@@ -174,9 +174,9 @@ public final class UniversalRegistry {
 	/**
 	 * Register a resource as a specific service
 	 * 
-	 * @param <T> - the service
-	 * @param service - the service class, e.g. Economy.class for Vault economy
-	 * @param provider - the resource to register, cannot be null
+	 * @param <T> the service
+	 * @param service the service class, e.g. Economy.class for Vault economy
+	 * @param provider the resource to register, cannot be null
 	 */
 	public synchronized <T extends Registrable> void register(Class<T> service, T provider) {
 		Objects.requireNonNull(provider, "Provider must not be null!");
@@ -195,8 +195,8 @@ public final class UniversalRegistry {
 	 * <br>
 	 * If you need to retrive a registration use {@link #getRegistration(Class)}
 	 * 
-	 * @param <T> - the service
-	 * @param service - the service class
+	 * @param <T> the service
+	 * @param service the service class
 	 * @return true if the service is provided for, false if not
 	 */
 	public <T extends Registrable> boolean isProvidedFor(Class<T> service) {
@@ -212,8 +212,8 @@ public final class UniversalRegistry {
 	 * <br>
 	 * <b>Do not use {@link #isProvidedFor(Class)} and then this method, or you may experience concurrency problems.</b>
 	 * 
-	 * @param <T> - the service
-	 * @param service - the service class
+	 * @param <T> the service
+	 * @param service the service class
 	 * @return the service asked.
 	 */
 	@SuppressWarnings("unchecked")
