@@ -50,8 +50,6 @@ public final class CollectionsUtil {
 	 * @return the mutated array where each element has been replaced with UnaryOperator.wrap(previous element)
 	 */
 	public static <T> T[] wrapAll(T[] original, UnaryOperator<T> wrapper) {
-		Objects.requireNonNull(original, "Input array must not be null!");
-		Objects.requireNonNull(wrapper, "Wrapper must not be null!");
 		for (int n = 0; n < original.length; n++) {
 			original[n] = wrapper.apply(original[n]);
 		}
@@ -67,8 +65,7 @@ public final class CollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 */
 	public static <T> boolean checkForAnyMatches(Collection<T> collection, Function<T, Boolean> checker) {
-		Objects.requireNonNull(checker, "Checker must not be null!");
-		for (T element : Objects.requireNonNull(collection, "Input collection must not be null!")) {
+		for (T element : collection) {
 			if (checker.apply(element)) {
 				return true;
 			}
@@ -85,8 +82,7 @@ public final class CollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 */
 	public static <T> boolean checkForAnyMatches(T[] array, Function<T, Boolean> checker) {
-		Objects.requireNonNull(checker, "Checker must not be null!");
-		for (T element : Objects.requireNonNull(array, "Input array must not be null!")) {
+		for (T element : array) {
 			if (checker.apply(element)) {
 				return true;
 			}
@@ -103,8 +99,7 @@ public final class CollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 */
 	public static <T> boolean checkForAllMatches(Collection<T> collection, Function<T, Boolean> checker) {
-		Objects.requireNonNull(checker, "Checker must not be null!");
-		for (T element : Objects.requireNonNull(collection, "Input collection must not be null!")) {
+		for (T element : collection) {
 			if (!checker.apply(element)) {
 				return false;
 			}
@@ -121,8 +116,7 @@ public final class CollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 */
 	public static <T> boolean checkForAllMatches(T[] array, Function<T, Boolean> checker) {
-		Objects.requireNonNull(checker, "Checker must not be null!");
-		for (T element : Objects.requireNonNull(array, "Input array must not be null!")) {
+		for (T element : array) {
 			if (!checker.apply(element)) {
 				return false;
 			}
