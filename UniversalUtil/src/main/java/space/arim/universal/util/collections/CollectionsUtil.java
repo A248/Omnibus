@@ -38,6 +38,7 @@ import java.util.function.UnaryOperator;
  */
 public final class CollectionsUtil {
 
+	// Prevent instantiation
 	private CollectionsUtil() {}
 	
 	/**
