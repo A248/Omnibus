@@ -139,7 +139,7 @@ public final class CollectionsUtil {
 	 * Converts an array of type T to type R according to the given mapping function.
 	 * 
 	 * @param <T> the type of the original array
-	 * @param <R> the typoe of the target array
+	 * @param <R> the type of the target array
 	 * @param original the original array
 	 * @param mapper the mapping function
 	 * @param doNotPassThisVariable ignore this parameter and do not pass it. It is used for internal mechanics.
