@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import org.yaml.snakeyaml.Yaml;
+
 import com.google.gson.Gson;
 
 /**
@@ -55,10 +57,20 @@ public final class UniversalUtil {
 	private final long mainThread = Thread.currentThread().getId();
 	
 	/**
-	 * Since Gson is thread-safe, this is a common Gson for any class to use.
-	 * 
+	 * Since Gson is thread safe, this is a common Gson for any class to use. <br>
+	 * <br>
+	 * <b>Gson is an optional dependency of UniversalUtil. <br>
+	 * If using this field, please be sure Gson is on the classpath!
 	 */
 	public static final Gson COMMON_GSON = new Gson();
+	
+	/**
+	 * Since SnakeYAML is not thread safe, this is a thread local supplier for SnakeYAML instances. <br>
+	 * <br>
+	 * <b>SnakeYAML is an optional dependency of UniversalUtil. <br>
+	 * If using this field, please be sure SnakeYAML is on the classpath!
+	 */
+	public static final ThreadLocal<Yaml> COMMON_SNAKE_YAML = ThreadLocal.withInitial(() -> new Yaml());
 	
 	/**
 	 * Instances map to prevent duplicate ids
