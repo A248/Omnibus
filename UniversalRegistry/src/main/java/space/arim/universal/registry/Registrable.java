@@ -19,7 +19,16 @@
 package space.arim.universal.registry;
 
 /**
- * Service types must implement or extend this interface.
+ * Service types must implement or extend this interface in order to be registered. <br>
+ * <br>
+ * <b>Contract: </b> <br>
+ * Objects implementing Registrable should be registered according to the broadest Registrable type possible. <br>
+ * Specifically, for two classes <code>Foo</code> and <code>Bar</code>, if class <code>Foo</code> is a Registrable, and <code>Bar extends Foo</code>,
+ * <code>Bar</code> objects should be registered under <code>Foo.class</code> and not type <code>Bar.class</code>, thus: <br>
+ * <code>UniversalRegistry.get().register(Foo.class, myBar); // Good</code> <br>
+ * <code>UniversalRegistry.get().register(Bar.class, myBar); // BAD! </code> <br>
+ * This way, retrieving registrations for <code>Foo.class</code> may return <code>Bar</code> objects as intended, since <code>Bar</code> is a subclass of <code>Foo</code>. <br>
+ * If more specific type retrievals are required, instance checks should be used.
  * 
  * @author A248
  *
