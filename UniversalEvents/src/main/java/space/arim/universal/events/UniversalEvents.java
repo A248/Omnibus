@@ -186,7 +186,8 @@ public final class UniversalEvents {
 	}
 	
 	/**
-	 * Fires an event, invoking all applicable listeners
+	 * Fires an event, invoking all applicable listeners. <br>
+	 * If {@link Event#isAsynchronous()} returns untruthfully, an unchecked exception is thrown.
 	 * 
 	 * @param <E> event
 	 * @param event the event itself
@@ -201,7 +202,7 @@ public final class UniversalEvents {
 		eventListeners.forEach((clazz, listeners) -> {
 			if (clazz.isInstance(event)) {
 				listeners.forEach((listener) -> {
-					if (!(event instanceof Cancellable) || !listener.ignoreCancelled || !((Cancellable) event).isCancelled()) {
+					if (!(event instanceof Cancellable && listener.ignoreCancelled && ((Cancellable) event).isCancelled())) {
 						listener.invoke(event);
 					}
 				});
@@ -231,7 +232,7 @@ public final class UniversalEvents {
 	/**
 	 * Registers an object to listen to events. <br>
 	 * <br>
-	 * In the object registered, methods must have the {@link EventHandler} annotation.
+	 * In the object registered, listening methods must have the {@link EventHandler} annotation.
 	 * 
 	 * @param listener the object to register
 	 */
