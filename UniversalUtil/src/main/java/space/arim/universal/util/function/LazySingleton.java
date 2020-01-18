@@ -21,7 +21,7 @@ package space.arim.universal.util.function;
 import java.util.function.Supplier;
 
 /**
- * A thread-safe singleton supplier.
+ * A thread safe singleton supplier.
  * 
  * @author A248
  *
@@ -47,6 +47,15 @@ public class LazySingleton<T> implements Supplier<T> {
 			}
 		}
 		return value;
+	}
+	
+	/**
+	 * Checks whether the underlying value is initialised.
+	 * 
+	 * @return true if and only if the value is not <code>null</code>
+	 */
+	public boolean has() {
+		return value != null;
 	}
 
 }
