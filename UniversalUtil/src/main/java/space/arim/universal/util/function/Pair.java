@@ -23,8 +23,8 @@ package space.arim.universal.util.function;
  * 
  * @author A248
  *
- * @param <M> - the type of the first value
- * @param <N> - the type of the second value
+ * @param <M> the type of the first value
+ * @param <N> the type of the second value
  */
 public class Pair<M, N> {
 
@@ -36,14 +36,29 @@ public class Pair<M, N> {
 		this.secondValue = secondValue;
 	}
 	
+	/**
+	 * Retrieves the first object in the pair
+	 * 
+	 * @return the first object
+	 */
 	public M firstValue() {
 		return firstValue;
 	}
 	
+	/**
+	 * Retrieves the second object in the pair
+	 * 
+	 * @return the second object
+	 */
 	public N secondValue() {
 		return secondValue;
 	}
 	
+	/**
+	 * Flips the ordering of the pair.
+	 * 
+	 * @return a new Pair with the first and second values swapped.
+	 */
 	public Pair<N, M> swapped() {
 		return new Pair<N, M>(secondValue, firstValue);
 	}
