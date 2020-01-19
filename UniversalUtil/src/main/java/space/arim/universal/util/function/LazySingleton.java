@@ -25,18 +25,30 @@ import java.util.function.Supplier;
  * 
  * @author A248
  *
- * @param <T> the type of the singleton
+ * @param <T> the type of the underlying singleton
  */
 public class LazySingleton<T> implements Supplier<T> {
 	
-	private volatile T value;
+	volatile T value;
 	
 	private final Supplier<T> instantiator;
 	
+	/**
+	 * Creates a new LazySingleton with a given Supplier. <br>
+	 * When the underlying object is created as explained in {@link #get()}, {@link Supplier#get()} is called.
+	 * 
+	 * @param instantiator the Supplier to use
+	 */
 	public LazySingleton(Supplier<T> instantiator) {
 		this.instantiator = instantiator;
 	}
 	
+	/**
+	 * Gets the object. <br>
+	 * If the object has not been instantiated, a new one is created.
+	 * 
+	 * @return the object
+	 */
 	@Override
 	public T get() {
 		if (value == null) {
