@@ -19,9 +19,9 @@
 package space.arim.universal.util.collections;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * For manipulating arrays.
@@ -36,7 +36,7 @@ public final class ArraysUtil {
 	
 	/**
 	 * Removes an element from the array without mutating the original. <br>
-	 * If the element is not present in the array, the original array is returned.
+	 * If the element is not present in the array according to Object#equals, the original array is returned.
 	 * 
 	 * @param <T> the type of the array
 	 * @param original the source array
@@ -63,26 +63,39 @@ public final class ArraysUtil {
 	 * Adds an element to the array without mutating the original.
 	 * 
 	 * @param <T> the type of the array
-	 * @param source the source array
+	 * @param original the source array
 	 * @param element to be added
 	 * @return a new array with the specified element added
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] add(T[] source, T element) {
-		T[] result = (T[]) Array.newInstance(source.getClass().getComponentType(), source.length + 1);
-		result[source.length] = element;
+	public static <T> T[] add(T[] original, T element) {
+		T[] result = (T[]) Array.newInstance(original.getClass().getComponentType(), original.length + 1);
+		result[original.length] = element;
 		return result;
 	}
 	
 	/**
-	 * Converts the array to a Set
+	 * Scans the array to determine if the specified element is present according to Object#equals. <br>
+	 * If not, appends the element according to {@link #add(Object[], Object)}
+	 * 
+	 * @param <T>
+	 * @param original the source array
+	 * @param element the element to add
+	 * @return a new array if the element did not match
+	 */
+	public static <T> T[] addIfNotPresent(T[] original, T element) {
+		return CollectionsUtil.checkForAnyMatches(original, element::equals) ? original : add(original, element);
+	}
+	
+	/**
+	 * Converts the array to an unbacked Collection
 	 * 
 	 * @param <T> the type of the array
-	 * @param source the source array
-	 * @return a set
+	 * @param original the source array
+	 * @return a collection
 	 */
-	public static <T> Set<T> convert(T[] source) {
-		return new HashSet<T>(Arrays.asList(source));
+	public static <T> Collection<T> convert(T[] original) {
+		return new ArrayList<T>(Arrays.asList(original));
 	}
 	
 }
