@@ -31,10 +31,12 @@ import java.util.Set;
  */
 public final class ArraysUtil {
 
+	// Prevent instantiation
 	private ArraysUtil() {}
 	
 	/**
-	 * Removes an element from the array without mutating the original.
+	 * Removes an element from the array without mutating the original. <br>
+	 * If the element is not present in the array, the original array is returned.
 	 * 
 	 * @param <T> the type of the array
 	 * @param original the source array
