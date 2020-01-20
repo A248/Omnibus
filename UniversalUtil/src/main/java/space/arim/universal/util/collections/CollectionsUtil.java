@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
@@ -57,16 +58,16 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Iterates across the collection, if {@link Function#apply(Object)} for any element returns <code>true</code>, the method returns true. Otherwise, returns false.
+	 * Iterates across the collection, if {@link Predicate#test(Object)} for any element returns <code>true</code>, the method returns true. Otherwise, returns false.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param collection the collection across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 */
-	public static <T> boolean checkForAnyMatches(Collection<T> collection, Function<T, Boolean> checker) {
+	public static <T> boolean checkForAnyMatches(Collection<T> collection, Predicate<T> checker) {
 		for (T element : collection) {
-			if (checker.apply(element)) {
+			if (checker.test(element)) {
 				return true;
 			}
 		}
@@ -81,9 +82,9 @@ public final class CollectionsUtil {
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 */
-	public static <T> boolean checkForAnyMatches(T[] array, Function<T, Boolean> checker) {
+	public static <T> boolean checkForAnyMatches(T[] array, Predicate<T> checker) {
 		for (T element : array) {
-			if (checker.apply(element)) {
+			if (checker.test(element)) {
 				return true;
 			}
 		}
@@ -91,16 +92,16 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Iterates across the input array, if {@link Function#apply(Object)} for any element returns <code>false</code>, the method returns false. Otherwise, returns true.
+	 * Iterates across the input array, if {@link Predicate#test(Object)} for any element returns <code>false</code>, the method returns false. Otherwise, returns true.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param collection the collection across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 */
-	public static <T> boolean checkForAllMatches(Collection<T> collection, Function<T, Boolean> checker) {
+	public static <T> boolean checkForAllMatches(Collection<T> collection, Predicate<T> checker) {
 		for (T element : collection) {
-			if (!checker.apply(element)) {
+			if (!checker.test(element)) {
 				return false;
 			}
 		}
@@ -115,9 +116,9 @@ public final class CollectionsUtil {
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 */
-	public static <T> boolean checkForAllMatches(T[] array, Function<T, Boolean> checker) {
+	public static <T> boolean checkForAllMatches(T[] array, Predicate<T> checker) {
 		for (T element : array) {
-			if (!checker.apply(element)) {
+			if (!checker.test(element)) {
 				return false;
 			}
 		}
