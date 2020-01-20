@@ -41,8 +41,12 @@ public class WrappedConnection implements Connection {
 	
 	private final Connection connection;
 	
-	WrappedConnection(Connection connection) {
+	protected WrappedConnection(Connection connection) {
 		this.connection = connection;
+	}
+	
+	protected final Connection getUnderlyingConnection() {
+		return connection;
 	}
 	
 	@Override
