@@ -43,6 +43,31 @@ public final class CollectionsUtil {
 	private CollectionsUtil() {}
 	
 	/**
+	 * Recursively retrieves a specified type of object from a Map of potentially nested maps. <br>
+	 * Periods delineate a nested map.
+	 * <br>
+	 * This method is particularly useful for configuration loaded thorugh SnakeYAML. <br>
+	 * Specifically, if one must retrieve the yaml value key1.subkey.value as an Integer from the map <code>configValues</code>,
+	 * one should call use <code>getFromMapRecursive(configValues, "key1.subkey.value", Integer.class)</code> <br>
+	 * 
+	 * @param <T> the type to retrieve. If the object found is not this type, <code>null</code> is returned
+	 * @param map the map from which to retrieve recursively
+	 * @param key the key string
+	 * @param type the type class
+	 * @return the object if found, null if not
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getFromMapRecursive(Map<String, Object> map, String key, Class<T> type) {
+		if (!key.contains(".")) {
+			Object obj = map.get(key);
+			return type.isInstance(obj) ? (T) obj : null;
+		} else if (key.startsWith(".") || key.endsWith(".")) {
+			throw new IllegalArgumentException("Cannot retrieve value for invalid key " + key);
+		}
+		return getFromMapRecursive((Map<String, Object>) map.get(key.substring(0, key.indexOf("."))), key.substring(key.indexOf(".") + 1), type);
+	}
+	
+	/**
 	 * Mutates the input array, setting each element to {@link UnaryOperator#apply(Object)}
 	 * 
 	 * @param <T> the type of the array

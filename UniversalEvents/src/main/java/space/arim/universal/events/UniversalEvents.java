@@ -18,7 +18,6 @@
  */
 package space.arim.universal.events;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,17 +30,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import space.arim.universal.util.UniversalUtil;
+import space.arim.universal.util.Util;
 
 /**
  * <b>UniversalEvents</b>: Main class <br>
+ * 
  * <br>
- * Used for firing events and listening to them. <br>
- * <br>
- * The most common usage of this class is to fire and listen to events. <br>
- * To fire events: {@link #fireEvent(Event)} <br>
- * To listen to events: {@link EventHandler} <br>
- * <br>
- * To retrieve an instance: <br>
+ * Used for retrieving {@link Events} instances: <br>
  * * {@link #get()} <br>
  * * {@link #getByClass(Class)} <br>
  * * {@link #threadLocal()} <br>
@@ -50,7 +45,7 @@ import space.arim.universal.util.UniversalUtil;
  * @author A248
  *
  */
-public final class UniversalEvents {
+public final class UniversalEvents implements Events {
 	
 	/**
 	 * The id of the instance
@@ -65,10 +60,10 @@ public final class UniversalEvents {
 	private final ConcurrentHashMap<Class<?>, List<ListenerMethod>> eventListeners = new ConcurrentHashMap<Class<?>, List<ListenerMethod>>();
 	
 	/**
-	 * The corresponding {@link UniversalUtil} instance
+	 * The corresponding {@link Util} instance
 	 * 
 	 */
-	private final UniversalUtil util;
+	private final Util util;
 	
 	/**
 	 * Used to sort all ListenerMethod wrappers by priority <br>
@@ -95,106 +90,78 @@ public final class UniversalEvents {
 	 * The thread local
 	 * 
 	 */
-	private static final ThreadLocal<UniversalEvents> THREAD_LOCAL = ThreadLocal.withInitial(() -> byUtil(UniversalUtil.threadLocal().get()));
+	private static final ThreadLocal<Events> THREAD_LOCAL = ThreadLocal.withInitial(() -> byUtil(UniversalUtil.threadLocal().get()));
 	
 	// Control instantiation
-	private UniversalEvents(String id, UniversalUtil util) {
+	private UniversalEvents(String id, Util util) {
 		this.id = id;
 		this.util = util;
 	}
 	
-	private static synchronized UniversalEvents demandEvents(String id, UniversalUtil util) {
-		if (!INSTANCES.containsKey(id)) {
-			INSTANCES.put(id, new UniversalEvents(id, util));
-		}
-		return INSTANCES.get(id);
+	static Events demandEvents(String id, Util util) {
+		return INSTANCES.computeIfAbsent(id, (instanceId) -> new UniversalEvents(id, util));
 	}
 	
-	static UniversalEvents byUtil(UniversalUtil util) {
+	static Events byUtil(Util util) {
 		return demandEvents(util.getId(), util);
 	}
 	
 	/**
-	 * UniversalEvents instances are thread-safe; however, you may wish for a thread-specific instance nonetheless.
+	 * Events instances are thread safe; however, you may wish for a thread specific instance nonetheless.
 	 * 
 	 * @return ThreadLocal a {@link ThreadLocal}
 	 */
-	public static ThreadLocal<UniversalEvents> threadLocal() {
+	public static ThreadLocal<Events> threadLocal() {
 		return THREAD_LOCAL;
 	}
 	
 	/**
-	 * Retrieves a UniversalEvents instance by class.
+	 * Retrieves an Events instance by class.
 	 * If no instance for the classname exists, a new one is created.<br>
 	 * <br>
-	 * This is the preferred approach to using your own UniversalEvents instances.
+	 * This is the preferred approach to using your own Events instances.
 	 * 
 	 * @param clazz the class
-	 * @return UniversalEvents the instance. If none exists, a new instance is created.
+	 * @return Events the instance. If none exists, a new instance is created.
 	 */
-	public static UniversalEvents getByClass(Class<?> clazz) {
+	public static Events getByClass(Class<?> clazz) {
 		return byUtil(UniversalUtil.getByClass(clazz));
 	}
 	
 	/**
-	 * Gets a UniversalEvents by class with a default value, issued by the Supplier, if it does not exist. <br>
+	 * Gets an Events instance by class with a default value, issued by the Supplier, if it does not exist. <br>
 	 * <br>
 	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
 	 * 
 	 * @param clazz see {@link #getByClass(Class)}
 	 * @param defaultSupplier from which to return back default values.
-	 * @return UniversalEvents a registered instance if the id exists, otherwise the default value
+	 * @return Events a registered instance if the id exists, otherwise the default value
 	 */
-	public static UniversalEvents getOrDefault(Class<?> clazz, Supplier<UniversalEvents> defaultSupplier) {
-		UniversalEvents events = INSTANCES.get("class-" + clazz.getName());
+	public static Events getOrDefault(Class<?> clazz, Supplier<Events> defaultSupplier) {
+		Events events = INSTANCES.get("class-" + clazz.getName());
 		return events != null ? events : defaultSupplier.get();
 	}
 	
 	/**
-	 * Gets the main instance of UniversalEvents
+	 * Gets the main Events instance
 	 * 
-	 * @return UniversalEvents the instance
+	 * @return Events the instance
 	 */
-	public static UniversalEvents get() {
+	public static Events get() {
 		return byUtil(UniversalUtil.get());
 	}
 	
-	/**
-	 * Returns the id of this UniversalEvents instance. <br>
-	 * <br>
-	 * The current implementation: <br>
-	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalUtil} + "-" + the thread name <br>
-	 * However, these values may change.
-	 * 
-	 * @return String the id
-	 */
+	@Override
 	public String getId() {
 		return id;
 	}
 	
-	/**
-	 * Gets the {@link UniversalUtil} instance corresponding to this event manager. <br>
-	 * <br>
-	 * The returned UniversalUtil instance is the same one used to validate the truthfulness of {@link Event#isAsynchronous()} values.
-	 * 
-	 * @return UniversalUtil the accompanying utility instance
-	 */
-	public UniversalUtil getUtil() {
+	@Override
+	public Util getUtil() {
 		return util;
 	}
 	
-	/**
-	 * Fires an event, invoking all applicable listeners. <br>
-	 * If {@link Event#isAsynchronous()} returns untruthfully, an unchecked exception is thrown.
-	 * 
-	 * @param <E> event
-	 * @param event the event itself
-	 * @return false if the event is a Cancellable and was cancelled, true otherwise
-	 * 
-	 * @see Cancellable
-	 */
+	@Override
 	public <E extends Event> boolean fireEvent(E event) {
 		if (event.isAsynchronous() != util.isAsynchronous()) {
 			throw new IllegalStateException("Event#isAsynchronous returned untruthfully!");
@@ -229,13 +196,7 @@ public final class UniversalEvents {
 		return methodMap;
 	}
 	
-	/**
-	 * Registers an object to listen to events. <br>
-	 * <br>
-	 * In the object registered, listening methods must have the {@link EventHandler} annotation.
-	 * 
-	 * @param listener the object to register
-	 */
+	@Override
 	public void register(Object listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
 		if (methodMap.isEmpty()) {
@@ -254,13 +215,7 @@ public final class UniversalEvents {
 		}
 	}
 	
-	/**
-	 * Unregister an object from any listening. <br>
-	 * <br>
-	 * Opposite of {@link #register(Object)}
-	 * 
-	 * @param listener the object to unregister
-	 */
+	@Override
 	public void unregister(Object listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
 		if (methodMap.isEmpty()) {
@@ -273,34 +228,6 @@ public final class UniversalEvents {
 				}
 			});
 		}
-	}
-	
-}
-
-/**
- * Internal wrapper class. Implementation could change, so this is not exposed.
- * 
- * @author A248
- *
- */
-class ListenerMethod {
-
-	private final Object listener;
-	private final Method method;
-	final byte priority;
-	final boolean ignoreCancelled;
-	
-	ListenerMethod(Object listener, Method method, byte priority, boolean ignoreCancelled) {
-		this.listener = listener;
-		this.method = method;
-		this.priority = priority;
-		this.ignoreCancelled = ignoreCancelled;
-	}
-	
-	void invoke(Event evt) {
-		try {
-			method.invoke(listener, evt);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {}
 	}
 	
 }

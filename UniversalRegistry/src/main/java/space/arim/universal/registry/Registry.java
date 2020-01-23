@@ -1,0 +1,108 @@
+/* 
+ * UniversalRegistry, a common registry for plugin resources
+ * Copyright © 2020 Anand Beh <https://www.arim.space
+ * 
+ * UniversalRegistry is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * UniversalRegistry is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with UniversalRegistry. If not, see <https://www.gnu.org/licenses/>
+ * and navigate to version 3 of the GNU General Public License.
+ */
+package space.arim.universal.registry;
+
+import java.util.Map;
+
+import space.arim.universal.events.Events;
+
+/**
+ * A framework for registering all services, as well as checking/listing registrations. <br>
+ * <b>For an implementation, use {@link UniversalRegistry}</b> <br>
+ * <br>
+ * <b>Usage</b>: to register resources and retrieve registrations. <br>
+ * To register resources: {@link #register(Class, Registrable)} <br>
+ * To retrieve registrations: {@link #getRegistration(Class)} <br>
+ * 
+ * @author A248
+ *
+ */
+public interface Registry {
+
+	/**
+	 * Returns the id of this Registry instance. <br>
+	 * <br>
+	 * The current implementation: <br>
+	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
+	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link Events} + "-" + the thread name <br>
+	 * However, these values may change.
+	 * 
+	 * @return String the id
+	 */
+	String getId();
+	
+	/**
+	 * Gets the {@link Events} instance corresponding to this registry. <br>
+	 * <br>
+	 * The returned Events instance is the same one on which RegistrationEvents are fired.
+	 * 
+	 * @return Events the accompanying events instance
+	 */
+	Events getEvents();
+	
+	/**
+	 * Register a resource as a specific service
+	 * 
+	 * @param <T> the service
+	 * @param service the service class, e.g. Economy.class for Vault economy
+	 * @param provider the resource to register, cannot be null
+	 */
+	<T extends Registrable> void register(Class<T> service, T provider);
+	
+	/**
+	 * Checks whether a service has any accompanying provider <br>
+	 * <br>
+	 * This method should only be called in the rare case where
+	 * you need to check whether a service is registered but you do not
+	 * need to retrieve the registration itself. <br>
+	 * <br>
+	 * If you need to retrive a registration use {@link #getRegistration(Class)}
+	 * 
+	 * @param <T> the service
+	 * @param service the service class
+	 * @return true if the service is provided for, false if not
+	 */
+	<T extends Registrable> boolean isProvidedFor(Class<T> service);
+	
+	/**
+	 * Retrieves the highest-priority registration for a service. <br>
+	 * <br>
+	 * The proper way to retrieve registrations is to call this method once,
+	 * check if the returned value is non-null. If not null, proceed normally.
+	 * If null, there is no registration for the service. (You could then print an explanatory error message)<br>
+	 * <br>
+	 * <b>Do not use {@link #isProvidedFor(Class)} and then this method, or you may experience concurrency problems.</b>
+	 * 
+	 * @param <T> the service
+	 * @param service the service class
+	 * @return the service asked.
+	 */
+	<T extends Registrable> T getRegistration(Class<T> service);
+	
+	/**
+	 * Retrieves a the map of service types to registrations backed by the internal registry. <br>
+	 * <br>
+	 * <b>Changes to the internal registry are reflected in the map</b>
+	 * 
+	 * @return a map of service classes to registrable lists
+	 */
+	Map<Class<?>, Registrable> getRegistrations();
+	
+}
