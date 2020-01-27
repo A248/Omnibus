@@ -122,7 +122,7 @@ public final class UniversalEvents implements Events {
 	 * This is the preferred approach to using your own Events instances.
 	 * 
 	 * @param clazz the class
-	 * @return Events the instance. If none exists, a new instance is created.
+	 * @return the instance. If none exists, a new instance is created.
 	 */
 	public static Events getByClass(Class<?> clazz) {
 		return byUtil(UniversalUtil.getByClass(clazz));
@@ -135,7 +135,7 @@ public final class UniversalEvents implements Events {
 	 * 
 	 * @param clazz see {@link #getByClass(Class)}
 	 * @param defaultSupplier from which to return back default values.
-	 * @return Events a registered instance if the id exists, otherwise the default value
+	 * @return the instance if it exists, otherwise the default value
 	 */
 	public static Events getOrDefault(Class<?> clazz, Supplier<Events> defaultSupplier) {
 		Events events = INSTANCES.get("class-" + clazz.getName());
@@ -145,7 +145,7 @@ public final class UniversalEvents implements Events {
 	/**
 	 * Gets the main Events instance
 	 * 
-	 * @return Events the instance
+	 * @return the instance
 	 */
 	public static Events get() {
 		return byUtil(UniversalUtil.get());

@@ -97,7 +97,7 @@ public final class UniversalUtil implements Util {
 	 * This is the preferred approach to using your own UniversalUtil instances.
 	 * 
 	 * @param clazz the class
-	 * @return Util the instance. If none exists, a new instance is created.
+	 * @return the instance. If none exists, a new instance is created.
 	 */
 	public static Util getByClass(Class<?> clazz) {
 		return demandUtil("class-" + clazz.getName());
@@ -110,7 +110,7 @@ public final class UniversalUtil implements Util {
 	 * 
 	 * @param clazz see {@link #getByClass(Class)}
 	 * @param defaultSupplier from which to return back default values.
-	 * @return Util a registered instance if the id exists, otherwise the default value
+	 * @return the instance if it exists, otherwise the default value
 	 */
 	public static Util getOrDefault(Class<?> clazz, Supplier<Util> defaultSupplier) {
 		UniversalUtil util = INSTANCES.get("class-" + clazz.getName());
@@ -120,7 +120,7 @@ public final class UniversalUtil implements Util {
 	/**
 	 * Gets the main Util instance
 	 * 
-	 * @return Util the instance
+	 * @return the instance
 	 */
 	public static Util get() {
 		return demandUtil(DEFAULT_ID);

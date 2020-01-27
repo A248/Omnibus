@@ -108,7 +108,7 @@ public final class UniversalRegistry implements Registry {
 	 * This is the preferred approach to using your own UniversalRegistry instances.
 	 * 
 	 * @param clazz the class
-	 * @return Registry the instance. If none exists, a new instance is created.
+	 * @return the instance. If none exists, a new instance is created.
 	 */
 	public static Registry getByClass(Class<?> clazz) {
 		return byEvents(UniversalEvents.getByClass(clazz));
@@ -121,7 +121,7 @@ public final class UniversalRegistry implements Registry {
 	 * 
 	 * @param clazz see {@link #getByClass(Class)}
 	 * @param defaultSupplier from which to return back default values.
-	 * @return Registry a registered instance if the id exists, otherwise the default value
+	 * @return the instance if it exists, otherwise the default value
 	 */
 	public static Registry getOrDefault(Class<?> clazz, Supplier<Registry> defaultSupplier) {
 		Registry registry = INSTANCES.get("class-" + clazz.getName());
@@ -131,7 +131,7 @@ public final class UniversalRegistry implements Registry {
 	/**
 	 * Gets the main instance of UniversalRegistry
 	 * 
-	 * @return UniversalRegistry the instance
+	 * @return the instance
 	 */
 	public static Registry get() {
 		return byEvents(UniversalEvents.get());
@@ -148,12 +148,20 @@ public final class UniversalRegistry implements Registry {
 	}
 	
 	@Override
-	public synchronized <T extends Registrable> void register(Class<T> service, T provider) {
-		Objects.requireNonNull(provider, "Provider must not be null!");
-		if (!registry.containsKey(service) || provider.getPriority() > registry.get(service).getPriority()) {
-			registry.put(service, provider);
-			getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
-		}
+	public <T extends Registrable> boolean register(Class<T> service, T provider) {
+		return Objects.requireNonNull(provider, "Provider must not be null!") == registry.compute(service, (serviceClass, registration) -> {
+			if (registration == null || provider.getPriority() > registration.getPriority()) {
+				getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
+				return provider;
+			}
+			return registration;
+		});
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends Registrable> T computeIfAbsent(Class<T> service, Supplier<T> computer) {
+		return (T) registry.computeIfAbsent(service, (serviceClass) -> computer.get());
 	}
 	
 	@Override

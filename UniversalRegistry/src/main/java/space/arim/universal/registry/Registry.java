@@ -19,6 +19,7 @@
 package space.arim.universal.registry;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import space.arim.universal.events.Events;
 
@@ -63,8 +64,23 @@ public interface Registry {
 	 * @param <T> the service
 	 * @param service the service class, e.g. Economy.class for Vault economy
 	 * @param provider the resource to register, cannot be null
+	 * @return true if the resource was registered, false if the existing registration has a higher priority
 	 */
-	<T extends Registrable> void register(Class<T> service, T provider);
+	<T extends Registrable> boolean register(Class<T> service, T provider);
+	
+	/**
+	 * Registers a resource conditionally: <br>
+	 * * If there is a registration for the service, it is returned. <br>
+	 * * Otherwise, the resource provided by the Supplier is registered and returned. <br>
+	 * <br>
+	 * Functions similarly to {@link Map#computeIfAbsent(Object, java.util.function.Function)}.
+	 * 
+	 * @param <T> the service
+	 * @param service the service class
+	 * @param computer if there is no registration for the service, the resource is demanded from this Supplier
+	 * @return the registration for the service once the operation is complete
+	 */
+	<T extends Registrable> T computeIfAbsent(Class<T> service, Supplier<T> computer);
 	
 	/**
 	 * Checks whether a service has any accompanying provider <br>
