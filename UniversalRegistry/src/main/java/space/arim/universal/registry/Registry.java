@@ -37,19 +37,6 @@ import space.arim.universal.events.Events;
 public interface Registry {
 
 	/**
-	 * Returns the id of this Registry instance. <br>
-	 * <br>
-	 * The current implementation: <br>
-	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link Events} + "-" + the thread name <br>
-	 * However, these values may change.
-	 * 
-	 * @return String the id
-	 */
-	String getId();
-	
-	/**
 	 * Gets the {@link Events} instance corresponding to this registry. <br>
 	 * <br>
 	 * The returned Events instance is the same one on which RegistrationEvents are fired.

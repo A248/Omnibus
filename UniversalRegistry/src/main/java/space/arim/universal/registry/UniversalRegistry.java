@@ -89,7 +89,7 @@ public final class UniversalRegistry implements Registry {
 	}
 	
 	static Registry byEvents(Events events) {
-		return demandRegistry(events.getId(), events);
+		return demandRegistry(((UniversalEvents) events).getId(), events);
 	}
 	
 	/**
@@ -137,7 +137,18 @@ public final class UniversalRegistry implements Registry {
 		return byEvents(UniversalEvents.get());
 	}
 	
-	@Override
+	/**
+	 * Returns the id of this Registry instance. <br>
+	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
+	 * <br>
+	 * The current implementation: <br>
+	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
+	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link Events} + "-" + the thread name <br>
+	 * However, these values may change.
+	 * 
+	 * @return String the id
+	 */
 	public String getId() {
 		return id;
 	}

@@ -103,7 +103,7 @@ public final class UniversalEvents implements Events {
 	}
 	
 	static Events byUtil(Util util) {
-		return demandEvents(util.getId(), util);
+		return demandEvents(((UniversalUtil) util).getId(), util);
 	}
 	
 	/**
@@ -151,7 +151,18 @@ public final class UniversalEvents implements Events {
 		return byUtil(UniversalUtil.get());
 	}
 	
-	@Override
+	/**
+	 * Returns the id of this UniversalEvents instance. <br>
+	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
+	 * <br>
+	 * The current implementation: <br>
+	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
+	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalUtil} + "-" + the thread name <br>
+	 * However, these values may change.
+	 * 
+	 * @return String the id
+	 */
 	public String getId() {
 		return id;
 	}

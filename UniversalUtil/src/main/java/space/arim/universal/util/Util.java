@@ -30,19 +30,6 @@ package space.arim.universal.util;
 public interface Util {
 
 	/**
-	 * Returns the id of this Util instance. <br>
-	 * <br>
-	 * The current implementation: <br>
-	 * * For the main instance retrieved with {@link UniversalUtil#get()}, it is {@link UniversalUtil#DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link UniversalUtil#getByClass(Class)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link UniversalUtil#threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time + "-" + the thread name <br>
-	 * However, these values may change.
-	 * 
-	 * @return String the id
-	 */
-	String getId();
-	
-	/**
 	 * Returns whether program is running asynchronously. <br>
 	 * <br>
 	 * Note that the "main thread" is taken to mean the thread on which the instance is initialised. <br>

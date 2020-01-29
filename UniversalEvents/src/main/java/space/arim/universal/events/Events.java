@@ -18,7 +18,6 @@
  */
 package space.arim.universal.events;
 
-import space.arim.universal.util.UniversalUtil;
 import space.arim.universal.util.Util;
 
 /**
@@ -34,19 +33,6 @@ import space.arim.universal.util.Util;
  */
 public interface Events {
 
-	/**
-	 * Returns the id of this UniversalEvents instance. <br>
-	 * <br>
-	 * The current implementation: <br>
-	 * * For the main instance, it is {@link #DEFAULT_ID} <br>
-	 * * For classname instances retrieved with {@link #getByClass(Class)}, it is "class-" followed by the classname<br>
-	 * * For thread-local instances retrieved with {@link #threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time of the corresponding {@link UniversalUtil} + "-" + the thread name <br>
-	 * However, these values may change.
-	 * 
-	 * @return String the id
-	 */
-	String getId();
-	
 	/**
 	 * Gets the {@link Util} instance corresponding to this event manager. <br>
 	 * <br>

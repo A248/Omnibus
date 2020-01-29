@@ -126,7 +126,18 @@ public final class UniversalUtil implements Util {
 		return demandUtil(DEFAULT_ID);
 	}
 	
-	@Override
+	/**
+	 * Returns the id of this Util instance. <br>
+	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
+	 * <br>
+	 * The current implementation: <br>
+	 * * For the main instance retrieved with {@link UniversalUtil#get()}, it is {@link UniversalUtil#DEFAULT_ID} <br>
+	 * * For classname instances retrieved with {@link UniversalUtil#getByClass(Class)}, it is "class-" followed by the classname<br>
+	 * * For thread-local instances retrieved with {@link UniversalUtil#threadLocal()}, it is "thread-" + {@link System#currentTimeMillis()} at instantiation time + "-" + the thread name <br>
+	 * However, these values may 
+	 * 
+	 * @return String the id
+	 */
 	public String getId() {
 		return id;
 	}
