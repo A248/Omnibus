@@ -46,14 +46,31 @@ public interface Registry {
 	Events getEvents();
 	
 	/**
-	 * Register a resource as a specific service
+	 * Attempts to register a resource as a specific service. <br>
+	 * * If there is a registration for the service which has a higher priority, nothing happens. <br>
+	 * * Otherwise, the resource is registered for the service.
 	 * 
 	 * @param <T> the service
 	 * @param service the service class, e.g. Economy.class for Vault economy
 	 * @param provider the resource to register, cannot be null
-	 * @return true if the resource was registered, false if the existing registration has a higher priority
+	 * @return the resulting registration (after a possible update)
 	 */
-	<T extends Registrable> boolean register(Class<T> service, T provider);
+	<T extends Registrable> T register(Class<T> service, T provider);
+	
+	/**
+	 * Attempts to register a resource as a specific service. <br>
+	 * Differs from {@link #register(Class, Registrable)} in that the other method <i>always</i> requires a preconstructed object.
+	 * Since the object may be discarded, it is a potential misuse of resources to create and object only to discard it.
+	 * Thus, this method is provided as a solution. This way, creating the resource is only necessary if the existing registration
+	 * has a lower priority than the priority parameter.
+	 * 
+	 * @param <T> the service
+	 * @param service the service class, e.g. Economy.class for Vault economy
+	 * @param the priority of the resource which will be registered
+	 * @param computer the {@link Supplier} which, if queried for its object, will provide the resource to register
+	 * @return the resulting registration (after a possible update)
+	 */
+	<T extends Registrable> T compute(Class<T> service, byte priority, Supplier<T> computer);
 	
 	/**
 	 * Registers a resource conditionally: <br>

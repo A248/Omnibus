@@ -20,7 +20,6 @@ package space.arim.universal.registry;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -159,9 +158,23 @@ public final class UniversalRegistry implements Registry {
 	}
 	
 	@Override
-	public <T extends Registrable> boolean register(Class<T> service, T provider) {
-		return Objects.requireNonNull(provider, "Provider must not be null!") == registry.compute(service, (serviceClass, registration) -> {
+	@SuppressWarnings("unchecked")
+	public <T extends Registrable> T register(Class<T> service, T provider) {
+		return (T) registry.compute(service, (serviceClass, registration) -> {
 			if (registration == null || provider.getPriority() > registration.getPriority()) {
+				getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
+				return provider;
+			}
+			return registration;
+		});
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends Registrable> T compute(Class<T> service, byte priority, Supplier<T> computer) {
+		return (T) registry.compute(service, (serviceClass, registration) -> {
+			if (registration == null || priority > registration.getPriority()) {
+				T provider = computer.get();
 				getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
 				return provider;
 			}
