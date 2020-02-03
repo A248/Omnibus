@@ -20,15 +20,9 @@ package space.arim.universal.plugin;
 
 import org.spongepowered.api.plugin.Plugin;
 
-@Plugin(id = "universalregistryplugin", name = "UniversalRegistryPlugin")
+@Plugin(id = "${plugin.spongeid}", name = "${plugin.name}", version = "${plugin.version}", authors = {"${plugin.author}"}, description = "${plugin.description}", url = "${plugin.url}")
 public class UniversalPluginSponge {
 	
-	/*
-	 * I am so glad there is no implementation required here.
-	 * The Sponge API is just absolutely horrible.
-	 * 
-	 * So much of its access is disgustingly static. There are no server instances for use.
-	 * Worse, the extreme over-use of annotations for basic functionality is just appalling.
-	 */
+	
 	
 }

@@ -1,5 +1,6 @@
-name: UniversalRegistryPlugin
-main: ${project.groupId}.universal.plugin.UniversalPluginBukkit
-version: ${project.version}
-author: A248
-description: ${project.description}
+name: ${plugin.name}
+main: space.arim.universal.plugin.UniversalPluginBukkit
+version: ${plugin.version}
+author: ${plugin.author}
+website: ${plugin.url}
+description: ${plugin.description}
