@@ -34,6 +34,7 @@ public interface ErringBiPredicate<T, U, X extends Throwable> {
 	 * 
 	 * @param obj1 the first object
 	 * @param obj2 the second object
+	 * @return true or false
 	 * @throws X possibly, as parameterised
 	 */
 	boolean test(T obj1, U obj2) throws X;

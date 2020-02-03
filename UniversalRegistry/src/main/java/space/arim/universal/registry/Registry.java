@@ -66,7 +66,7 @@ public interface Registry {
 	 * 
 	 * @param <T> the service
 	 * @param service the service class, e.g. Economy.class for Vault economy
-	 * @param the priority of the resource which will be registered
+	 * @param priority the priority of the resource which will be registered
 	 * @param computer the {@link Supplier} which, if queried for its object, will provide the resource to register
 	 * @return the resulting registration (after a possible update)
 	 */

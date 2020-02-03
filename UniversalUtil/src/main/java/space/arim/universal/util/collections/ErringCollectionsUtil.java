@@ -20,10 +20,9 @@ package space.arim.universal.util.collections;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import space.arim.universal.util.function.erring.ErringConsumer;
-import space.arim.universal.util.function.erring.ErringFunction;
 import space.arim.universal.util.function.erring.ErringPredicate;
 import space.arim.universal.util.function.erring.ErringUnaryOperator;
 
@@ -44,6 +43,7 @@ public final class ErringCollectionsUtil {
 	 * Mutates the input array, setting each element to {@link ErringUnaryOperator#apply(Object)}
 	 * 
 	 * @param <T> the type of the array
+	 * @param <X> the type of the exception
 	 * @param original the input array
 	 * @param wrapper the {@link ErringUnaryOperator} to wrap each element
 	 * @return the mutated array where each element has been replaced with UnaryOperator.wrap(previous element)
@@ -57,18 +57,18 @@ public final class ErringCollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link CollectionsUtil#checkForAnyMatches(Collection, Function)} but uses an {@link ErringFunction} instead.
+	 * Same as {@link CollectionsUtil#checkForAnyMatches(Collection, Predicate)} but uses an {@link ErringPredicate} instead.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param <X> the type of the exception
 	 * @param collection the collection across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
-	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAnyMatches(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAnyMatches(Collection<T> collection, ErringPredicate<T, X> checker) throws X {
 		for (T element : collection) {
-			if (checker.apply(element)) {
+			if (checker.test(element)) {
 				return true;
 			}
 		}
@@ -76,18 +76,18 @@ public final class ErringCollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link #checkForAnyMatches(Collection, ErringFunction)} but accepts an array instead.
+	 * Same as {@link #checkForAnyMatches(Collection, ErringPredicate)} but accepts an array instead.
 	 * 
 	 * @param <T> the type of the array
 	 * @param <X> the type of the exception
 	 * @param array the array across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
-	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAnyMatches(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAnyMatches(T[] array, ErringPredicate<T, X> checker) throws X {
 		for (T element : array) {
-			if (checker.apply(element)) {
+			if (checker.test(element)) {
 				return true;
 			}
 		}
@@ -95,18 +95,18 @@ public final class ErringCollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link CollectionsUtil#checkForAllMatches(Collection, Function)} but uses an {@link ErringFunction} instead.
+	 * Same as {@link CollectionsUtil#checkForAllMatches(Collection, Predicate)} but uses an {@link ErringPredicate} instead.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param <X> the type of the exception
 	 * @param collection the collection across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
-	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAllMatches(Collection<T> collection, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAllMatches(Collection<T> collection, ErringPredicate<T, X> checker) throws X {
 		for (T element : collection) {
-			if (!checker.apply(element)) {
+			if (!checker.test(element)) {
 				return false;
 			}
 		}
@@ -114,18 +114,18 @@ public final class ErringCollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link #checkForAllMatches(Collection, Function)} but accepts an array instead.
+	 * Same as {@link #checkForAllMatches(Collection, ErringPredicate)} but accepts an array instead.
 	 * 
 	 * @param <T> the type of the array
 	 * @param <X> the type of the exception
 	 * @param array the array across which to iterate
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
-	 * @throws X according to {@link ErringFunction#apply(Object)}
+	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAllMatches(T[] array, ErringFunction<T, Boolean, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAllMatches(T[] array, ErringPredicate<T, X> checker) throws X {
 		for (T element : array) {
-			if (!checker.apply(element)) {
+			if (!checker.test(element)) {
 				return false;
 			}
 		}
@@ -148,7 +148,7 @@ public final class ErringCollectionsUtil {
 	}
 	
 	/**
-	 * An erring version of {@link Collection#removeIf(java.util.function.Predicate)}
+	 * An erring version of {@link Collection#removeIf(Predicate)}
 	 * 
 	 * @param <T> the type of the collection
 	 * @param <X> the type of the exception

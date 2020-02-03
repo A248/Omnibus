@@ -32,10 +32,10 @@ public interface Util {
 	/**
 	 * Returns whether program is running asynchronously. <br>
 	 * <br>
-	 * Note that the "main thread" is taken to mean the thread on which the instance is initialised. <br>
-	 * It is thus recommended to fetch your own instance with {@link #getByClass(Class)} if you plan on using this method. <br>
-	 * E.g.: <br>
-	 * <code>UniversalUtil myUtil = UniversalUtil.getByClassname(MyClass.class.getName());</code> <br>
+	 * Note that the "main thread" is often taken to mean the thread on which the instance is initialised. <br>
+	 * It is thus recommended to fetch your own instance (e.g., through {@link UniversalUtil#getByClass(Class)}) if you plan on using this method. <br>
+	 * <br>
+	 * <code>UniversalUtil myUtil = UniversalUtil.getByClass(MyClass.class);</code> <br>
 	 * <b>By making your own instance on the main thread, you guarantee the validity of this method return</b> <br>
 	 * <br>
 	 * Alternatively, be sure to warn API users against bad calls.

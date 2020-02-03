@@ -78,7 +78,7 @@ public final class ArraysUtil {
 	 * Scans the array to determine if the specified element is present according to Object#equals. <br>
 	 * If not, appends the element according to {@link #add(Object[], Object)}
 	 * 
-	 * @param <T>
+	 * @param <T> the type of the array
 	 * @param original the source array
 	 * @param element the element to add
 	 * @return a new array if the element did not match

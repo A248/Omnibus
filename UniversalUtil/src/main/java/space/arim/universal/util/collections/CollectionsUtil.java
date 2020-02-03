@@ -100,7 +100,7 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link #checkForAnyMatches(Collection, Function)} but accepts an array instead.
+	 * Same as {@link #checkForAnyMatches(Collection, Predicate)} but accepts an array instead.
 	 * 
 	 * @param <T> the type of the array
 	 * @param array the array across which to iterate
@@ -134,7 +134,7 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Same as {@link #checkForAllMatches(Collection, Function)} but accepts an array instead.
+	 * Same as {@link #checkForAllMatches(Collection, Predicate)} but accepts an array instead.
 	 * 
 	 * @param <T> the type of the array
 	 * @param array the array across which to iterate
