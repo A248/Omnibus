@@ -19,9 +19,6 @@
 package space.arim.universal.util.collections;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * For manipulating arrays.
@@ -35,8 +32,10 @@ public final class ArraysUtil {
 	private ArraysUtil() {}
 	
 	/**
-	 * Removes an element from the array without mutating the original. <br>
-	 * If the element is not present in the array according to Object#equals, the original array is returned.
+	 * Removes the element from the array without mutating the original. <br>
+	 * If the element is not present in the array according to <code>Object#equals</code>, the original array is returned. <br>
+	 * <br>
+	 * If multiple array members match the element according to <code>Object#equals</code>, then all of the matching array members are removed.
 	 * 
 	 * @param <T> the type of the array
 	 * @param original the source array
@@ -60,7 +59,7 @@ public final class ArraysUtil {
 	}
 	
 	/**
-	 * Adds an element to the array without mutating the original.
+	 * Appends an element to the array without mutating the original.
 	 * 
 	 * @param <T> the type of the array
 	 * @param original the source array
@@ -85,17 +84,6 @@ public final class ArraysUtil {
 	 */
 	public static <T> T[] addIfNotPresent(T[] original, T element) {
 		return CollectionsUtil.checkForAnyMatches(original, element::equals) ? original : add(original, element);
-	}
-	
-	/**
-	 * Converts the array to an unbacked Collection
-	 * 
-	 * @param <T> the type of the array
-	 * @param original the source array
-	 * @return a collection
-	 */
-	public static <T> Collection<T> convert(T[] original) {
-		return new ArrayList<T>(Arrays.asList(original));
 	}
 	
 }
