@@ -86,7 +86,7 @@ public final class CollectionsUtil {
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 */
-	public static <T> boolean checkForAnyMatches(Collection<T> collection, Predicate<T> checker) {
+	public static <T> boolean checkForAnyMatches(Collection<T> collection, Predicate<? super T> checker) {
 		for (T element : collection) {
 			if (checker.test(element)) {
 				return true;
@@ -103,7 +103,7 @@ public final class CollectionsUtil {
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 */
-	public static <T> boolean checkForAnyMatches(T[] array, Predicate<T> checker) {
+	public static <T> boolean checkForAnyMatches(T[] array, Predicate<? super T> checker) {
 		for (T element : array) {
 			if (checker.test(element)) {
 				return true;
@@ -120,7 +120,7 @@ public final class CollectionsUtil {
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 */
-	public static <T> boolean checkForAllMatches(Collection<T> collection, Predicate<T> checker) {
+	public static <T> boolean checkForAllMatches(Collection<T> collection, Predicate<? super T> checker) {
 		for (T element : collection) {
 			if (!checker.test(element)) {
 				return false;
@@ -137,7 +137,7 @@ public final class CollectionsUtil {
 	 * @param checker used when checking an element
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 */
-	public static <T> boolean checkForAllMatches(T[] array, Predicate<T> checker) {
+	public static <T> boolean checkForAllMatches(T[] array, Predicate<? super T> checker) {
 		for (T element : array) {
 			if (!checker.test(element)) {
 				return false;

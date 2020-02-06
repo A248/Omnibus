@@ -66,7 +66,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAnyMatches(Collection<T> collection, ErringPredicate<T, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAnyMatches(Collection<T> collection, ErringPredicate<? super T, X> checker) throws X {
 		for (T element : collection) {
 			if (checker.test(element)) {
 				return true;
@@ -85,7 +85,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>any</b> element
 	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAnyMatches(T[] array, ErringPredicate<T, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAnyMatches(T[] array, ErringPredicate<? super T, X> checker) throws X {
 		for (T element : array) {
 			if (checker.test(element)) {
 				return true;
@@ -104,7 +104,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAllMatches(Collection<T> collection, ErringPredicate<T, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAllMatches(Collection<T> collection, ErringPredicate<? super T, X> checker) throws X {
 		for (T element : collection) {
 			if (!checker.test(element)) {
 				return false;
@@ -123,7 +123,7 @@ public final class ErringCollectionsUtil {
 	 * @return true if and only if checker.apply(element) returns true for <b>every</b> element
 	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> boolean checkForAllMatches(T[] array, ErringPredicate<T, X> checker) throws X {
+	public static <T, X extends Throwable> boolean checkForAllMatches(T[] array, ErringPredicate<? super T, X> checker) throws X {
 		for (T element : array) {
 			if (!checker.test(element)) {
 				return false;
@@ -141,7 +141,7 @@ public final class ErringCollectionsUtil {
 	 * @param action the ErringConsumer to use
 	 * @throws X according to {@link ErringConsumer#accept(Object)}
 	 */
-	public static <T, X extends Throwable> void forEach(Iterable<T> collection, ErringConsumer<T, X> action) throws X {
+	public static <T, X extends Throwable> void forEach(Iterable<T> collection, ErringConsumer<? super T, X> action) throws X {
         for (T object : collection) {
             action.accept(object);
         }
@@ -156,7 +156,7 @@ public final class ErringCollectionsUtil {
 	 * @param filter the ErringPredicate to use
 	 * @throws X according to {@link ErringPredicate#test(Object)}
 	 */
-	public static <T, X extends Throwable> void removeIf(Iterable<T> collection, ErringPredicate<T, X> filter) throws X {
+	public static <T, X extends Throwable> void removeIf(Iterable<T> collection, ErringPredicate<? super T, X> filter) throws X {
 		for (Iterator<T> it = collection.iterator(); it.hasNext();) {
 			if (filter.test(it.next())) {
 				it.remove();
