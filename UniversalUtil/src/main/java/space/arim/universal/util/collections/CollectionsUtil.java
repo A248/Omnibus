@@ -18,13 +18,9 @@
  */
 package space.arim.universal.util.collections;
 
-import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -181,155 +177,6 @@ public final class CollectionsUtil {
 			results[n] = mapper.apply(original[n]);
 		}
 		return results;
-	}
-	
-	/**
-	 * Creates a map whose {@link Map#get(Object)} is first wrapped according to the given wrapping function before being passed to the caller. <br>
-	 * <br>
-	 * This is useful for modifying returned values in an API if needed. Calling {@link Map#get(Object)} on a map created with this method is equivalent to calling <code>wrapper.apply(original.get(key))</code>.
-	 * 
-	 * @param <K> the type of a map key
-	 * @param <V> the type of a map value
-	 * @param original the original, backing map
-	 * @param wrapper the {@link UnaryOperator} to apply for retrievals
-	 * @return a map whose retrievals are wrapped accordingly
-	 */
-	public static <K, V> Map<K, V> valueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
-		return new ValueWrappedMap<K, V>(original, wrapper);
-	}
-	
-	/**
-	 * Similar to {@link #valueWrappedMap(Map, UnaryOperator)} in that it wraps all the values of the given map according to the wrapping function. <br>
-	 * This method differs in that the mutating methods (put, remove, putAll, clear) of the wrapped map throw {@link UnsupportedOperationException} if accessed. <br>
-	 * <br>
-	 * <b>Useful for creating unmodifiable maps with nested unmodifiable collections</b>. <br>
-	 * E.g., it is possible to return a map to a caller whose values are nested maps which are in themselves unmodifiable: <br>
-	 * <code>Map nestedUnmodifiable = CollectionsUtil.unmodifiableValueWrappedMap(original, new UnaryOperator() {
-	 * 
-	 * public void apply(Map map) {
-	 *   return Collections.unmodifiableMap(map);
-	 * }
-	 * }</code> <br>
-	 * 
-	 * @param <K> the type of a map key
-	 * @param <V> the type of a map value
-	 * @param original the original, backing map
-	 * @param wrapper the {@link UnaryOperator} to apply for retrievals
-	 * @return an unmodifiable map whose retrievals are wrapped accordingly.
-	 */
-	public static <K, V> Map<K, V> unmodifiableValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
-		return new UnmodifiableValueWrappedMap<K, V>(original, wrapper);
-	}
-	
-	@SuppressWarnings("unlikely-arg-type")
-	private static class WrappedMap<K, V> implements Map<K, V>, Serializable {
-		
-		/**
-		 * Serial version id
-		 */
-		private static final long serialVersionUID = 9173816626493816021L;
-
-        private final Map<K, V> original;
-		
-		WrappedMap(Map<K, V> original) {
-			this.original = Objects.requireNonNull(original);
-		}
-		
-		@Override
-		public int size() {return original.size();}
-		@Override
-		public boolean isEmpty() {return original.isEmpty();}
-		@Override
-		public boolean containsKey(Object key) {return original.containsKey(key);}
-		@Override
-		public boolean containsValue(Object value) {return original.containsValue(value);}
-		@Override
-		public V get(Object key) {return original.get(key);}
-		@Override
-		public V put(K key, V value) {return original.put(key, value);}
-		@Override
-		public V remove(Object key) {return original.remove(key);}
-		@Override
-		public void putAll(Map<? extends K, ? extends V> m) {original.putAll(m);}
-		@Override
-		public void clear() {original.clear();}
-		@Override
-		public Set<K> keySet() {return original.keySet();}
-		@Override
-		public Collection<V> values() {return original.values();}
-		@Override
-		public Set<Entry<K, V>> entrySet() {return original.entrySet();}
-		
-	}
-	
-	private static class ValueWrappedMap<K, V> extends WrappedMap<K, V> {
-		
-		/**
-		 * Serial version id
-		 */
-		private static final long serialVersionUID = 7086908298319638652L;
-		
-		private final UnaryOperator<V> wrapper;
-		
-		ValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
-			super(original);
-			this.wrapper = wrapper;
-		}
-		
-		@SuppressWarnings("unlikely-arg-type")
-		@Override
-		public V get(Object key) {
-			return wrapper.apply(super.get(key));
-		}
-		
-	}
-	
-	private static class UnmodifiableValueWrappedMap<K, V> extends ValueWrappedMap<K, V> {
-
-		/**
-		 * Serial version id
-		 */
-		private static final long serialVersionUID = -3678280252223253513L;
-
-        private transient Set<K> keySet;
-        private transient Set<Map.Entry<K,V>> entrySet;
-        private transient Collection<V> values;
-		
-		UnmodifiableValueWrappedMap(Map<K, V> original, UnaryOperator<V> wrapper) {
-			super(original, wrapper);
-		}
-		
-		@Override
-		public V put(K key, V value) {throw new UnsupportedOperationException();}
-		@Override
-		public V remove(Object key) {throw new UnsupportedOperationException();}
-		@Override
-		public void putAll(Map<? extends K, ? extends V> m) {throw new UnsupportedOperationException();}
-		@Override
-		public void clear() {throw new UnsupportedOperationException();}
-		
-		@Override
-		public Set<K> keySet() {
-			if (keySet == null) {
-				keySet = Collections.unmodifiableSet(super.keySet());
-			}
-			return keySet;
-		}
-		@Override
-		public Collection<V> values() {
-			if (values == null) {
-				values = Collections.unmodifiableCollection(super.values());
-			}
-			return values;
-		}
-		@Override
-		public Set<Entry<K, V>> entrySet() {
-			if (entrySet == null) {
-				entrySet = Collections.unmodifiableSet(super.entrySet());
-			}
-			return entrySet;
-		}        
-		
 	}
 	
 }
