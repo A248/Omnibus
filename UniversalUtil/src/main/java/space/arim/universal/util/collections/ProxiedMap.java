@@ -46,6 +46,11 @@ public abstract class ProxiedMap<K, V> implements Map<K, V> {
 		this.original = Objects.requireNonNull(original);
 	}
 	
+	/**
+	 * Gets the original map upon which this ProxiedMap is based.
+	 * 
+	 * @return the original, backing map
+	 */
 	protected Map<K, V> getOriginal() {
 		return original;
 	}

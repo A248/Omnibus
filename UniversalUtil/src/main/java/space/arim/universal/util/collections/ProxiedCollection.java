@@ -43,6 +43,11 @@ public abstract class ProxiedCollection<E> implements Collection<E> {
 		this.original = original;
 	}
 	
+	/**
+	 * Gets the original collection upon which this ProxiedCollection is based.
+	 * 
+	 * @return the original, backing collection
+	 */
 	protected Collection<E> getOriginal() {
 		return original;
 	}

@@ -34,6 +34,11 @@ public abstract class ProxiedSet<E> extends ProxiedCollection<E> implements Set<
 		super(original);
 	}
 	
+	/**
+	 * Gets the original set upon which this ProxiedList is based.
+	 * 
+	 * @return the original, backing set
+	 */
 	@Override
 	protected final Set<E> getOriginal() {
 		return (Set<E>) super.getOriginal();

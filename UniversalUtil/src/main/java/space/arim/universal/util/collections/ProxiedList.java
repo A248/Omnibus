@@ -37,6 +37,11 @@ public abstract class ProxiedList<E> extends ProxiedCollection<E> implements Lis
 		super(original);
 	}
 	
+	/**
+	 * Gets the original list upon which this ProxiedList is based.
+	 * 
+	 * @return the original, backing list
+	 */
 	@Override
 	protected final List<E> getOriginal() {
 		return (List<E>) super.getOriginal();
