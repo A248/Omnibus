@@ -16,7 +16,7 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.collections;
+package space.arim.universal.util.proxy;
 
 import java.util.Collection;
 import java.util.Map;

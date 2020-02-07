@@ -16,7 +16,7 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.collections;
+package space.arim.universal.util.proxy;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -26,7 +26,7 @@ import java.util.Iterator;
  * Such "collections" do not hold any data themselves, but merely refer calls to their backing collections. <br>
  * <br>
  * However, the proxy collection's additional call layer provides fine tuned control over reads and writes to the backing collection. <br>
- * Programmers may extend this class to utilise this enhanced control. {@link DishonestCollection} is a simple example. <br>
+ * Programmers may extend this class to utilise this enhanced control. <br>
  * <br>
  * Note that a reference is retained to the backing collection. Changes to the backing collection are reflected in proxied collections.
  * 
@@ -39,6 +39,11 @@ public abstract class ProxiedCollection<E> implements Collection<E> {
 	
 	private final Collection<E> original;
 	
+	/**
+	 * Creates a ProxiedCollection based on a backing collection
+	 * 
+	 * @param original the original, backing collection
+	 */
 	protected ProxiedCollection(Collection<E> original) {
 		this.original = original;
 	}
