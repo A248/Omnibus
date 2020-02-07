@@ -16,24 +16,28 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.function.erring;
+package space.arim.universal.util.erringfunction;
 
 /**
- * Similar to {@link java.util.function.Supplier} but throws a type of exception
+ * An erring version of {@link java.util.function.BiFunction}
  * 
  * @author A248
  *
- * @param <T> the type of the object supplied
+ * @param <T> the type of the first object
+ * @param <U> the type of the second object
+ * @param <R> the type of the return value
  * @param <X> the type of the exception
  */
-public interface ErringSupplier<T, X extends Throwable> {
+public interface ErringBiFunction<T, U, R, X extends Throwable> {
 
 	/**
-	 * Retrieves the result, possibly throwing an exception
+	 * Applies this function to the given arguments
 	 * 
-	 * @return a result
+	 * @param obj1 the first object
+	 * @param obj2 the second object
+	 * @return the result
 	 * @throws X possibly, as parameterised
 	 */
-	T get() throws X;
+	R apply(T obj1, U obj2) throws X;
 	
 }

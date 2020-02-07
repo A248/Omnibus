@@ -16,24 +16,26 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.function.erring;
+package space.arim.universal.util.erringfunction;
 
 /**
- * An erring version of {@link java.util.function.Consumer}
+ * An erring version of {@link java.util.function.BiConsumer}
  * 
  * @author A248
  *
- * @param <T> the type of the input object
+ * @param <T> the type of the first object
+ * @param <U> the type of the second object
  * @param <X> the type of the exception
  */
-public interface ErringConsumer<T, X extends Throwable> {
+public interface ErringBiConsumer<T, U, X extends Throwable> {
 
-    /**
-     * Performs this operation on the given argument.
-     *
-     * @param object the input object
-     * @throws X possibly, as parameterised
-     */
-    void accept(T object) throws X;
+	/**
+	 * Performs this operation on the given arguments
+	 * 
+	 * @param obj1 the first object
+	 * @param obj2 the second
+	 * @throws X possibly, as parameterised
+	 */
+	void accept(T obj1, U obj2) throws X;
 	
 }

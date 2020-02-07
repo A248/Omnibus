@@ -16,38 +16,25 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.function.erring;
-
-import java.util.Objects;
+package space.arim.universal.util.erringfunction;
 
 /**
- * A thread-safe singleton supplier which may throw an error upon instantiation.
+ * An erring version of {@link java.util.function.Predicate}
  * 
  * @author A248
  *
- * @param <T> the type of the singleton
+ * @param <T> the type of the input object
  * @param <X> the type of the exception
  */
-public class ErringLazySingleton<T, X extends Throwable> implements ErringSupplier<T, X> {
+public interface ErringPredicate<T, X extends Throwable> {
 
-	private volatile T value;
-	
-	private final ErringSupplier<T, X> instantiator;
-	
-	public ErringLazySingleton(ErringSupplier<T, X> instantiator) {
-		this.instantiator = Objects.requireNonNull(instantiator, "Instantiator must not be null!");
-	}
-	
-	@Override
-	public T get() throws X {
-		if (value == null) {
-			synchronized (instantiator) {
-				if (value == null) {
-					value = instantiator.get();
-				}
-			}
-		}
-		return value;
-	}
+	/**
+     * Evaluates the predicate on the given argument.
+     *
+     * @param object the input object
+     * @return true if the input argument matches the predicate, false otherwise
+     * @throws X possibly, as parameterised
+     */
+    boolean test(T object) throws X;
 	
 }

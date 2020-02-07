@@ -16,16 +16,38 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.function.erring;
+package space.arim.universal.util.erringfunction;
+
+import java.util.Objects;
 
 /**
- * An erring version of {@link java.util.function.UnaryOperator}
+ * A thread-safe singleton supplier which may throw an error upon instantiation.
  * 
  * @author A248
  *
- * @param <T> the type of the operand and result
+ * @param <T> the type of the singleton
  * @param <X> the type of the exception
  */
-public interface ErringUnaryOperator<T, X extends Throwable> extends ErringFunction<T, T, X> {
+public class ErringLazySingleton<T, X extends Throwable> implements ErringSupplier<T, X> {
 
+	private volatile T value;
+	
+	private final ErringSupplier<T, X> instantiator;
+	
+	public ErringLazySingleton(ErringSupplier<T, X> instantiator) {
+		this.instantiator = Objects.requireNonNull(instantiator, "Instantiator must not be null!");
+	}
+	
+	@Override
+	public T get() throws X {
+		if (value == null) {
+			synchronized (instantiator) {
+				if (value == null) {
+					value = instantiator.get();
+				}
+			}
+		}
+		return value;
+	}
+	
 }

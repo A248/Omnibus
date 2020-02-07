@@ -22,9 +22,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-import space.arim.universal.util.function.erring.ErringConsumer;
-import space.arim.universal.util.function.erring.ErringPredicate;
-import space.arim.universal.util.function.erring.ErringUnaryOperator;
+import space.arim.universal.util.erringfunction.ErringConsumer;
+import space.arim.universal.util.erringfunction.ErringPredicate;
+import space.arim.universal.util.erringfunction.ErringUnaryOperator;
 
 /**
  * Utility class similar to {@link CollectionsUtil} but whose methods throw exceptions and accept erring functions. <br>
