@@ -16,16 +16,29 @@
  * along with ArimBansLib. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.exception;
+package space.arim.universal.util.web;
 
-import space.arim.universal.util.web.HttpStatus;
-
+/**
+ * An exception caused by an unexpected (non 200) HTTP status code.
+ * 
+ * @author A248
+ *
+ */
 public class HttpStatusException extends Exception {
 
 	private static final long serialVersionUID = -744115099274403312L;
 	
+	/**
+	 * The status code of the exception
+	 * 
+	 */
 	public final HttpStatus status;
-
+	
+	/**
+	 * Creates a HttpStatusException for the given code
+	 * 
+	 * @param status
+	 */
 	public HttpStatusException(HttpStatus status) {
 		super("Encountered HttpStatus " + status.getCode() + ": " + status.getName());
 		this.status = status;

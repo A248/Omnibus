@@ -19,6 +19,13 @@
 package space.arim.universal.util.web;
 
 // possible todo: Add more from https://httpstatuses.com
+/**
+ * HTTP status codes. <br>
+ * Included are some nonstandard status codes.
+ * 
+ * @author A248
+ *
+ */
 public enum HttpStatus {
 	
 	CONTINUE(100, "Continue", "The client should continue with its request."),
@@ -85,18 +92,29 @@ public enum HttpStatus {
 	NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required", "The client needs to authenticate to gain network access."),
 	NETWORK_CONNECT_TIMEOUT_ERROR(599, "Network Connect Timeout Error", "This status code is not specified in any RFCs, but is used by some HTTP proxies to signal a network connect timeout behind the proxy to a client in front of the proxy."),
 	
+	/**
+	 * Represents an unknown or nonstandard HTTP status
+	 * 
+	 */
 	UNKNOWN(400, "Unknown HTTP Status Code", "Unknown or unsupported HTTP status code");
 	
 	private final int code;
 	private final String name;
 	private final String description;
-
+	
 	private HttpStatus(int code, String name, String description) {
 		this.code = code;
 		this.name = name;
 		this.description = description;
 	}
 	
+	/**
+	 * Gets a HttpStatus from a raw code. <br>
+	 * If no corresponding HttpStatus is found, {@link #UNKNOWN} is returned.
+	 * 
+	 * @param code
+	 * @return
+	 */
 	public static HttpStatus fromCode(final int code) {
 		for (HttpStatus status : HttpStatus.values()) {
 			if (status.code == code) {
@@ -106,14 +124,29 @@ public enum HttpStatus {
 		return UNKNOWN;
 	}
 	
+	/**
+	 * Gets the raw code
+	 * 
+	 * @return the status code number
+	 */
 	public int getCode() {
 		return code;
 	}
 	
+	/**
+	 * Gets the display name of the code
+	 * 
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/**
+	 * A brief description of what this HTTP status code entails
+	 * 
+	 * @return a description
+	 */
 	public String getDescrption() {
 		return description;
 	}
