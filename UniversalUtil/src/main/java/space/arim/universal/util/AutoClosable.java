@@ -16,7 +16,7 @@
  * along with ArimAPI. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.lang;
+package space.arim.universal.util;
 
 /**
  * A subinterface of {@link AutoCloseable}. Advantages: See {@link #close()}
@@ -29,8 +29,9 @@ public interface AutoClosable extends AutoCloseable {
 	/**
 	 * Replaces {@link AutoCloseable#close()}. <br>
 	 * <br>
-	 * * <b>Does not throw <code>Exception</code></b>, so implementations are forced to conduct their own exception handling. <br>
-	 * * Default implementation does nothing, which prevents an abundance of empty method blocks in implementing objects.
+	 * <b>Differences</b>: <br>
+	 * * Does not throw <code>Exception</code>, so implementations are forced to conduct their own exception handling. <br>
+	 * * Has a default implementation, which is an empty method block. This prevents an explosion of empty <code>close</code> declarations in implementing objects.
 	 * 
 	 */
 	@Override
