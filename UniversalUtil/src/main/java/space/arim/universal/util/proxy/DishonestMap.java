@@ -44,7 +44,7 @@ public class DishonestMap<K, V> extends ProxiedMap<K, V> {
 	 * is the backing map and <i>key</i> is the map key passed to <code>#get</code> <br>
 	 * <br>
 	 * For example, a map of unmodifiable maps could be created like so: <br>
-	 * <code>Map&lt;String, Map&gt; mapOfUnmodifiableMaps = new DishonestMap&lt;String, Map&gt;(new HashMap&lt;String, Map&gt;, Collections::unmodifiableMap);</code> <br>
+	 * <code>Map{@literal <}String, Map{@literal >} mapOfUnmodifiableMaps = new DishonestMap{@literal <}String, Map{@literal >}(new HashMap{@literal <}String, Map{@literal >}, Collections::unmodifiableMap);</code> <br>
 	 * Such a map would support all normal read and write operations, such as <code>#put</code>; however, its <code>#get</code>
 	 * method would return an unmodifiable collection view (per {@link Collections#unmodifiableMap}) when called.
 	 * (Essentially, the map's values would be unmodifiable maps, but the map as a whole would allow modification.

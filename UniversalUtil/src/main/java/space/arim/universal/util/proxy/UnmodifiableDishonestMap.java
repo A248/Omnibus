@@ -47,7 +47,7 @@ public class UnmodifiableDishonestMap<K, V> extends DishonestMap<K, V> {
 	 * See {@link DishonestMap#DishonestMap(Map, UnaryOperator)} for more information. <br>
 	 * <br>
 	 * Example: creating an unmodifiable map of unmodifiable submaps.
-	 * <code>Map&lt;String, Map&gt; totallyUnmodifiableMegaMap = new UnmodifiableDishonestMap&lt;String, Map&gt;(existingMap, Collections::unmodifiableMap);</code> where <i>existingMap</i> is the original map.
+	 * <code>Map{@literal <}String, Map{@literal >} totallyUnmodifiableMegaMap = new UnmodifiableDishonestMap{@literal <}String, Map{@literal >}(existingMap, Collections::unmodifiableMap);</code> where <i>existingMap</i> is the original map.
 	 * 
      * @param original the original, backing map
 	 * @param processor with which to modify <code>#get</code> results
