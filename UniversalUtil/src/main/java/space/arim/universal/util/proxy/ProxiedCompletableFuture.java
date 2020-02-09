@@ -29,6 +29,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import space.arim.universal.util.concurrent.CompetitiveFuture;
+
 /**
  * A parent class for completable futures which simply redirect, a.k.a. <i>proxy</i>, calls to another such future (the backing future). <br>
  * Such "futures" do no work themselves, but merely refer calls to their backing futures. <br>

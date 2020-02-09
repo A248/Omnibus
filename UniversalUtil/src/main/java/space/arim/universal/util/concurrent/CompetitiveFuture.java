@@ -16,7 +16,7 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.proxy;
+package space.arim.universal.util.concurrent;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -25,6 +25,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import space.arim.universal.util.proxy.ProxiedCompletableFuture;
 
 /**
  * A {@link ProxiedCompletableFuture} used to change the default {@link Executor} used in CompletableFuture's methods executing asynchronous code. <br>
