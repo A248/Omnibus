@@ -59,7 +59,7 @@ public class CompetitiveFuture<T> extends ProxiedCompletableFuture<T> {
 	 * Creates a CompetitiveFuture using a backing <code>CompletableFuture</code> and <code>Executor</code>
 	 * 
 	 * @param <T> the type of the object the future will yield
-	 * @param original
+	 * @param original the original, backing CompletableFuture
 	 * @param executor the executor used for asynchronous execution
 	 * @return a CompetitiveFuture, never <code>null</code>
 	 */
