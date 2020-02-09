@@ -53,6 +53,12 @@ public final class UniversalRegistry implements Registry {
 	private final ConcurrentHashMap<Class<?>, Registrable> registry = new ConcurrentHashMap<Class<?>, Registrable>();
 	
 	/**
+	 * Unmodifiable view of the registry
+	 * 
+	 */
+	private volatile Map<Class<?>, Registrable> registryView;
+	
+	/**
 	 * The corresponding {@link Events} instance
 	 * 
 	 */
@@ -154,7 +160,7 @@ public final class UniversalRegistry implements Registry {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Registrable> T register(Class<T> service, T provider) {
-		return (T) registry.compute(service, (serviceClass, registration) -> {
+		return (provider == null) ? getRegistration(service) : (T) registry.compute(service, (serviceClass, registration) -> {
 			if (registration == null || provider.getPriority() > registration.getPriority()) {
 				getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
 				return provider;
@@ -166,11 +172,13 @@ public final class UniversalRegistry implements Registry {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Registrable> T compute(Class<T> service, byte priority, Supplier<T> computer) {
-		return (T) registry.compute(service, (serviceClass, registration) -> {
+		return (computer == null) ? getRegistration(service) : (T) registry.compute(service, (serviceClass, registration) -> {
 			if (registration == null || priority > registration.getPriority()) {
 				T provider = computer.get();
-				getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
-				return provider;
+				if (provider != null) {
+					getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, provider));
+					return provider;
+				}
 			}
 			return registration;
 		});
@@ -195,7 +203,7 @@ public final class UniversalRegistry implements Registry {
 	
 	@Override
 	public Map<Class<?>, Registrable> getRegistrations() {
-		return Collections.unmodifiableMap(registry);
+		return (registryView != null) ? registryView : (registryView = Collections.unmodifiableMap(registry));
 	}
 	
 }
