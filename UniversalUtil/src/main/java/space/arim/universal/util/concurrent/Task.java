@@ -19,7 +19,9 @@
 package space.arim.universal.util.concurrent;
 
 /**
- * A task executed by a {@link Scheduler} which may be cancelled via {@link #cancel()}
+ * A scheduled task which may be cancelled via {@link #cancel()}. <br>
+ * <br>
+ * See {@link #cancel()} for specifications.
  * 
  * @author A248
  *
@@ -27,10 +29,12 @@ package space.arim.universal.util.concurrent;
 public interface Task {
 
 	/**
-	 * Cancels the task. Cancellation need not stop a single pending execution of a task if execution has initiated (i.e., no interruption required).
-	 * Only, a {@link Scheduler} should cease further scheduling of the task in timed or delayed executions. <br>
+	 * Cancels the task, preventing further scheduling or rescheduling. <br>
+	 * Cancellation should not stop a single pending execution of a task if execution has initiated (no interruption required). <br>
 	 * <br>
-	 * Implementations are strongly encouraged to make this method idempotent for repeated calls.
+	 * <b>Specifications</b>: <br>
+	 * * A {@link EnhancedExecutor} or {@link Scheduler} MUST cease further scheduling of the task in timed or delayed executions. <br>
+	 * * Method MUST be idempotent for repeated calls.
 	 * 
 	 */
 	void cancel();

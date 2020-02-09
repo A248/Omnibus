@@ -20,7 +20,7 @@ package space.arim.universal.util.concurrent;
 
 /**
  * Internal class used for default implementations of {@link Scheduler} methods which accept a {@link Consumer} as the task parameter.
- * This object is passed to the Consumer parameters and then its {@link #cancel()}
+ * This object is passed to the Consumer parameters.
  * 
  * @author A248
  *
@@ -30,6 +30,11 @@ class PreTask implements Task {
 	private volatile Task value;
 	private volatile boolean cancelled = false;
 	
+	/**
+	 * Fills the PreTask with a value
+	 * 
+	 * @param value the value
+	 */
 	void fill(Task value) {
 		this.value = value;
 		if (cancelled) {
