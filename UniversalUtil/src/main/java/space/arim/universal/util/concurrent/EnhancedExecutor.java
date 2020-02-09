@@ -96,15 +96,14 @@ public interface EnhancedExecutor extends Executor {
 	 * @return a <code>Task</code> which may be cancelled, never <code>null</code>
 	 */
 	default Task schedule(Runnable cmd, long delay, TimeUnit units) {
+		Task task = new DefaultTask();
 		long msDelay = TimeUnit.MILLISECONDS.convert(delay, units);
 		if (msDelay > 0) {
-			Task task = new DefaultTask();
 			ScheduledAction.schedule(this, cmd, msDelay, task::isCancelled);
-			return task;
 		} else if (msDelay == 0) {
 			execute(cmd);
 		}
-		return new DefaultTask();
+		return task;
 	}
 	
 	/**
@@ -120,14 +119,13 @@ public interface EnhancedExecutor extends Executor {
 	 * @return a <code>Task</code> which may then be cancelled, never <code>null</code>
 	 */
 	default Task schedule(Runnable cmd, long initialDelay, LongUnaryOperator delayFunction, TimeUnit units) {
+		Task task = new DefaultTask();
 		long msDelay = TimeUnit.MILLISECONDS.convert(initialDelay, units);
 		if (msDelay >= 0) {
 			LongUnaryOperator convertedDelayFunction = (previousDelay) -> TimeUnit.MILLISECONDS.convert(delayFunction.applyAsLong(units.convert(previousDelay, TimeUnit.MILLISECONDS)), units);
-			Task task = new DefaultTask();
 			ScheduledAction.schedule(this, cmd, msDelay, task::isCancelled, convertedDelayFunction);
-			return task;
 		}
-		return new DefaultTask();
+		return task;
 	}
 	
 	/**
@@ -143,14 +141,13 @@ public interface EnhancedExecutor extends Executor {
 	 * @return the same <code>Task</code> the <code>Consumer</code> received, never <code>null</code>
 	 */
 	default Task schedule(Consumer<Task> cmd, long initialDelay, LongUnaryOperator delayFunction, TimeUnit units) {
+		Task task = new DefaultTask();
 		long msDelay = TimeUnit.MILLISECONDS.convert(initialDelay, units);
 		if (msDelay >= 0) {
 			LongUnaryOperator convertedDelayFunction = (previousDelay) -> TimeUnit.MILLISECONDS.convert(delayFunction.applyAsLong(units.convert(previousDelay, TimeUnit.MILLISECONDS)), units);
-			Task task = new DefaultTask();
 			ScheduledAction.schedule(this, () -> cmd.accept(task), msDelay, task::isCancelled, convertedDelayFunction);
-			return task;
 		}
-		return new DefaultTask();
+		return task;
 	}
 	
 	/**
@@ -166,14 +163,13 @@ public interface EnhancedExecutor extends Executor {
 	 * @return a <code>Task</code> which may then be cancelled, never <code>null</code>
 	 */
 	default Task schedule(Runnable cmd, long initialDelay, LongBinaryOperator delayFunction, TimeUnit units) {
+		Task task = new DefaultTask();
 		long msDelay = TimeUnit.MILLISECONDS.convert(initialDelay, units);
 		if (msDelay >= 0) {
 			LongBinaryOperator convertedDelayFunction = (previousDelay, execTime) -> TimeUnit.MILLISECONDS.convert(delayFunction.applyAsLong(units.convert(previousDelay, TimeUnit.MILLISECONDS), units.convert(execTime, TimeUnit.MILLISECONDS)), units);
-			Task task = new DefaultTask();
 			ScheduledAction.schedule(this, cmd, msDelay, task::isCancelled, convertedDelayFunction);
-			return task;
 		}
-		return new DefaultTask();
+		return task;
 	}
 	
 	/**
@@ -189,14 +185,13 @@ public interface EnhancedExecutor extends Executor {
 	 * @return the same <code>Task</code> the <code>Consumer</code> received, never <code>null</code>
 	 */
 	default Task schedule(Consumer<Task> cmd, long initialDelay, LongBinaryOperator delayFunction, TimeUnit units) {
+		Task task = new DefaultTask();
 		long msDelay = TimeUnit.MILLISECONDS.convert(initialDelay, units);
 		if (msDelay >= 0) {
 			LongBinaryOperator convertedDelayFunction = (previousDelay, execTime) -> TimeUnit.MILLISECONDS.convert(delayFunction.applyAsLong(units.convert(previousDelay, TimeUnit.MILLISECONDS), units.convert(execTime, TimeUnit.MILLISECONDS)), units);
-			Task task = new DefaultTask();
 			ScheduledAction.schedule(this, () -> cmd.accept(task), msDelay, task::isCancelled, convertedDelayFunction);
-			return task;
 		}
-		return new DefaultTask();
+		return task;
 	}
 	
 	/**
