@@ -128,7 +128,7 @@ public final class UniversalUtil implements Util {
 	
 	/**
 	 * Returns the id of this Util instance. <br>
-	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.
+	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
 	 * 
 	 * @return String the id
 	 */

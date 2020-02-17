@@ -112,8 +112,8 @@ public enum HttpStatus {
 	 * Gets a HttpStatus from a raw code. <br>
 	 * If no corresponding HttpStatus is found, {@link #UNKNOWN} is returned.
 	 * 
-	 * @param code
-	 * @return
+	 * @param code the integer code, use {@link java.net.HttpURLConnection#getResponseCode() HttpURLConnection.getResponseCode()}
+	 * @return the code if found, otherwise <code>UNKNOWN</code>
 	 */
 	public static HttpStatus fromCode(final int code) {
 		for (HttpStatus status : HttpStatus.values()) {
