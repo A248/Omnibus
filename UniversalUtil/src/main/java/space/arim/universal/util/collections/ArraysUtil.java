@@ -19,6 +19,7 @@
 package space.arim.universal.util.collections;
 
 import java.lang.reflect.Array;
+import java.util.function.Function;
 
 /**
  * For manipulating arrays.
@@ -84,6 +85,49 @@ public final class ArraysUtil {
 	 */
 	public static <T> T[] addIfNotPresent(T[] original, T element) {
 		return CollectionsUtil.checkForAnyMatches(original, element::equals) ? original : add(original, element);
+	}
+	
+	/**
+	 * Concatenates the {@link #toString()} representations of each element. <br>
+	 * <br>
+	 * The result will always start and end with '{' and '}'. Inside, each element is separated by a comma.
+	 * 
+	 * @param <T> the type of the array
+	 * @param elements the element array
+	 * @return a formatted String
+	 */
+	public static <T> String toString(T[] elements) {
+		StringBuilder builder = new StringBuilder('{');
+		for (int n = 0; n < elements.length; n++) {
+			if (n > 0) {
+				builder.append(',');
+			}
+			builder.append(elements[n].toString());
+		}
+		builder.append('}');
+		return builder.toString();
+	}
+	
+	/**
+	 * Concatenates the {@link Function#apply(Object)} representations of each element. <br>
+	 * <br>
+	 * The result will always start and end with '{' and '}'. Inside, each element is separated by a comma.
+	 * 
+	 * @param <T> the type of the array
+	 * @param elements the element array
+	 * @param representer the function used to determine the string representation of each element
+	 * @return a formatted String
+	 */
+	public static <T> String toString(T[] elements, Function<T, String> representer) {
+		StringBuilder builder = new StringBuilder('{');
+		for (int n = 0; n < elements.length; n++) {
+			if (n > 0) {
+				builder.append(',');
+			}
+			builder.append(representer.apply(elements[n]));
+		}
+		builder.append('}');
+		return builder.toString();
 	}
 	
 }
