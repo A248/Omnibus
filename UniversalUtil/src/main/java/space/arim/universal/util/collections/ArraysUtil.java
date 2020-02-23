@@ -130,44 +130,4 @@ public final class ArraysUtil {
 		return builder.toString();
 	}
 	
-	/**
-	 * Combines multiple arrays into a super array. <br>
-	 * <br>
-	 * Uses <code>arrays.getClass().getComponentType().getComponentType()</code> as the component type of the resulting array. <br>
-	 * <b>Programmers should prefer {@link #combine(Class, Object[]...)} to explicitly define the component type.</b>
-	 * 
-	 * @param <T> the component type of each array
-	 * @param arrays the source arrays
-	 * @return a combined array
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T[] combine(T[]...arrays) {
-		return combine((Class<T>) arrays.getClass().getComponentType().getComponentType(), arrays);
-	}
-	
-	/**
-	 * Combines multiple arrays into a super array.
-	 * 
-	 * @param <T> the component type of each array
-	 * @param clazz the component type of the resulting array
-	 * @param arrays the source arrays
-	 * @return a combined array
-	 */
-	public static <T> T[] combine(Class<? super T> clazz, @SuppressWarnings("unchecked") T[]...arrays) {
-		int length = 0;
-		for (T[] array : arrays) {
-			length += array.length;
-		}
-		@SuppressWarnings("unchecked")
-		T[] result = (T[]) Array.newInstance(clazz, length);
-		int n = 0;
-		for (T[] array : arrays) {
-			for (T element : array) {
-				result[n] = element;
-				n++;
-			}
-		}
-		return result;
-	}
-	
 }
