@@ -19,6 +19,7 @@
 package space.arim.universal.util.collections;
 
 import java.lang.reflect.Array;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -31,6 +32,19 @@ public final class ArraysUtil {
 
 	// Prevent instantiation
 	private ArraysUtil() {}
+	
+	/**
+	 * Checks whether the element is present in the array according to <code>element.equals(Object)</code>. <br>
+	 * Accepts <code>null</code> parameters. Returns <code>false</code> if <code>original</code> is null.
+	 * 
+	 * @param <T> the type of the array
+	 * @param original the source array
+	 * @param element the element to check for
+	 * @return true if the array contains the element, false otherwise
+	 */
+	public static <T> boolean contains(T[] original, T element) {
+		return original != null && CollectionsUtil.checkForAnyMatches(original, (element != null) ? element::equals : Objects::isNull);
+	}
 	
 	/**
 	 * Removes the element from the array without mutating the original. <br>
