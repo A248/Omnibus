@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim</groupId>
 	<artifactId>universal</artifactId>
-	<version>0.6.7-SNAPSHOT</version>
+	<version>0.6.8-SNAPSHOT</version>
 	<!--
 	Remember to update versions: 
 		1. Update property core.version
@@ -19,7 +19,7 @@
 	<inceptionYear>2019</inceptionYear>
 	
 	<properties>
-		<core.version>0.6.7</core.version>
+		<core.version>0.6.8</core.version>
 		<core.author>A248</core.author>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     	<maven.compiler.source>1.8</maven.compiler.source>
