@@ -19,6 +19,9 @@
 package space.arim.universal.util.collections;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -38,12 +41,12 @@ public final class ArraysUtil {
 	 * Accepts <code>null</code> parameters. Returns <code>false</code> if <code>original</code> is null.
 	 * 
 	 * @param <T> the type of the array
-	 * @param original the source array
+	 * @param array the source array
 	 * @param element the element to check for
 	 * @return true if the array contains the element, false otherwise
 	 */
-	public static <T> boolean contains(T[] original, T element) {
-		return original != null && CollectionsUtil.checkForAnyMatches(original, (element != null) ? element::equals : Objects::isNull);
+	public static <T> boolean contains(T[] array, T element) {
+		return array != null && CollectionsUtil.checkForAnyMatches(array, (element != null) ? element::equals : Objects::isNull);
 	}
 	
 	/**
@@ -99,6 +102,55 @@ public final class ArraysUtil {
 	 */
 	public static <T> T[] addIfNotPresent(T[] original, T element) {
 		return CollectionsUtil.checkForAnyMatches(original, element::equals) ? original : add(original, element);
+	}
+	
+	/**
+	 * Clones the specified array. <br>
+	 * The result has the same length, ordering, and elements as the original.
+	 * 
+	 * @param <T> the type of the array
+	 * @param original the source array
+	 * @return an array of the same elements and ordering as the source
+	 */
+	public static <T> T[] copy(T[] original) {
+		return Arrays.copyOf(original, original.length);
+	}
+	
+	/**
+	 * Generates a hash code for the specified array which does not depend on the order of the elements. <br>
+	 * The result is the sum of the hash codes of the elements.
+	 * 
+	 * @param <T> the type of the array
+	 * @param array the source array
+	 * @return the sum of the hash codes of the elements
+	 */
+	public static <T> int unorderedHashCode(T[] array) {
+		int h = 0;
+		for (T element : array) {
+			h += element.hashCode();
+		}
+		return h;
+	}
+	
+	/**
+	 * Checks for equality with another array disregarding the order of the elements. <br>
+	 * It does not matter which array is passed first.
+	 * 
+	 * @param <T> the type of each array
+	 * @param array the main array
+	 * @param other the other array, to check against
+	 * @return true if the arrays are equal, false otherwise
+	 */
+	public static <T> boolean unorderedEquals(T[] array, T[] other) {
+		return array.length == other.length && elementCounts(array).equals(elementCounts(other));
+	}
+	
+	private static <T> Map<T, Integer> elementCounts(T[] array) {
+	    Map<T, Integer> map = new HashMap<>();
+	    for (T element : array) {
+	        map.merge(element, 1, Integer::sum);
+	    }
+	    return map;
 	}
 	
 	/**
