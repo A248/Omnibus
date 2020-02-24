@@ -16,16 +16,24 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.erringfunction;
+package space.arim.universal.util.function;
 
 /**
- * An erring version of {@link java.util.function.UnaryOperator}
+ * An erring version of {@link java.util.function.Consumer}
  * 
  * @author A248
  *
- * @param <T> the type of the operand and result
+ * @param <T> the type of the input object
  * @param <X> the type of the exception
  */
-public interface ErringUnaryOperator<T, X extends Throwable> extends ErringFunction<T, T, X> {
+public interface ErringConsumer<T, X extends Throwable> {
 
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param object the input object
+     * @throws X possibly, as parameterised
+     */
+    void accept(T object) throws X;
+	
 }

@@ -16,27 +16,16 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.erringfunction;
+package space.arim.universal.util.function;
 
 /**
- * An erring version of {@link java.util.function.BiPredicate}
+ * An erring version of {@link java.util.function.UnaryOperator}
  * 
  * @author A248
  *
- * @param <T> the type of the first object
- * @param <U> the type of the second object
+ * @param <T> the type of the operand and result
  * @param <X> the type of the exception
  */
-public interface ErringBiPredicate<T, U, X extends Throwable> {
-	
-	/**
-	 * Evaluates this predicate based on the given arguments
-	 * 
-	 * @param obj1 the first object
-	 * @param obj2 the second object
-	 * @return true or false
-	 * @throws X possibly, as parameterised
-	 */
-	boolean test(T obj1, U obj2) throws X;
-	
+public interface ErringUnaryOperator<T, X extends Throwable> extends ErringFunction<T, T, X> {
+
 }

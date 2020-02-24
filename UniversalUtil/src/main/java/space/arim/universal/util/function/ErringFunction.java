@@ -16,24 +16,26 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.erringfunction;
+package space.arim.universal.util.function;
 
 /**
- * Similar to {@link java.util.function.Supplier} but throws a type of exception
+ * Similar to {@link java.util.function.Function} but throws a type of exception
  * 
  * @author A248
  *
- * @param <T> the type of the object supplied
+ * @param <T> the type of the input
+ * @param <R> the type of the output
  * @param <X> the type of the exception
  */
-public interface ErringSupplier<T, X extends Throwable> {
+public interface ErringFunction<T, R, X extends Throwable> {
 
 	/**
-	 * Retrieves the result, possibly throwing an exception
-	 * 
-	 * @return a result
-	 * @throws X possibly, as parameterised
-	 */
-	T get() throws X;
+     * Applies the function to the given argument
+     *
+     * @param object the function argument
+     * @return the function result
+     * @throws X possibly, as parameterised
+     */
+	R apply(T object) throws X;
 	
 }

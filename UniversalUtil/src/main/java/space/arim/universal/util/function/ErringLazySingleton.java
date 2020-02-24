@@ -16,28 +16,38 @@
  * along with UniversalUtil. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU General Public License.
  */
-package space.arim.universal.util.erringfunction;
+package space.arim.universal.util.function;
+
+import java.util.Objects;
 
 /**
- * An erring version of {@link java.util.function.BiFunction}
+ * A thread-safe singleton supplier which may throw an error upon instantiation.
  * 
  * @author A248
  *
- * @param <T> the type of the first object
- * @param <U> the type of the second object
- * @param <R> the type of the return value
+ * @param <T> the type of the singleton
  * @param <X> the type of the exception
  */
-public interface ErringBiFunction<T, U, R, X extends Throwable> {
+public class ErringLazySingleton<T, X extends Throwable> implements ErringSupplier<T, X> {
 
-	/**
-	 * Applies this function to the given arguments
-	 * 
-	 * @param obj1 the first object
-	 * @param obj2 the second object
-	 * @return the result
-	 * @throws X possibly, as parameterised
-	 */
-	R apply(T obj1, U obj2) throws X;
+	private volatile T value;
+	
+	private final ErringSupplier<T, X> instantiator;
+	
+	public ErringLazySingleton(ErringSupplier<T, X> instantiator) {
+		this.instantiator = Objects.requireNonNull(instantiator, "Instantiator must not be null!");
+	}
+	
+	@Override
+	public T get() throws X {
+		if (value == null) {
+			synchronized (instantiator) {
+				if (value == null) {
+					value = instantiator.get();
+				}
+			}
+		}
+		return value;
+	}
 	
 }
