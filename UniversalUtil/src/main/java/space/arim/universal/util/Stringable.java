@@ -19,7 +19,7 @@
 package space.arim.universal.util;
 
 /**
- * A workaround for overriding {@link #toString()} in interfaces. <br>
+ * A workaround for overriding {@link Object#toString()} in interfaces. <br>
  * <br>
  * <b>Usage:</b> <br>
  * Programmers should let an interface extend Stringable, then create a default implementation of {@link #toStringMe()} in the interface. <br>
@@ -36,7 +36,7 @@ package space.arim.universal.util;
 public interface Stringable {
 
 	/**
-	 * Should be equivalent to {@link #toString()}
+	 * Should be equivalent to {@link Object#toString()}
 	 * 
 	 * @return the string representation
 	 */
