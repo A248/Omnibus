@@ -20,7 +20,9 @@ package space.arim.universal.util.collections;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -177,6 +179,37 @@ public final class CollectionsUtil {
 			results[n] = mapper.apply(original[n]);
 		}
 		return results;
+	}
+	
+	/**
+	 * Gets a random element from a collection in a thread safe manner. <br>
+	 * If the input collection is <code>null</code> or empty, <code>null</code> is returned
+	 * 
+	 * @param <T> the type of the collection
+	 * @param collection the collection
+	 * @return a random element from the collection, or <code>null</code> if preconditions are not met
+	 */
+	public static <T> T random(Collection<T> collection) {
+		if (collection == null) {
+			return null;
+		}
+		int n = 0;
+		int size = collection.size();
+		if (size == 0) {
+			return null;
+		}
+		// alright, the collection is non-empty, get a random index
+		int index = ThreadLocalRandom.current().nextInt(size);
+		// scan the collection to find the element at the index
+		for (Iterator<T> it = collection.iterator(); it.hasNext();) {
+			if (n == index) {
+				return it.next();
+			}
+			it.next();
+			n++;
+		}
+		// huh, we must've encountered a concurrency problem, so we'll repeat
+		return random(collection);
 	}
 	
 }
