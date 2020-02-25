@@ -182,7 +182,7 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Gets a random element from a collection in a thread safe manner. <br>
+	 * Gets a random element from a collection in a thread safe (but not atomic) manner. <br>
 	 * If the input collection is <code>null</code> or empty, <code>null</code> is returned
 	 * 
 	 * @param <T> the type of the collection
