@@ -92,11 +92,11 @@
 	<distributionManagement>
 		<repository>
 			<id>arim-repo</id>
-			<url>https://www.arim.space/repo/repository/maven-releases/</url>
+			<url>https://maven.cloudsmith.io/anand-beh/arim-repo/</url>
 		</repository>
 		<snapshotRepository>
 			<id>arim-repo</id>
-			<url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+			<url>https://maven.cloudsmith.io/anand-beh/arim-repo/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	
