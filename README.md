@@ -26,7 +26,7 @@ Maven repository:
 ``` xml
 <repository>
   <id>arim-repo</id>
-  <url>https://www.arim.space/repo/repository/maven-snapshots/</url>
+  <url>https://dl.cloudsmith.io/public/anand-beh/arim-repo/maven/</url>
 </repository>
 ```
 
