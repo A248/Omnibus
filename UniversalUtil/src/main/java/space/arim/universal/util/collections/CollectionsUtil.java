@@ -40,6 +40,16 @@ public final class CollectionsUtil {
 	// Prevent instantiation
 	private CollectionsUtil() {}
 	
+	@SafeVarargs
+	@SuppressWarnings("unchecked")
+	private static <T> Class<T> genericType(T...doNotPassThisArray) {
+		return (Class<T>) doNotPassThisArray.getClass().getComponentType();
+	}
+	
+	/*private static <T> boolean genericInstanceOf(Object obj) {
+		return CollectionsUtil.<T>genericType().isInstance(obj);
+	}*/
+	
 	/**
 	 * Recursively retrieves a specified type of object from a Map of potentially nested maps. <br>
 	 * Periods delineate a nested map.
@@ -166,15 +176,11 @@ public final class CollectionsUtil {
 	 * @param <R> the type of the target array
 	 * @param original the original array
 	 * @param mapper the mapping function
-	 * @param doNotPassThisVariable ignore this parameter and do not pass it. It is used for internal mechanics.
 	 * @return a converted array
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper, R...doNotPassThisVariable) {
-		if (doNotPassThisVariable.length > 0) {
-			throw new IllegalArgumentException("Do not pass the last parameter!");
-		}
-		R[] results = (R[]) Array.newInstance(doNotPassThisVariable.getClass().getComponentType(), original.length);
+	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper) {
+		R[] results = (R[]) Array.newInstance(CollectionsUtil.<R>genericType(), original.length);
 		for (int n = 0; n < original.length; n++) {
 			results[n] = mapper.apply(original[n]);
 		}
@@ -182,8 +188,11 @@ public final class CollectionsUtil {
 	}
 	
 	/**
-	 * Gets a random element from a collection in a thread safe (but not atomic) manner. <br>
-	 * If the input collection is <code>null</code> or empty, <code>null</code> is returned
+	 * Gets a random element from a collection. <br>
+	 * If the input collection is <code>null</code> or empty, <code>null</code> is returned. <br>
+	 * <br>
+	 * This method is thread safe. The underlying collection may be concurrently modified
+	 * without comprising the integrity of this method call.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param collection the collection
