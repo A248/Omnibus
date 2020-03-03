@@ -37,9 +37,9 @@ import java.util.function.UnaryOperator;
  */
 public class UnmodifiableDishonestMap<K, V> extends DishonestMap<K, V> {
 	
-    private transient Set<K> keySetView;
-    private transient Set<Map.Entry<K,V>> entrySetView;
-    private transient Collection<V> valuesView;
+    private volatile transient Set<K> keySetView;
+    private volatile transient Set<Map.Entry<K,V>> entrySetView;
+    private volatile transient Collection<V> valuesView;
 	
     /**
 	 * Creates an UnmodifiableDishonestMap using the given map as the backing map and the {@link UnaryOperator} to process {@link Map#get(Object)} operations. <br>
