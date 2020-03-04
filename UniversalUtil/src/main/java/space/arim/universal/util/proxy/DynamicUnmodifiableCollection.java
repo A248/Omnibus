@@ -37,7 +37,7 @@ public class DynamicUnmodifiableCollection<E> extends UnmodifiableCollection<E> 
 	/**
 	 * Creates a DynamicUnmodifiableCollection based on a supplier of backing collections.
 	 * 
-	 * @param originalSupplier
+	 * @param originalSupplier the supplier of backing collections
 	 */
 	public DynamicUnmodifiableCollection(Supplier<Collection<E>> originalSupplier) {
 		super(null);
