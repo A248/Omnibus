@@ -20,7 +20,6 @@ package space.arim.universal.util.proxy;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -38,21 +37,15 @@ import java.util.Set;
  * @param <V> the value type
  */
 @SuppressWarnings("unlikely-arg-type")
-public abstract class ProxiedMap<K, V> implements Map<K, V> {
-
-    private final Map<K, V> original;
-	
-	protected ProxiedMap(Map<K, V> original) {
-		this.original = Objects.requireNonNull(original);
-	}
+public abstract class ProxiedMap<K, V> extends ProxiedObject<Map<K, V>> implements Map<K, V> {
 	
 	/**
-	 * Gets the original map upon which this ProxiedMap is based.
+	 * Creates a ProxiedMap based on a backing map
 	 * 
-	 * @return the original, backing map
+	 * @param original the original, backing map
 	 */
-	protected Map<K, V> getOriginal() {
-		return original;
+	protected ProxiedMap(Map<K, V> original) {
+		super(original);
 	}
 	
 	@Override

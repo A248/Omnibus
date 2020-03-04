@@ -35,9 +35,7 @@ import java.util.Iterator;
  * @param <E> the element type
  */
 @SuppressWarnings("unlikely-arg-type")
-public abstract class ProxiedCollection<E> implements Collection<E> {
-	
-	private final Collection<E> original;
+public abstract class ProxiedCollection<E> extends ProxiedObject<Collection<E>> implements Collection<E> {
 	
 	/**
 	 * Creates a ProxiedCollection based on a backing collection
@@ -45,16 +43,7 @@ public abstract class ProxiedCollection<E> implements Collection<E> {
 	 * @param original the original, backing collection
 	 */
 	protected ProxiedCollection(Collection<E> original) {
-		this.original = original;
-	}
-	
-	/**
-	 * Gets the original collection upon which this ProxiedCollection is based.
-	 * 
-	 * @return the original, backing collection
-	 */
-	protected Collection<E> getOriginal() {
-		return original;
+		super(original);
 	}
 	
 	@Override

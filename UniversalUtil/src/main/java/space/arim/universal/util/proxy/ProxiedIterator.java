@@ -34,9 +34,7 @@ import java.util.function.Consumer;
  *
  * @param <E>
  */
-public class ProxiedIterator<E> implements Iterator<E> {
-	
-	private final Iterator<E> original;
+public class ProxiedIterator<E> extends ProxiedObject<Iterator<E>> implements Iterator<E> {
 	
 	/**
 	 * Creates a ProxiedIterator based on a backing iterator
@@ -44,11 +42,7 @@ public class ProxiedIterator<E> implements Iterator<E> {
 	 * @param original the original, backing iterator
 	 */
 	public ProxiedIterator(Iterator<E> original) {
-		this.original = original;
-	}
-	
-	protected Iterator<E> getOriginal() {
-		return original;
+		super(original);
 	}
 	
 	@Override
