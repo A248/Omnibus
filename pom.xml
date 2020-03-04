@@ -137,4 +137,10 @@
 		</dependencies>
 	</dependencyManagement>
 	
+	<repositories>
+		<repository>
+			<id>arim-repo</id>
+			<url>https://dl.cloudsmith.io/public/anand-beh/arim-repo/maven/</url>
+		</repository>
+	</repositories>
 </project>
