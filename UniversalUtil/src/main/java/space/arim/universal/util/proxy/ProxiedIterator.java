@@ -47,24 +47,28 @@ public class ProxiedIterator<E> implements Iterator<E> {
 		this.original = original;
 	}
 	
+	protected Iterator<E> getOriginal() {
+		return original;
+	}
+	
 	@Override
 	public boolean hasNext() {
-		return original.hasNext();
+		return getOriginal().hasNext();
 	}
 	
 	@Override
 	public E next() {
-		return original.next();
+		return getOriginal().next();
 	}
 	
 	@Override
 	public void remove() {
-		original.remove();
+		getOriginal().remove();
 	}
 	
 	@Override
 	public void forEachRemaining(Consumer<? super E> action) {
-		original.forEachRemaining(action);
+		getOriginal().forEachRemaining(action);
 	}
 
 }

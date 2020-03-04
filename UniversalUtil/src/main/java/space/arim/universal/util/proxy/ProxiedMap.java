@@ -56,28 +56,28 @@ public abstract class ProxiedMap<K, V> implements Map<K, V> {
 	}
 	
 	@Override
-	public int size() {return original.size();}
+	public int size() {return getOriginal().size();}
 	@Override
-	public boolean isEmpty() {return original.isEmpty();}
+	public boolean isEmpty() {return getOriginal().isEmpty();}
 	@Override
-	public boolean containsKey(Object key) {return original.containsKey(key);}
+	public boolean containsKey(Object key) {return getOriginal().containsKey(key);}
 	@Override
-	public boolean containsValue(Object value) {return original.containsValue(value);}
+	public boolean containsValue(Object value) {return getOriginal().containsValue(value);}
 	@Override
-	public V get(Object key) {return original.get(key);}
+	public V get(Object key) {return getOriginal().get(key);}
 	@Override
-	public V put(K key, V value) {return original.put(key, value);}
+	public V put(K key, V value) {return getOriginal().put(key, value);}
 	@Override
-	public V remove(Object key) {return original.remove(key);}
+	public V remove(Object key) {return getOriginal().remove(key);}
 	@Override
-	public void putAll(Map<? extends K, ? extends V> m) {original.putAll(m);}
+	public void putAll(Map<? extends K, ? extends V> m) {getOriginal().putAll(m);}
 	@Override
-	public void clear() {original.clear();}
+	public void clear() {getOriginal().clear();}
 	@Override
-	public Set<K> keySet() {return original.keySet();}
+	public Set<K> keySet() {return getOriginal().keySet();}
 	@Override
-	public Collection<V> values() {return original.values();}
+	public Collection<V> values() {return getOriginal().values();}
 	@Override
-	public Set<Entry<K, V>> entrySet() {return original.entrySet();}
+	public Set<Entry<K, V>> entrySet() {return getOriginal().entrySet();}
 	
 }

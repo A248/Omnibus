@@ -58,30 +58,30 @@ public abstract class ProxiedCollection<E> implements Collection<E> {
 	}
 	
 	@Override
-	public int size() {return original.size();}
+	public int size() {return getOriginal().size();}
 	@Override
-	public boolean isEmpty() {return original.isEmpty();}
+	public boolean isEmpty() {return getOriginal().isEmpty();}
 	@Override
-	public boolean contains(Object o) {return original.contains(o);}
+	public boolean contains(Object o) {return getOriginal().contains(o);}
 	@Override
-	public Iterator<E> iterator() {return original.iterator();}
+	public Iterator<E> iterator() {return getOriginal().iterator();}
 	@Override
-	public Object[] toArray() {return original.toArray();}
+	public Object[] toArray() {return getOriginal().toArray();}
 	@Override
-	public <T> T[] toArray(T[] a) {return original.toArray(a);}
+	public <T> T[] toArray(T[] a) {return getOriginal().toArray(a);}
 	@Override
-	public boolean add(E e) {return original.add(e);}
+	public boolean add(E e) {return getOriginal().add(e);}
 	@Override
-	public boolean remove(Object o) {return original.remove(o);}
+	public boolean remove(Object o) {return getOriginal().remove(o);}
 	@Override
-	public boolean containsAll(Collection<?> c) {return original.containsAll(c);}
+	public boolean containsAll(Collection<?> c) {return getOriginal().containsAll(c);}
 	@Override
-	public boolean addAll(Collection<? extends E> c) {return original.addAll(c);}
+	public boolean addAll(Collection<? extends E> c) {return getOriginal().addAll(c);}
 	@Override
-	public boolean removeAll(Collection<?> c) {return original.removeAll(c);}
+	public boolean removeAll(Collection<?> c) {return getOriginal().removeAll(c);}
 	@Override
-	public boolean retainAll(Collection<?> c) {return original.retainAll(c);}
+	public boolean retainAll(Collection<?> c) {return getOriginal().retainAll(c);}
 	@Override
-	public void clear() {original.clear();}
+	public void clear() {getOriginal().clear();}
 	
 }
