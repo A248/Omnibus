@@ -20,7 +20,14 @@ package space.arim.universal.util.proxy;
 
 /**
  * A general parent object for objects, which simply redirect, a.k.a. <i>proxy</i>, calls to another object (the backing object). <br>
- * The proxy object is itself an instance of the backing object, and thus it may be substituted in order to provide refined control.
+ * The proxy object is itself an instance of the backing object, and thus it may be substituted in order to provide refined control. <br>
+ * <br>
+ * Please note that <b>not all proxied objects are able to extend ProxiedObject. </b> <br>
+ * Accordingly, ProxiedObject is only used as a default implementation; do not rely on proxying classes extending ProxiedObject. <br>
+ * If the proxy type is an interface, then the proxy object may extend this class and use it for basic implementation.
+ * However, if the proxy type is a class, then the proxy object, in order to maintain the same type as its backing object,
+ * must extend the proxy type, thereby preventing it from extending ProxiedObject. Consider {@link ProxiedCompletableFuture}. 
+ * It must extend <code>CompletableFuture</code> in order to disguise itself likewise, meaning it cannot extend ProxiedObject. <br>
  * 
  * @author A248
  *
