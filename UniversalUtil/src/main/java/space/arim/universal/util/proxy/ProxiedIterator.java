@@ -32,7 +32,7 @@ import java.util.function.Consumer;
  * 
  * @author A248
  *
- * @param <E>
+ * @param <E> the type of the iterator
  */
 public class ProxiedIterator<E> extends ProxiedObject<Iterator<E>> implements Iterator<E> {
 	

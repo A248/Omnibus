@@ -29,7 +29,7 @@ import java.util.Iterator;
  * 
  * @author A248
  *
- * @param <E>
+ * @param <E> the type of the collection
  */
 public class UnmodifiableCollection<E> extends ProxiedCollection<E> {
 	
