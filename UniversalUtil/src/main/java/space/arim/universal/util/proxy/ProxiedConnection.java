@@ -49,9 +49,7 @@ import java.util.concurrent.Executor;
  * @author A248
  *
  */
-public abstract class ProxiedConnection implements Connection {
-
-	private final Connection original;
+public abstract class ProxiedConnection extends ProxiedObject<Connection> implements Connection {
 	
 	/**
 	 * Creates a ProxiedConnection based on a backing connection
@@ -59,286 +57,277 @@ public abstract class ProxiedConnection implements Connection {
 	 * @param original the original, backing connection
 	 */
 	protected ProxiedConnection(Connection original) {
-		this.original = original;
-	}
-	
-	/**
-	 * Gets the original connection upon which this ProxiedConnection is based
-	 * 
-	 * @return the original, backing connection
-	 */
-	protected Connection getOriginal() {
-		return original;
+		super(original);
 	}
 	
 	@Override
 	public void close() throws SQLException {
-		original.close();
+		getOriginal().close();
 	}
 	
 	@Override
 	public boolean isClosed() throws SQLException {
-		return original.isClosed();
+		return getOriginal().isClosed();
 	}
-
+	
 	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
-		return original.unwrap(iface);
+		return getOriginal().unwrap(iface);
 	}
-
+	
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return original.isWrapperFor(iface);
+		return getOriginal().isWrapperFor(iface);
 	}
-
+	
 	@Override
 	public Statement createStatement() throws SQLException {
-		return original.createStatement();
+		return getOriginal().createStatement();
 	}
-
+	
 	@Override
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		return original.prepareStatement(sql);
+		return getOriginal().prepareStatement(sql);
 	}
-
+	
 	@Override
 	public CallableStatement prepareCall(String sql) throws SQLException {
-		return original.prepareCall(sql);
+		return getOriginal().prepareCall(sql);
 	}
-
+	
 	@Override
 	public String nativeSQL(String sql) throws SQLException {
-		return original.nativeSQL(sql);
+		return getOriginal().nativeSQL(sql);
 	}
-
+	
 	@Override
 	public void setAutoCommit(boolean autoCommit) throws SQLException {
-		original.setAutoCommit(autoCommit);
+		getOriginal().setAutoCommit(autoCommit);
 	}
-
+	
 	@Override
 	public boolean getAutoCommit() throws SQLException {
-		return original.getAutoCommit();
+		return getOriginal().getAutoCommit();
 	}
-
+	
 	@Override
 	public void commit() throws SQLException {
-		original.commit();
+		getOriginal().commit();
 	}
-
+	
 	@Override
 	public void rollback() throws SQLException {
-		original.rollback();
+		getOriginal().rollback();
 	}
-
+	
 	@Override
 	public DatabaseMetaData getMetaData() throws SQLException {
-		return original.getMetaData();
+		return getOriginal().getMetaData();
 	}
-
+	
 	@Override
 	public void setReadOnly(boolean readOnly) throws SQLException {
-		original.setReadOnly(readOnly);
+		getOriginal().setReadOnly(readOnly);
 	}
-
+	
 	@Override
 	public boolean isReadOnly() throws SQLException {
-		return original.isReadOnly();
+		return getOriginal().isReadOnly();
 	}
-
+	
 	@Override
 	public void setCatalog(String catalog) throws SQLException {
-		original.setCatalog(catalog);
+		getOriginal().setCatalog(catalog);
 	}
-
+	
 	@Override
 	public String getCatalog() throws SQLException {
-		return original.getCatalog();
+		return getOriginal().getCatalog();
 	}
-
+	
 	@Override
 	public void setTransactionIsolation(int level) throws SQLException {
-		original.setTransactionIsolation(level);
+		getOriginal().setTransactionIsolation(level);
 	}
-
+	
 	@Override
 	public int getTransactionIsolation() throws SQLException {
-		return original.getTransactionIsolation();
+		return getOriginal().getTransactionIsolation();
 	}
-
+	
 	@Override
 	public SQLWarning getWarnings() throws SQLException {
-		return original.getWarnings();
+		return getOriginal().getWarnings();
 	}
-
+	
 	@Override
 	public void clearWarnings() throws SQLException {
-		original.clearWarnings();
+		getOriginal().clearWarnings();
 	}
-
+	
 	@Override
 	public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
-		return original.createStatement(resultSetType, resultSetConcurrency);
+		return getOriginal().createStatement(resultSetType, resultSetConcurrency);
 	}
-
+	
 	@Override
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		return original.prepareStatement(sql, resultSetType, resultSetConcurrency);
+		return getOriginal().prepareStatement(sql, resultSetType, resultSetConcurrency);
 	}
-
+	
 	@Override
 	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-		return original.prepareCall(sql, resultSetType, resultSetConcurrency);
+		return getOriginal().prepareCall(sql, resultSetType, resultSetConcurrency);
 	}
-
+	
 	@Override
 	public Map<String, Class<?>> getTypeMap() throws SQLException {
-		return original.getTypeMap();
+		return getOriginal().getTypeMap();
 	}
-
+	
 	@Override
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-		original.setTypeMap(map);
+		getOriginal().setTypeMap(map);
 	}
-
+	
 	@Override
 	public void setHoldability(int holdability) throws SQLException {
-		original.setHoldability(holdability);
+		getOriginal().setHoldability(holdability);
 	}
-
+	
 	@Override
 	public int getHoldability() throws SQLException {
-		return original.getHoldability();
+		return getOriginal().getHoldability();
 	}
-
+	
 	@Override
 	public Savepoint setSavepoint() throws SQLException {
-		return original.setSavepoint();
+		return getOriginal().setSavepoint();
 	}
-
+	
 	@Override
 	public Savepoint setSavepoint(String name) throws SQLException {
-		return original.setSavepoint(name);
+		return getOriginal().setSavepoint(name);
 	}
-
+	
 	@Override
 	public void rollback(Savepoint savepoint) throws SQLException {
-		original.rollback(savepoint);
+		getOriginal().rollback(savepoint);
 	}
-
+	
 	@Override
 	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-		original.releaseSavepoint(savepoint);
+		getOriginal().releaseSavepoint(savepoint);
 	}
-
+	
 	@Override
 	public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		return original.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+		return getOriginal().createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
 	}
-
+	
 	@Override
 	public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		return original.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+		return getOriginal().prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
 	}
-
+	
 	@Override
 	public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		return original.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+		return getOriginal().prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
 	}
-
+	
 	@Override
 	public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
-		return original.prepareStatement(sql, autoGeneratedKeys);
+		return getOriginal().prepareStatement(sql, autoGeneratedKeys);
 	}
-
+	
 	@Override
 	public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
-		return original.prepareStatement(sql, columnIndexes);
+		return getOriginal().prepareStatement(sql, columnIndexes);
 	}
-
+	
 	@Override
 	public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
-		return original.prepareStatement(sql, columnNames);
+		return getOriginal().prepareStatement(sql, columnNames);
 	}
-
+	
 	@Override
 	public Clob createClob() throws SQLException {
-		return original.createClob();
+		return getOriginal().createClob();
 	}
-
+	
 	@Override
 	public Blob createBlob() throws SQLException {
-		return original.createBlob();
+		return getOriginal().createBlob();
 	}
-
+	
 	@Override
 	public NClob createNClob() throws SQLException {
-		return original.createNClob();
+		return getOriginal().createNClob();
 	}
-
+	
 	@Override
 	public SQLXML createSQLXML() throws SQLException {
-		return original.createSQLXML();
+		return getOriginal().createSQLXML();
 	}
-
+	
 	@Override
 	public boolean isValid(int timeout) throws SQLException {
-		return original.isValid(timeout);
+		return getOriginal().isValid(timeout);
 	}
-
+	
 	@Override
 	public void setClientInfo(String name, String value) throws SQLClientInfoException {
-		original.setClientInfo(name, value);
+		getOriginal().setClientInfo(name, value);
 	}
-
+	
 	@Override
 	public void setClientInfo(Properties properties) throws SQLClientInfoException {
-		original.setClientInfo(properties);
+		getOriginal().setClientInfo(properties);
 	}
-
+	
 	@Override
 	public String getClientInfo(String name) throws SQLException {
-		return original.getClientInfo(name);
+		return getOriginal().getClientInfo(name);
 	}
-
+	
 	@Override
 	public Properties getClientInfo() throws SQLException {
-		return original.getClientInfo();
+		return getOriginal().getClientInfo();
 	}
-
+	
 	@Override
 	public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
-		return original.createArrayOf(typeName, elements);
+		return getOriginal().createArrayOf(typeName, elements);
 	}
-
+	
 	@Override
 	public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
-		return original.createStruct(typeName, attributes);
+		return getOriginal().createStruct(typeName, attributes);
 	}
-
+	
 	@Override
 	public void setSchema(String schema) throws SQLException {
-		original.setSchema(schema);
+		getOriginal().setSchema(schema);
 	}
-
+	
 	@Override
 	public String getSchema() throws SQLException {
-		return original.getSchema();
+		return getOriginal().getSchema();
 	}
-
+	
 	@Override
 	public void abort(Executor executor) throws SQLException {
-		original.abort(executor);
+		getOriginal().abort(executor);
 	}
-
+	
 	@Override
 	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-		original.setNetworkTimeout(executor, milliseconds);
+		getOriginal().setNetworkTimeout(executor, milliseconds);
 	}
-
+	
 	@Override
 	public int getNetworkTimeout() throws SQLException {
-		return original.getNetworkTimeout();
+		return getOriginal().getNetworkTimeout();
 	}
 	
 }
