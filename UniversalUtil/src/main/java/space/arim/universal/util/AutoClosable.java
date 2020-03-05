@@ -37,6 +37,8 @@ public interface AutoClosable extends AutoCloseable {
 	@Override
 	default void close() {
 		
+		// do nothing by default
+		
 	}
 	
 }
