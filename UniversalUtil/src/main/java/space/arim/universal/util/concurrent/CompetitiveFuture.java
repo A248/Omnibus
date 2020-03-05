@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import space.arim.universal.util.proxy.ProxiedCompletableFuture;
 
@@ -77,7 +78,7 @@ public class CompetitiveFuture<T> extends ProxiedCompletableFuture<T> {
 	 * @return a combined CompetitiveFuture, never <code>null</code>
 	 */
 	public static CompetitiveFuture<Void> allOf(Executor executor, CompletableFuture<?>...originals) {
-		return new CompetitiveFuture<Void>(CompletableFuture.allOf(originals), executor);
+		return of(CompletableFuture.allOf(originals), executor);
 	}
 	
 	/**
@@ -88,11 +89,11 @@ public class CompetitiveFuture<T> extends ProxiedCompletableFuture<T> {
 	 * @return a combined CompetitiveFuture, never <code>null</code>
 	 */
 	public static CompetitiveFuture<Object> anyOf(Executor executor, CompletableFuture<?>...originals) {
-		return new CompetitiveFuture<Object>(CompletableFuture.anyOf(originals), executor);
+		return of(CompletableFuture.anyOf(originals), executor);
 	}
 	
 	/**
-	 * Equivalent to {@link CompletableFuture#completedFuture(Object)}
+	 * Shortcut {@link #completedFuture(Object)}
 	 * 
 	 * @param <T> the type of the object
 	 * @param value the object
@@ -100,7 +101,42 @@ public class CompetitiveFuture<T> extends ProxiedCompletableFuture<T> {
 	 * @return a CompetitiveFuture, never <code>null</code>
 	 */
 	public static <T> CompetitiveFuture<T> completed(T value, Executor executor) {
-		return new CompetitiveFuture<T>(CompletableFuture.completedFuture(value), executor);
+		return of(CompletableFuture.completedFuture(value), executor);
+	}
+	
+	/**
+	 * Same as {@link CompletableFuture#completedFuture(Object)}, but accepts the <code>Executor</code> for the CompetitiveFuture.
+	 * 
+	 * @param <T> the type of the object
+	 * @param value the object
+	 * @param executor the executor
+	 * @return a CompetitiveFuture, never <code>null</code>
+	 */
+	public static <T> CompetitiveFuture<T> completedFuture(T value, Executor executor) {
+		return of(CompletableFuture.completedFuture(value), executor);
+	}
+	
+	/**
+	 * Same as {@link CompletableFuture#runAsync(Runnable, Executor)}, but accepts the <code>Executor</code> for the CompetitiveFuture.
+	 * 
+	 * @param runnable the runnable to execute
+	 * @param executor the executor
+	 * @return a CompetitiveFuture, never <code>null</code>
+	 */
+	public static CompetitiveFuture<Void> runAsync(Runnable runnable, Executor executor) {
+		return of(CompletableFuture.runAsync(runnable, executor), executor);
+	}
+	
+	/**
+	 * Same as {@link CompletableFuture#supplyAsync(Supplier, Executor)}, but accepts the <code>Executor</code> for the CompetitiveFuture.
+	 * 
+	 * @param <T> the type of the object supplied
+	 * @param supplier the supplier of the object
+	 * @param executor the executor
+	 * @return a CompetitiveFuture, never <code>null</code>
+	 */
+	public static <T> CompetitiveFuture<T> supplyAsync(Supplier<T> supplier, Executor executor) {
+		return of(CompletableFuture.supplyAsync(supplier, executor), executor);
 	}
 	
 	/**
