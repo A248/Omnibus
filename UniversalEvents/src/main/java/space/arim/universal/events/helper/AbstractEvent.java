@@ -28,7 +28,7 @@ import space.arim.universal.events.Events;
  * @author A248
  *
  */
-public class AbstractEvent implements Event {
+public abstract class AbstractEvent implements Event {
 	
 	private final Events events;
 	
