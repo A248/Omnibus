@@ -19,7 +19,7 @@
 package space.arim.universal.events;
 
 /**
- * An event which may be cancelled via {@link #setCancelled(boolean)}
+ * An event which may be cancelled via {@link #setCancelled(boolean)}.
  * 
  * @author A248
  *
@@ -29,14 +29,14 @@ public interface Cancellable {
 	/**
 	 * Whether the event has been cancelled, presumably by another listener
 	 * 
-	 * @return true if and only if the event is cancelled
+	 * @return true if the event is cancelled, false otherwise
 	 */
 	boolean isCancelled();
 	
 	/**
-	 * Cancels/uncancels an event
+	 * Cancels (or uncancels) the event
 	 * 
-	 * @param cancelled - whether or not to cancel
+	 * @param cancelled whether or not to cancel
 	 */
 	void setCancelled(boolean cancelled);
 	
