@@ -18,6 +18,7 @@
  */
 package space.arim.universal.events.helper;
 
+import space.arim.universal.events.Event;
 import space.arim.universal.events.Events;
 
 /**
