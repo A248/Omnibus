@@ -28,7 +28,7 @@ import space.arim.universal.events.Events;
  * @author A248
  *
  */
-public abstract class AbstractCancellableEvent extends AbstractEvent implements Cancellable {
+public abstract class AbstractCancellable extends AbstractEvent implements Cancellable {
 	
 	private volatile boolean cancelled = false;
 	
@@ -37,7 +37,7 @@ public abstract class AbstractCancellableEvent extends AbstractEvent implements 
 	 * 
 	 * @param events the events instance
 	 */
-	protected AbstractCancellableEvent(Events events) {
+	protected AbstractCancellable(Events events) {
 		super(events);
 	}
 	
