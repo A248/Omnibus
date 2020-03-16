@@ -68,7 +68,7 @@ public final class UniversalEvents implements Events {
 	/**
 	 * Used to sort all ListenerMethod wrappers by priority <br>
 	 * <br>
-	 * The order is swapped so that lower-priority listeners are called first
+	 * The order is swapped so that lower priority listeners are called first
 	 * 
 	 */
 	private static final Comparator<ListenerMethod> PRIORITY_COMPARATOR = (method1, method2) -> method2.priority - method1.priority;
@@ -192,10 +192,7 @@ public final class UniversalEvents implements Events {
 				if (parameters.length != 1) {
 					throw new IllegalArgumentException("Listening methods must have 1 parameter!");
 				}
-				if (!methodMap.containsKey(parameters[0])) {
-					methodMap.put(parameters[0], new HashSet<ListenerMethod>());
-				}
-				methodMap.get(parameters[0]).add(new ListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
+				methodMap.computeIfAbsent(parameters[0], (clazz) -> new HashSet<ListenerMethod>()).add(new ListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
 			}
 		}
 		return methodMap;
@@ -203,36 +200,28 @@ public final class UniversalEvents implements Events {
 	
 	@Override
 	public void register(Listener listener) {
-		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
-		if (methodMap.isEmpty()) {
-			return;
-		}
-		synchronized (eventListeners) {
-			methodMap.forEach((clazz, methods) -> {
-				if (!eventListeners.containsKey(clazz)) {
-					eventListeners.put(clazz, new ArrayList<ListenerMethod>());
+		getMethodMap(listener).forEach((clazz, methods) -> {
+			List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
+			synchronized (existingMethods) {
+				if (existingMethods.addAll(methods)) {
+					existingMethods.sort(PRIORITY_COMPARATOR);
 				}
-				List<ListenerMethod> eventMethods = eventListeners.get(clazz);
-				if (eventMethods.addAll(methods)) {
-					eventMethods.sort(PRIORITY_COMPARATOR);
-				}
-			});
-		}
+			}
+		});
 	}
 	
 	@Override
 	public void unregister(Listener listener) {
-		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
-		if (methodMap.isEmpty()) {
-			return;
-		}
-		synchronized (eventListeners) {
-			methodMap.forEach((clazz, methods) -> {
-				if (eventListeners.containsKey(clazz) && eventListeners.get(clazz).removeAll(methods)) {
-					eventListeners.get(clazz).sort(PRIORITY_COMPARATOR);
+		getMethodMap(listener).forEach((clazz, methods) -> {
+			List<ListenerMethod> existingMethods = eventListeners.get(clazz);
+			if (existingMethods != null) {
+				synchronized (existingMethods) {
+					if (existingMethods.removeAll(methods)) {
+						existingMethods.sort(PRIORITY_COMPARATOR);
+					}
 				}
-			});
-		}
+			}
+		});
 	}
 	
 }
