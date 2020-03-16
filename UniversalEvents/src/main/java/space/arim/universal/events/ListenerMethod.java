@@ -39,6 +39,7 @@ class ListenerMethod {
 		this.method = method;
 		this.priority = priority;
 		this.ignoreCancelled = ignoreCancelled;
+		method.setAccessible(true);
 	}
 	
 	void invoke(Event evt) {
