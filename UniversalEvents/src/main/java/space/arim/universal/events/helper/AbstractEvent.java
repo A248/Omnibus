@@ -23,14 +23,7 @@ import space.arim.universal.events.Event;
 import space.arim.universal.events.Events;
 
 /**
- * A helper class for implementing {@link Event}, ensuring its specifications are always complied with. <br>
- * <br>
- * Example usage: <br>
- * <code>
- * public class MyEvent extends AbstractEvent {
- * 
- * }
- * </code>
+ * A helper class for implementing {@link Event}, ensuring its specifications are always complied with.
  * 
  * @author A248
  *
@@ -40,9 +33,9 @@ public class AbstractEvent implements Event {
 	private final Events events;
 	
 	/**
-	 * Creates the event with
+	 * Creates the event with a corresponding {@link Events} instance
 	 * 
-	 * @param events
+	 * @param events the events instance
 	 */
 	protected AbstractEvent(Events events) {
 		this.events = events;
