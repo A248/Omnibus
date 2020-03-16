@@ -18,12 +18,10 @@
  */
 package space.arim.universal.util.collections;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
@@ -39,16 +37,6 @@ public final class CollectionsUtil {
 
 	// Prevent instantiation
 	private CollectionsUtil() {}
-	
-	@SafeVarargs
-	@SuppressWarnings("unchecked")
-	private static <T> Class<T> genericType(T...doNotPassThisArray) {
-		return (Class<T>) doNotPassThisArray.getClass().getComponentType();
-	}
-	
-	/*private static <T> boolean genericInstanceOf(Object obj) {
-		return CollectionsUtil.<T>genericType().isInstance(obj);
-	}*/
 	
 	/**
 	 * Recursively retrieves a specified type of object from a Map of potentially nested maps. <br>
@@ -164,27 +152,14 @@ public final class CollectionsUtil {
 	 * @param <T> the type of the array
 	 * @param original the input array
 	 * @return a string array
+	 * 
 	 */
 	public static <T> String[] convertAllToString(T[] original) {
-		return convertAll(original, (object) -> object.toString());
-	}
-	
-	/**
-	 * Converts an array of type T to type R according to the given mapping function.
-	 * 
-	 * @param <T> the type of the original array
-	 * @param <R> the type of the target array
-	 * @param original the original array
-	 * @param mapper the mapping function
-	 * @return a converted array
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T, R> R[] convertAll(T[] original, Function<T, R> mapper) {
-		R[] results = (R[]) Array.newInstance(CollectionsUtil.<R>genericType(), original.length);
+		String[] result = new String[original.length];
 		for (int n = 0; n < original.length; n++) {
-			results[n] = mapper.apply(original[n]);
+			result[n] = original[n].toString();
 		}
-		return results;
+		return result;
 	}
 	
 	/**
