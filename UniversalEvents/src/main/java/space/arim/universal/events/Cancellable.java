@@ -19,7 +19,12 @@
 package space.arim.universal.events;
 
 /**
- * An event which may be cancelled via {@link #setCancelled(boolean)}.
+ * An event which may be cancelled via {@link #setCancelled(boolean)}. <br>
+ * <br>
+ * <b>Implementations MUST be thread safe!</b> <br>
+ * Programmers should use a <code>volatile</code> variable to track whether
+ * the event is cancelled internally; <code>volatile</code> ensures the value
+ * can be read safely by multiple threads operating on the same event concurrently.
  * 
  * @author A248
  *
@@ -27,14 +32,18 @@ package space.arim.universal.events;
 public interface Cancellable {
 	
 	/**
-	 * Whether the event has been cancelled, presumably by another listener
+	 * Whether the event has been cancelled, presumably by another listener. <br>
+	 * <br>
+	 * <b>Implementations MUST be thread safe!</b> Use a <code>volatile</code> variable.
 	 * 
 	 * @return true if the event is cancelled, false otherwise
 	 */
 	boolean isCancelled();
 	
 	/**
-	 * Cancels (or uncancels) the event
+	 * Cancels (or uncancels) the event. <br>
+	 * <br>
+	 * <b>Implementations MUST be thread safe!</b> Use a <code>volatile</code> variable.
 	 * 
 	 * @param cancelled whether or not to cancel
 	 */
