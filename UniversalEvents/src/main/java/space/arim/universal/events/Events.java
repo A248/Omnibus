@@ -26,7 +26,7 @@ import space.arim.universal.util.Util;
  * <br>
  * <b>Usage</b>: to fire and listen to events. <br>
  * To fire events: {@link #fireEvent(Event)} <br>
- * To listen to events: {@link EventHandler} <br>
+ * To listen to events: {@link Listen} <br>
  * 
  * @author A248
  *
@@ -57,7 +57,7 @@ public interface Events {
 	/**
 	 * Registers an object to listen to events. <br>
 	 * <br>
-	 * In the object registered, listening methods must have the {@link EventHandler} annotation.
+	 * In the object registered, listening methods must have the {@link Listen} annotation.
 	 * 
 	 * @param listener the object to register
 	 */

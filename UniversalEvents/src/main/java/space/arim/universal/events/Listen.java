@@ -25,29 +25,28 @@ import java.lang.annotation.Target;
 
 /**
  * Used for detecting listener methods <br>
- * <br>
- * To mark a method for listening, annotate it with this annotation.
+ * To mark a method for listening, use this annotation.
  * 
  * @author A248
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface EventHandler {
+public @interface Listen {
 	
 	/**
-	 * The priority of an EventHandler <br>
+	 * The priority of the listening <br>
 	 * <br>
 	 * <b>Higher priorities are called last</b>
 	 * 
-	 * @return byte - the priority
+	 * @return byte the priority
 	 */
 	byte priority() default 0;
 	
 	/**
-	 * Whether to ignore cancelled events
+	 * If <code>true</code>, the method will not be invoked if the event is cancelled.
 	 * 
-	 * @return false by default, true if specified as such
+	 * @return whether to ignore cancelled events
 	 */
 	boolean ignoreCancelled() default false;
 	

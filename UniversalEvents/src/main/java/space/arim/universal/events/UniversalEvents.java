@@ -186,7 +186,7 @@ public final class UniversalEvents implements Events {
 	private static Map<Class<?>, Set<ListenerMethod>> getMethodMap(Listener listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = new HashMap<Class<?>, Set<ListenerMethod>>();
 		for (Method method : listener.getClass().getDeclaredMethods()) {
-			EventHandler annotation = method.getAnnotation(EventHandler.class);
+			Listen annotation = method.getAnnotation(Listen.class);
 			if (annotation != null) {
 				Class<?>[] parameters = method.getParameterTypes();
 				if (parameters.length != 1) {

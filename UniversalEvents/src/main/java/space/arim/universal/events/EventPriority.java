@@ -21,7 +21,7 @@ package space.arim.universal.events;
 /**
  * Class containing priority constants for referential use
  * 
- * <br><br>See {@link space.arim.universal.events.EventHandler#priority() EventHandler.priority()}
+ * <br><br>See {@link Listen#priority()}
  * 
  * @author A248
  */
