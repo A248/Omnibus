@@ -19,13 +19,9 @@
 package space.arim.universal.events;
 
 /**
- * A universal event <br>
+ * An event which runs either synchronously or asynchronously. <br>
  * <br>
- * Since this is an interface rather than an abstract class,
- * you may create custom events in other event managers which double as a universal event,
- * saving the hassle of making separate event classes for every platform. <br>
- * <br>
- * <b>Or, better yet, use UniversalEvents entirely</b>, and never deal with such problems again!
+ * See {@link #isAsynchronous()}
  * 
  * @author A248
  *
@@ -36,14 +32,13 @@ public interface Event {
 	 * Whether an event is running asynchronously <br>
 	 * <br>
 	 * <b>Contract</b>: <br>
-	 * * If true, event MUST NOT run synchronously with the main thread <br>
-	 * * If false, event MUST run synchronously with the main thread <br>
+	 * * If true, event MUST NOT run on the main thread <br>
+	 * * If false, event MUST run on the main thread <br>
 	 * <br>
 	 * The main thread is generally taken as the thread doing the most work. <br>
-	 * <br>
-	 * <b>The event is vetted by UniversalEvents according to {@link space.arim.universal.util.Util#isAsynchronous} to ensure it complies with this specification</b>
+	 * <b>This method return is vetted by {@link Events} implementations (according to {@link space.arim.universal.util.Util#isAsynchronous}) to ensure it complies with this specification</b>
 	 * 
-	 * @return true if and only if event is asynchronous
+	 * @return true if the event is asynchronous, false otherwise
 	 */
 	boolean isAsynchronous();
 	
