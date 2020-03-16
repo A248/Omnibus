@@ -183,7 +183,7 @@ public final class UniversalEvents implements Events {
 		return !(event instanceof Cancellable) || !((Cancellable) event).isCancelled();
 	}
 	
-	private static Map<Class<?>, Set<ListenerMethod>> getMethodMap(Object listener) {
+	private static Map<Class<?>, Set<ListenerMethod>> getMethodMap(Listener listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = new HashMap<Class<?>, Set<ListenerMethod>>();
 		for (Method method : listener.getClass().getDeclaredMethods()) {
 			EventHandler annotation = method.getAnnotation(EventHandler.class);
@@ -202,7 +202,7 @@ public final class UniversalEvents implements Events {
 	}
 	
 	@Override
-	public void register(Object listener) {
+	public void register(Listener listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
 		if (methodMap.isEmpty()) {
 			return;
@@ -221,7 +221,7 @@ public final class UniversalEvents implements Events {
 	}
 	
 	@Override
-	public void unregister(Object listener) {
+	public void unregister(Listener listener) {
 		Map<Class<?>, Set<ListenerMethod>> methodMap = getMethodMap(listener);
 		if (methodMap.isEmpty()) {
 			return;

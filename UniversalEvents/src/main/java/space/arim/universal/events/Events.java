@@ -61,7 +61,7 @@ public interface Events {
 	 * 
 	 * @param listener the object to register
 	 */
-	void register(Object listener);
+	void register(Listener listener);
 	
 	/**
 	 * Unregister an object from any listening. <br>
@@ -70,6 +70,6 @@ public interface Events {
 	 * 
 	 * @param listener the object to unregister
 	 */
-	void unregister(Object listener);
+	void unregister(Listener listener);
 	
 }
