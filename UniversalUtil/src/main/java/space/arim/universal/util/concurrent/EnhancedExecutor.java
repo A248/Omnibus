@@ -31,24 +31,39 @@ import java.util.function.Supplier;
  * A {@link Executor} with upgraded concurrent functionality. Focuses specifically on concurrent execution and scheduling, as such
  * there are no methods for thread pool management (such as shutdown, await termination, etc.) as in {@link java.util.concurrent.ExecutorService ExecutorService}. <br>
  * <br>
+ * {@link #decorate(Executor)} may be used to enhance a <code>Executor</code> into a <code>EnhancedExecutor</code>. <br>
+ * <br>
  * <b>Specifications:</b> <br>
  * * Requires {@link Executor#execute(Runnable)} <br>
  * * EnhancedExecutor provides default implementations for all of its own specifications. <br>
  * <br>
  * <b>Qualities:</b> <br>
- * * Adds {@link #submit(Runnable)} and {@link #supply(Supplier)}. <br>
- * * Adds the scheduling methods: <br>
- * * * {@link #schedule(Runnable, long, TimeUnit)}: for a one{@literal -}shot delayed task <br>
- * * * <i>{@literal schedule(Runnable/Consumer, long, LongUnaryOperator/LongBinaryOperator, TimeUnit)}</i>: for a repeating delayed task.
- * The <code>Runnable</code> is the execution to run, or a Consumer if the task must be able to cancel itself.
- * The <code>long</code> is the initial delay. If negative, nothing happens and all further scheduling is cancelled. If zero, it runs immediately.
- * The <code>LongUnaryOperator</code> or <code>LongBinaryOperator</code> is the <i>delay function</i> used to calculate the delay
- * before the next execution. If Unary, it takes the last delay as the input. If Binary, it takes the last delay as the left input
- * and the last execution time as the right input. {@link DelayFunctions} may be used for default implementations of delay functions.
- * The TimeUnit is the unit which the initial delay is specified in and the unit which the delay function uses. The method variants are:
- * ({@link #schedule(Runnable, long, LongUnaryOperator, TimeUnit)} / {@link #schedule(Consumer, long, LongUnaryOperator, TimeUnit)} / {@link #schedule(Runnable, long, LongBinaryOperator, TimeUnit)} / {@link #schedule(Consumer, long, LongBinaryOperator, TimeUnit)}) <br>
  * <br>
- * {@link #decorate(Executor)} may be used to enhance <code>Executor</code>s into <code>EnhancedExecutor</code>s.
+ * Adds {@link #submit(Runnable)} and {@link #supply(Supplier)} for basic asynchronous work. <br>
+ * <br>
+ * Adds several scheduling methods to enable timed execution. Programmers may, if desired, dynamically provide
+ * the time between executions based on a delay function. <br>
+ * Scheduling comes in many variants. {@link #schedule(Runnable, long, TimeUnit)} may be used for a one{@literal -}off delayed task
+ * (delays and then fires once, without repeating). <br>
+ * <br>
+ * There are several variant methods, which follow <i>{@literal schedule(Runnable/Consumer, long, LongUnaryOperator/LongBinaryOperator, TimeUnit)}</i>,
+ * which allow for repeating delayed tasks. <br>
+ * The <code>Runnable</code> is the execution to run, or a <code>Consumer</code> if the task must be able to access itself.
+ * The <code>long</code> is the initial delay. If negative, nothing happens and all further scheduling is cancelled.
+ * If zero, task eexecution begins immediately. <br>
+ * The <code>LongUnaryOperator</code> or <code>LongBinaryOperator</code> is the <i>delay function</i> used to calculate the delay
+ * before the next execution. All executions are guaranteed not to overlap. This is ensured in the default implementation and should
+ * likewise be upheld in overriding implementations. <br>
+ * If the delay function is "Unary", it takes the last delay as the input; "Unary" delay functions calculate the next delay
+ * based only on the previous delay. If "Binary", the delay function takes the last delay as the left input and
+ * the last execution time as the right input. Essentially, "Binary" delay functions generate the next delay
+ * based on the previous delay and the execution time. For simple implementations, {@link DelayFunctions} may be used. <br>
+ * The TimeUnit is the unit which the initial delay is specified in and the unit which the delay function uses.
+ * However, note that while <code>TimeUnit.NANOSECONDS</code> is a possible parameter,
+ * implementations are not guaranteed further precision than milliseconds time. <br>
+ * The method variants are:
+ * ({@link #schedule(Runnable, long, LongUnaryOperator, TimeUnit)} / {@link #schedule(Consumer, long, LongUnaryOperator, TimeUnit)} /
+ * {@link #schedule(Runnable, long, LongBinaryOperator, TimeUnit)} / {@link #schedule(Consumer, long, LongBinaryOperator, TimeUnit)}).
  * 
  * @author A248
  *
@@ -195,7 +210,8 @@ public interface EnhancedExecutor extends Executor {
 	}
 	
 	/**
-	 * Enhances a <code>Executor</code>, converting to an EnhancedExecutor
+	 * Enhances a <code>Executor</code>, converting to an EnhancedExecutor. <br>
+	 * The result uses the default implementations of all but the required <code>execute()</code>.
 	 * 
 	 * @param executor the executor
 	 * @return an EnhancedExecutor with the same {@link #execute(Runnable)} method
