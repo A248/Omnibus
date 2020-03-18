@@ -28,7 +28,7 @@ class SchedulerThread extends Thread {
 	
 	static SchedulerThread get() {
 		if (inst == null) {
-			synchronized (inst) {
+			synchronized (SchedulerThread.class) {
 				if (inst == null) {
 					inst = new SchedulerThread();
 					inst.start();
