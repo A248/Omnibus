@@ -18,35 +18,27 @@
  */
 package space.arim.universal.util.proxy;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * A {@link UnmodifiableCollection} whose original, backing collection is dynamically provided by a {@link Supplier}. <br>
+ * A version of {@link DynamicUnmodifiableCollection} which is specifically a set. <br>
  * <br>
  * On every call, the supplier is invoked and used to generate results.
  * 
  * @author A248
  *
- * @param <E> the type of the collection
+ * @param <E> the type of the set
  */
-public class DynamicUnmodifiableCollection<E> extends UnmodifiableCollection<E> {
-
-	private final Supplier<? extends Collection<E>> originalSupplier;
+public class DynamicUnmodifiableSet<E> extends DynamicUnmodifiableCollection<E> implements Set<E> {
 	
 	/**
-	 * Creates a DynamicUnmodifiableCollection based on a supplier of backing collections.
+	 * Creates a DynamicUnmodifiableSet based on a supplier of backing sets.
 	 * 
-	 * @param originalSupplier the supplier of backing collections
+	 * @param originalSupplier the supplier of backing sets
 	 */
-	public DynamicUnmodifiableCollection(Supplier<? extends Collection<E>> originalSupplier) {
-		super(null);
-		this.originalSupplier = originalSupplier;
+	public DynamicUnmodifiableSet(Supplier<Set<E>> originalSupplier) {
+		super(originalSupplier);
 	}
 	
-	@Override
-	protected Collection<E> getOriginal() {
-		return originalSupplier.get();
-	}
-
 }
