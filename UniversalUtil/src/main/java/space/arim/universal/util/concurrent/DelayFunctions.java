@@ -27,7 +27,7 @@ import java.util.function.LongUnaryOperator;
  * Recall that <code>Binary</code> operators take into account execution time, while <code>Unary</code> operators do not. <br>
  * Also, note that delay functions are applied after each execution. The first delay is determined by the initial
  * delay passed as a parameter to the scheduling methods themselves. Therefore,
- * <code>executor.schedule(this::runSomeTask, 5, DelayFunctions.exponential(2), TimeUnit.SECONDS)<br>, where <code>executor</code>
+ * <code>executor.schedule(this::runSomeTask, 5, DelayFunctions.exponential(2), TimeUnit.SECONDS)</code>, where <code>executor</code>
  * is an instance of <code>EnhancedExecutor</code>, will schedule some task so that, after five seconds, it is executed,
  * then there is a 10 second delay before the next execution, then a 20 second delay, etc. <br>
  * <br>
