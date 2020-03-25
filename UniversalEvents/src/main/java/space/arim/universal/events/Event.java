@@ -36,7 +36,9 @@ public interface Event {
 	 * * If false, event MUST run on the main thread <br>
 	 * <br>
 	 * The main thread is generally taken as the thread doing the most work. <br>
-	 * <b>This method return is vetted by {@link Events} implementations (according to {@link space.arim.universal.util.Util#isAsynchronous}) to ensure it complies with this specification</b>
+	 * <b>This method return is vetted by {@link Events} implementations (according to
+	 * {@link space.arim.universal.util.Util#isAsynchronous Util.isAnsynchronous()})
+	 * to ensure it complies with this specification</b>
 	 * 
 	 * @return true if the event is asynchronous, false otherwise
 	 */
