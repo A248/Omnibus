@@ -18,6 +18,8 @@
  */
 package space.arim.universal.events;
 
+import java.util.function.Consumer;
+
 import space.arim.universal.util.Util;
 
 /**
@@ -62,6 +64,17 @@ public interface Events {
 	 * @param listener the object to register
 	 */
 	void register(Listener listener);
+	
+	/**
+	 * Dynamically registers a listener.
+	 * 
+	 * @param <E> the type of the event
+	 * @param event the event class
+	 * @param priority the priority at which the listener listens, same as in {@link Listen}
+	 * @param listener the logic to run when the event fires
+	 * @return a listener which may be unregistered when necessary
+	 */
+	<E extends Event> Listener register(Class<E> event, byte priority, Consumer<E> listener);
 	
 	/**
 	 * Unregister an object from any listening. <br>

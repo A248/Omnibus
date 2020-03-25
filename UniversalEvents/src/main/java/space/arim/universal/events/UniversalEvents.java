@@ -20,6 +20,7 @@ package space.arim.universal.events;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import space.arim.universal.util.UniversalUtil;
@@ -175,7 +177,7 @@ public final class UniversalEvents implements Events {
 			if (clazz.isInstance(event)) {
 				listeners.forEach((listener) -> {
 					if (!(event instanceof Cancellable && listener.ignoreCancelled && ((Cancellable) event).isCancelled())) {
-						listener.invoke(event);
+						listener.invoke(clazz.cast(event));
 					}
 				});
 			}
@@ -183,8 +185,28 @@ public final class UniversalEvents implements Events {
 		return !(event instanceof Cancellable) || !((Cancellable) event).isCancelled();
 	}
 	
-	private static Map<Class<?>, Set<ListenerMethod>> getMethodMap(Listener listener) {
-		Map<Class<?>, Set<ListenerMethod>> methodMap = new HashMap<Class<?>, Set<ListenerMethod>>();
+	private void addMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
+		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
+		synchronized (existingMethods) {
+			if (existingMethods.addAll(methods)) {
+				existingMethods.sort(PRIORITY_COMPARATOR);
+			}
+		}
+	}
+	
+	private void removeMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
+		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
+		if (existingMethods != null) {
+			synchronized (existingMethods) {
+				if (existingMethods.removeAll(methods)) {
+					existingMethods.sort(PRIORITY_COMPARATOR);
+				}
+			}
+		}
+	}
+	
+	private static Map<Class<?>, Set<AnnotatedListenerMethod>> getMethodMap(Listener listener) {
+		Map<Class<?>, Set<AnnotatedListenerMethod>> methodMap = new HashMap<Class<?>, Set<AnnotatedListenerMethod>>();
 		for (Method method : listener.getClass().getDeclaredMethods()) {
 			Listen annotation = method.getAnnotation(Listen.class);
 			if (annotation != null) {
@@ -192,7 +214,7 @@ public final class UniversalEvents implements Events {
 				if (parameters.length != 1) {
 					throw new IllegalArgumentException("Listening methods must have 1 parameter!");
 				}
-				methodMap.computeIfAbsent(parameters[0], (clazz) -> new HashSet<ListenerMethod>()).add(new ListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
+				methodMap.computeIfAbsent(parameters[0], (clazz) -> new HashSet<AnnotatedListenerMethod>()).add(new AnnotatedListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
 			}
 		}
 		return methodMap;
@@ -200,28 +222,26 @@ public final class UniversalEvents implements Events {
 	
 	@Override
 	public void register(Listener listener) {
-		getMethodMap(listener).forEach((clazz, methods) -> {
-			List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
-			synchronized (existingMethods) {
-				if (existingMethods.addAll(methods)) {
-					existingMethods.sort(PRIORITY_COMPARATOR);
-				}
-			}
-		});
+		if (!(listener instanceof DynamicListener<?>)) {
+			getMethodMap(listener).forEach(this::addMethods);
+		}
+	}
+	
+	@Override
+	public <E extends Event> Listener register(Class<E> event, byte priority, Consumer<E> listener) {
+		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
+		addMethods(event, Collections.singleton(dynamicListener));
+		return dynamicListener;
 	}
 	
 	@Override
 	public void unregister(Listener listener) {
-		getMethodMap(listener).forEach((clazz, methods) -> {
-			List<ListenerMethod> existingMethods = eventListeners.get(clazz);
-			if (existingMethods != null) {
-				synchronized (existingMethods) {
-					if (existingMethods.removeAll(methods)) {
-						existingMethods.sort(PRIORITY_COMPARATOR);
-					}
-				}
-			}
-		});
+		if (listener instanceof DynamicListener<?>) {
+			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
+			removeMethods(dynamicListener.clazz, Collections.singleton(dynamicListener));
+		} else {
+			getMethodMap(listener).forEach(this::removeMethods);
+		}
 	}
 	
 }

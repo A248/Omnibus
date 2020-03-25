@@ -18,22 +18,32 @@
  */
 package space.arim.universal.events;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
- * General internal listener
+ * Internal wrapper for listening methods with the {@link Listen} annotation detected 
  * 
  * @author A248
  *
  */
-abstract class ListenerMethod {
+class AnnotatedListenerMethod extends ListenerMethod {
 
-	final byte priority;
-	final boolean ignoreCancelled;
+	private final Object listener;
+	private final Method method;
 	
-	ListenerMethod(byte priority, boolean ignoreCancelled) {
-		this.priority = priority;
-		this.ignoreCancelled = ignoreCancelled;
+	AnnotatedListenerMethod(Object listener, Method method, byte priority, boolean ignoreCancelled) {
+		super(priority, ignoreCancelled);
+		this.listener = listener;
+		this.method = method;
+		method.setAccessible(true);
 	}
 	
-	abstract void invoke(Object object);
+	@Override
+	void invoke(Object evt) {
+		try {
+			method.invoke(listener, evt);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {}
+	}
 	
 }

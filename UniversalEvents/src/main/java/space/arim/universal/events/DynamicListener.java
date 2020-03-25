@@ -18,22 +18,30 @@
  */
 package space.arim.universal.events;
 
+import java.util.function.Consumer;
+
 /**
- * General internal listener
+ * Internal wrapper for dynamic listeners
  * 
  * @author A248
  *
+ * @param <E> the type of the event
  */
-abstract class ListenerMethod {
+class DynamicListener<E extends Event> extends ListenerMethod implements Listener {
 
-	final byte priority;
-	final boolean ignoreCancelled;
+	final Class<?> clazz;
+	final Consumer<E> listener;
 	
-	ListenerMethod(byte priority, boolean ignoreCancelled) {
-		this.priority = priority;
-		this.ignoreCancelled = ignoreCancelled;
+	DynamicListener(Class<?> clazz, Consumer<E> listener, byte priority) {
+		super(priority, false);
+		this.clazz = clazz;
+		this.listener = listener;
 	}
 	
-	abstract void invoke(Object object);
+	@SuppressWarnings("unchecked")
+	@Override
+	void invoke(Object evt) {
+		listener.accept((E) evt);
+	}
 	
 }
