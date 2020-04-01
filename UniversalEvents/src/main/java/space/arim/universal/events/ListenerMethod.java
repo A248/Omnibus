@@ -34,6 +34,6 @@ abstract class ListenerMethod {
 		this.ignoreCancelled = ignoreCancelled;
 	}
 	
-	abstract void invoke(Object object);
+	abstract void invoke(Object object) throws Exception;
 	
 }

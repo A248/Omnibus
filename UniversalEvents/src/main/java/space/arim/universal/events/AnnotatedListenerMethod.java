@@ -40,10 +40,8 @@ class AnnotatedListenerMethod extends ListenerMethod {
 	}
 	
 	@Override
-	void invoke(Object evt) {
-		try {
-			method.invoke(listener, evt);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {}
+	void invoke(Object evt) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		method.invoke(listener, evt);
 	}
 	
 }

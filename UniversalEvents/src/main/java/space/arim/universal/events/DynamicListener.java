@@ -29,19 +29,18 @@ import java.util.function.Consumer;
  */
 class DynamicListener<E extends Event> extends ListenerMethod implements Listener {
 
-	final Class<?> clazz;
+	final Class<E> clazz;
 	final Consumer<E> listener;
 	
-	DynamicListener(Class<?> clazz, Consumer<E> listener, byte priority) {
+	DynamicListener(Class<E> clazz, Consumer<E> listener, byte priority) {
 		super(priority, false);
 		this.clazz = clazz;
 		this.listener = listener;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	void invoke(Object evt) {
-		listener.accept((E) evt);
+		listener.accept(clazz.cast(evt));
 	}
 	
 }
