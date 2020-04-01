@@ -19,29 +19,52 @@
 package space.arim.universal.events;
 
 /**
- * An event which runs either synchronously or asynchronously. <br>
+ * A general event, which runs either synchronously or asynchronously. <br>
  * <br>
  * See {@link #isAsynchronous()}
  * 
  * @author A248
  *
  */
-public interface Event {
+public abstract class Event {
+	
+	private final boolean async;
 	
 	/**
-	 * Whether an event is running asynchronously <br>
+	 * Creates the event, explicitly stating whether it is asynchronous, i.e.,
+	 * not on the main thread. <br>
+	 * The main thread is generally taken as the thread which does the most work. <br>
 	 * <br>
-	 * <b>Contract</b>: <br>
-	 * * If true, event MUST NOT run on the main thread <br>
-	 * * If false, event MUST run on the main thread <br>
+	 * If this value does not match whether the event is actually fired asynchronously,
+	 * an unchecked exception will be thrown when the event is attempted to be fired. <br>
+	 * The Events implementation will most likely use
+	 * {@link space.arim.universal.util.Util#isAsynchronous Util.isAnsynchronous()}.
+	 * to ensure compliance.
+	 * 
+	 * @param async whether the event is fired asynchronously
+	 */
+	protected Event(boolean async) {
+		this.async = async;
+	}
+	
+	/**
+	 * Creates an event, which runs synchronously. <br>
+	 * See {@link #Event(boolean)} to specify asynchronicity if required.
+	 * 
+	 */
+	protected Event() {
+		this(false);
+	}
+	
+	/**
+	 * Whether the event is firing asynchronously <br>
 	 * <br>
-	 * The main thread is generally taken as the thread doing the most work. <br>
-	 * <b>This method return is vetted by {@link Events} implementations (according to
-	 * {@link space.arim.universal.util.Util#isAsynchronous Util.isAnsynchronous()})
-	 * to ensure it complies with this specification</b>
+	 * If true, event DOES NOT run on the main thread
 	 * 
 	 * @return true if the event is asynchronous, false otherwise
 	 */
-	boolean isAsynchronous();
+	public final boolean isAsynchronous() {
+		return async;
+	}
 	
 }

@@ -19,34 +19,51 @@
 package space.arim.universal.events;
 
 /**
- * An event which may be cancelled via {@link #setCancelled(boolean)}. <br>
- * <br>
- * <b>Implementations MUST be thread safe!</b> <br>
- * Programmers should use a <code>volatile</code> variable to track whether
- * the event is cancelled internally; <code>volatile</code> ensures the value
- * can be read safely by multiple threads operating on the same event concurrently.
+ * An event which may be cancelled via {@link #setCancelled(boolean)}.
  * 
  * @author A248
  *
  */
-public interface Cancellable {
+public abstract class Cancellable extends Event {
+	
+	private volatile boolean cancelled = false;
 	
 	/**
-	 * Whether the event has been cancelled, presumably by another listener. <br>
-	 * <br>
-	 * <b>Implementations MUST be thread safe!</b> Use a <code>volatile</code> variable.
+	 * Creates a cancellable event, specifying whether it runs
+	 * synchronously or asynchronously. <br>
+	 * See {@link Event#Event(boolean)}
+	 * 
+	 * @param async whether the event is fired asynchronously
+	 */
+	protected Cancellable(boolean async) {
+		super(async);
+	}
+	
+	/**
+	 * Creates a cancellable event, which runs synchronously. <br>
+	 * See {@link #Event(boolean)} for more information.
+	 * 
+	 */
+	protected Cancellable() {
+		
+	}
+	
+	/**
+	 * Whether the event has been cancelled, presumably by another listener.
 	 * 
 	 * @return true if the event is cancelled, false otherwise
 	 */
-	boolean isCancelled();
+	public boolean isCancelled() {
+		return cancelled;
+	}
 	
 	/**
-	 * Cancels (or uncancels) the event. <br>
-	 * <br>
-	 * <b>Implementations MUST be thread safe!</b> Use a <code>volatile</code> variable.
+	 * Cancels (or uncancels) the event.
 	 * 
 	 * @param cancelled whether or not to cancel
 	 */
-	void setCancelled(boolean cancelled);
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
 	
 }
