@@ -82,13 +82,6 @@ public final class UniversalEvents implements Events {
 	private static final ConcurrentHashMap<String, UniversalEvents> INSTANCES = new ConcurrentHashMap<String, UniversalEvents>();
 	
 	/**
-	 * The main instance id <br>
-	 * <br>
-	 * Equivalent to {@link UniversalUtil#DEFAULT_ID}
-	 */
-	public static final String DEFAULT_ID = UniversalUtil.DEFAULT_ID;
-	
-	/**
 	 * The thread local
 	 * 
 	 */
@@ -178,8 +171,12 @@ public final class UniversalEvents implements Events {
 		eventListeners.forEach((clazz, listeners) -> {
 			if (clazz.isInstance(event)) {
 				listeners.forEach((listener) -> {
-					if (!(event instanceof Cancellable && listener.ignoreCancelled && ((Cancellable) event).isCancelled())) {
-						listener.invoke(clazz.cast(event));
+					if (!listener.ignoreCancelled || !(event instanceof Cancellable) || !((Cancellable) event).isCancelled()) {
+						try {
+							listener.invoke(clazz.cast(event));
+						} catch (Throwable ex) {
+							ex.printStackTrace();
+						}
 					}
 				});
 			}
@@ -223,21 +220,21 @@ public final class UniversalEvents implements Events {
 	}
 	
 	@Override
-	public void register(Listener listener) {
+	public void registerListener(Listener listener) {
 		if (!(listener instanceof DynamicListener<?>)) {
 			getMethodMap(listener).forEach(this::addMethods);
 		}
 	}
 	
 	@Override
-	public <E extends Event> Listener register(Class<E> event, byte priority, Consumer<E> listener) {
+	public <E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<E> listener) {
 		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
 		addMethods(event, Collections.singleton(dynamicListener));
 		return dynamicListener;
 	}
 	
 	@Override
-	public void unregister(Listener listener) {
+	public void unregisterListener(Listener listener) {
 		if (listener instanceof DynamicListener<?>) {
 			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
 			removeMethods(dynamicListener.clazz, Collections.singleton(dynamicListener));
