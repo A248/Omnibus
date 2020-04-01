@@ -41,4 +41,9 @@ public class DynamicUnmodifiableSet<E> extends DynamicUnmodifiableCollection<E> 
 		super(originalSupplier);
 	}
 	
+	@Override
+	protected Set<E> getOriginal() {
+		return (Set<E>) super.getOriginal();
+	}
+	
 }
