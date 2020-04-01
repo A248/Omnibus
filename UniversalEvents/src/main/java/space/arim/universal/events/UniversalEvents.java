@@ -156,6 +156,8 @@ public final class UniversalEvents implements Events {
 	/**
 	 * Returns the id of this UniversalEvents instance. <br>
 	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
+	 * (There may be other Events implementations which do not use an id based system, further,
+	 * UniversalEvents may itself change its internal implementation in the future).
 	 * 
 	 * @return String the id
 	 */
