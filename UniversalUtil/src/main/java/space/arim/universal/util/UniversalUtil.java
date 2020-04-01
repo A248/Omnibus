@@ -61,7 +61,7 @@ public final class UniversalUtil implements Util {
 	 * The main instance id
 	 * 
 	 */
-	public static final String DEFAULT_ID = "main";
+	private static final String DEFAULT_ID = "main";
 	
 	/**
 	 * The thread local
