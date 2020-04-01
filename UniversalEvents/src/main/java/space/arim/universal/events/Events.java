@@ -63,7 +63,7 @@ public interface Events {
 	 * 
 	 * @param listener the object to register
 	 */
-	void register(Listener listener);
+	void registerListener(Listener listener);
 	
 	/**
 	 * Dynamically registers a listener.
@@ -74,7 +74,7 @@ public interface Events {
 	 * @param listener the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
 	 */
-	<E extends Event> Listener register(Class<E> event, byte priority, Consumer<E> listener);
+	<E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<E> listener);
 	
 	/**
 	 * Unregister an object from any listening. <br>
@@ -83,6 +83,6 @@ public interface Events {
 	 * 
 	 * @param listener the object to unregister
 	 */
-	void unregister(Listener listener);
+	void unregisterListener(Listener listener);
 	
 }
