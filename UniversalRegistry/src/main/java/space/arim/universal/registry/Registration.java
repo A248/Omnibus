@@ -18,6 +18,8 @@
  */
 package space.arim.universal.registry;
 
+import java.util.Objects;
+
 public class Registration<T> implements Comparable<Registration<T>> {
 	
 	private final byte priority;
@@ -26,8 +28,8 @@ public class Registration<T> implements Comparable<Registration<T>> {
 	
 	Registration(byte priority, T provider, String name) {
 		this.priority = priority;
-		this.provider = provider;
-		this.name = name;
+		this.provider = Objects.requireNonNull(provider, "Provider must not be null");
+		this.name = Objects.requireNonNull(name, "Name must not be null");
 	}
 
 	/**
@@ -61,6 +63,25 @@ public class Registration<T> implements Comparable<Registration<T>> {
 	@Override
 	public int compareTo(Registration<T> o) {
 		return priority - o.priority;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + priority;
+		result = prime * result + ((provider == null) ? 0 : provider.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Registration) {
+			Registration<?> other = (Registration<?>) object;
+			return priority == other.priority && provider.equals(other.provider) && name.equals(other.name);
+		}
+		return false;
 	}
 	
 }
