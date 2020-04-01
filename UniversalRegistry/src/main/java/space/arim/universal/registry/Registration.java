@@ -26,7 +26,7 @@ public class Registration<T> implements Comparable<Registration<T>> {
 	private final T provider;
 	private final String name;
 	
-	Registration(byte priority, T provider, String name) {
+	public Registration(byte priority, T provider, String name) {
 		this.priority = priority;
 		this.provider = Objects.requireNonNull(provider, "Provider must not be null");
 		this.name = Objects.requireNonNull(name, "Name must not be null");
