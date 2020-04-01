@@ -79,7 +79,7 @@ public interface Events {
 	/**
 	 * Unregister an object from any listening. <br>
 	 * <br>
-	 * Opposite of {@link #register(Listener)}
+	 * Opposite of {@link #registerListener(Listener)}
 	 * 
 	 * @param listener the object to unregister
 	 */

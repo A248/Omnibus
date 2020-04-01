@@ -19,9 +19,10 @@
 package space.arim.universal.registry;
 
 /**
- * Class containing priority constants for referential use
- * 
- * <br><br>See {@link space.arim.universal.registry.Registrable#getPriority() Registrable.getPriority()}
+ * Class containing priority constants for referential use <br>
+ * <br>
+ * See {@link Registry#register(Class, byte, Object, String)} for
+ * more information on priorities.
  * 
  * @author A248
  */

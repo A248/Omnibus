@@ -41,7 +41,7 @@ public abstract class Cancellable extends Event {
 	
 	/**
 	 * Creates a cancellable event, which runs synchronously. <br>
-	 * See {@link #Event(boolean)} for more information.
+	 * See {@link Event#Event(boolean)}
 	 * 
 	 */
 	protected Cancellable() {
