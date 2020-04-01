@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>space.arim</groupId>
 		<artifactId>universal</artifactId>
-		<version>0.8.0-SNAPSHOT</version>
+		<version>0.8.1-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>universal-registry</artifactId>
