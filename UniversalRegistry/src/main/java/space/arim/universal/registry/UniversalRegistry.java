@@ -161,7 +161,7 @@ public final class UniversalRegistry implements Registry {
 	
 	@Override
 	public <T> Registration<T> register(Class<T> service, byte priority, T provider, String name) {
-		Registration<T> registration = new Registration<T>(priority, provider, name);
+		Registration<T> registration = new Registration<T>(priority, provider, name); // does the null check for us
 		getEvents().fireEvent(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, registration));
 		List<Registration<?>> registrations = registry.computeIfAbsent(service, (c) -> new CopyOnWriteArrayList<Registration<?>>());
 		addToListSorted(registrations, registration);
@@ -242,8 +242,10 @@ public final class UniversalRegistry implements Registry {
 		 */
 		if (registrations.isEmpty()) {
 			Registration<T> registration = computer.get();
-			addToListSorted(registrations, registration);
-			return registration;
+			if (registration != null) {
+				addToListSorted(registrations, registration);
+				return registration;
+			}
 		}
 		/*
 		 * Now we know that there's already a registration.
