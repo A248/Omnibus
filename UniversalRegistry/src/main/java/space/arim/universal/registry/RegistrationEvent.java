@@ -21,17 +21,17 @@ package space.arim.universal.registry;
 import space.arim.universal.events.Event;
 
 /**
- * Called for the registration of a resource
+ * Called for the registration of a resource. <br>
+ * The event will run async if the registration occured async.
  * 
  * @author A248
  *
- * @param <T> - the service for which the resource was registered
+ * @param <T> the service for which the resource was registered
  */
-public class RegistrationEvent<T extends Registrable> implements Event {
+public class RegistrationEvent<T> extends Event {
 
-	private final boolean async;
 	private final Class<T> service;
-	private final T provider;
+	private final Registration<T> registration;
 	
 	/**
 	 * Constructs a RegistrationEvent for a service and provider <br>
@@ -42,33 +42,30 @@ public class RegistrationEvent<T extends Registrable> implements Event {
 	 * @param service the service type registered
 	 * @param provider the provider of the service
 	 */
-	RegistrationEvent(boolean async, Class<T> service, T provider) {
-		this.async = async;
+	RegistrationEvent(boolean async, Class<T> service, Registration<T> registration) {
+		super(async);
 		this.service = service;
-		this.provider = provider;
+		this.registration = registration;
 	}
 	
 	/**
 	 * Returns the service for which the registration/unregistration occured.
+	 * The provider is an instance of this class.
 	 * 
-	 * @return Class - the service class
+	 * @return the service class
 	 */
 	public Class<T> getService() {
 		return service;
 	}
 	
 	/**
-	 * Returns the resource which was registered/unregistered
+	 * Returns the registration. This includes the provider,
+	 * the priority, and a name for the provider.
 	 * 
-	 * @return the resource
+	 * @return the registration
 	 */
-	public T getResource() {
-		return provider;
+	public Registration<T> getRegistration() {
+		return registration;
 	}
-
-	@Override
-	public boolean isAsynchronous() {
-		return async;
-	}
-
+	
 }

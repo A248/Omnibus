@@ -39,6 +39,6 @@ import java.lang.annotation.Target;
 @Target({ METHOD, PARAMETER })
 public @interface RequireRegistration {
 
-	Class<? extends Registrable>[] value();
+	Class<?>[] value();
 	
 }
