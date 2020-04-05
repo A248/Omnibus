@@ -21,8 +21,17 @@ package space.arim.universal.registry;
 import space.arim.universal.events.Event;
 
 /**
- * Called for the registration of a resource. <br>
- * The event will run async if the registration occured async.
+ * Called to <i>indicate</i> a resource was registered,
+ * but not necessarily called <i>when</i> a resource is registered. <br>
+ * <br>
+ * That is, <b>this event may or may not run in the same thread
+ * from which the registration itself was called.</b> It may run
+ * completely asynchronously regardless. <br>
+ * <br>
+ * It is up to the discretion of {@link Registry} implementations
+ * to decide when this event may fire. Do not assume that
+ * this event will fire immediately after calls to
+ * {@link Registry#register}.
  * 
  * @author A248
  *
