@@ -29,7 +29,7 @@ public class Registration<T> implements Comparable<Registration<T>> {
 	public Registration(byte priority, T provider, String name) {
 		this.priority = priority;
 		this.provider = Objects.requireNonNull(provider, "Provider must not be null");
-		this.name = Objects.requireNonNull(name, "Name must not be null");
+		this.name = (name != null) ? name : "";
 	}
 
 	/**
@@ -52,9 +52,12 @@ public class Registration<T> implements Comparable<Registration<T>> {
 	}
 	
 	/**
-	 * Gets a friendly display name for the service
+	 * Gets a nonnull, friendly display name for the service. <br>
+	 * <br>
+	 * If the resource was registered under a null name, this will
+	 * return an empty string.
 	 * 
-	 * @return the name
+	 * @return the nonnull name
 	 */
 	public String getName() {
 		return name;
