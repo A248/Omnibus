@@ -59,9 +59,9 @@ public interface Registry {
 	
 	/**
 	 * Registers a resource as a specific service and generates a {@link Registration}
-	 * from the result. <br>
+	 * to represent the registration which was just added. <br>
 	 * <br>
-	 * The provider must be nonnull. <br>
+	 * The provider must be nonnull. If the name is null, an empty string is used. <br>
 	 * Higher priority registrations will be preferred for {@link #load(Class)}. <br>
 	 * <br>
 	 * Services should be registered under all intended service types, thus: <br>
@@ -88,9 +88,45 @@ public interface Registry {
 	 * @param priority the registration priority
 	 * @param provider the resource to register, cannot be null
 	 * @param name a user friendly name for the implementation
-	 * @return the resulting registration information
+	 * @return the registration which was added to the registry, formed from the parameters
 	 */
 	<T> Registration<T> register(Class<T> service, byte priority, T provider, String name);
+	
+	/**
+	 * Registers a resource as a specific service and returns the highest priority
+	 * registration for the service. <br>
+	 * This is similar to {@link #register(Class, byte, Object, String)}, but instead
+	 * of returning a {@link Registration} based on the resource registered,
+	 * this returns the highest priority registration after computations. <br>
+	 * <br>
+	 * The provider must be nonnull. If the name is null, an empty string is used.
+	 * 
+	 * @param <T> the service type
+	 * @param service the service class
+	 * @param priority the registration priority
+	 * @param provider the resource to register, cannot be null
+	 * @param name a user friendly name for the implementation
+	 * @return the highest priority registration after the resource is registered
+	 */
+	<T> Registration<T> registerAndGet(Class<T> service, byte priority, T provider, String name);
+	
+	/**
+	 * Registers a resource as a specific service and automatically finds
+	 * the highest priority registration for the service after computations are
+	 * applied. <br>
+	 * This is essentially a combination of {@link #register(Class, byte, Object, String)}
+	 * and {@link #load(Class)}, completed in a thread safe manner.
+	 * 
+	 * @param <T> the service type
+	 * @param service the service class
+	 * @param priority the registration priority
+	 * @param provider the resource to register, cannot be null
+	 * @param name a user friendly name for the implementation
+	 * @return the highest priority provider
+	 */
+	default <T> T registerAndLoad(Class<T> service, byte priority, T provider, String name) {
+		return registerAndGet(service, priority, provider, name).getProvider();
+	}
 	
 	/**
 	 * Automatically finds the highest priority registration for a service
