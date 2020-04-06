@@ -47,7 +47,7 @@ class ScheduledAction implements Comparable<ScheduledAction> {
 	
 	@Override
 	public int compareTo(ScheduledAction other) {
-		return (int) (getWhen() - other.getWhen());
+		return (int) (when - other.when);
 	}
 	
 	private static void addDelayedTask(Runnable body, long delay) {
@@ -66,29 +66,29 @@ class ScheduledAction implements Comparable<ScheduledAction> {
 		}, delay);
 	}
 	
-	static void schedule(Executor executor, Runnable cmd, long initialDelay, BooleanSupplier cancellation, LongUnaryOperator delayFunction) {
-		addDelayedTask(() -> executeAndReschedule(executor, cmd, initialDelay, cancellation, delayFunction), initialDelay);
+	static void schedule(Executor executor, Runnable cmd, long delay, BooleanSupplier cancellation, LongUnaryOperator delayFunction) {
+		addDelayedTask(() -> executeAndReschedule(executor, cmd, delay, cancellation, delayFunction), delay);
 	}
 	
-	private static void executeAndReschedule(Executor executor, Runnable cmd, long initialDelay, BooleanSupplier cancellation, LongUnaryOperator delayFunction) {
+	private static void executeAndReschedule(Executor executor, Runnable cmd, long delay, BooleanSupplier cancellation, LongUnaryOperator delayFunction) {
 		if (!cancellation.getAsBoolean()) {
 			executor.execute(cmd);
 			if (!cancellation.getAsBoolean()) {
-				schedule(executor, cmd, delayFunction.applyAsLong(initialDelay), cancellation, delayFunction);
+				schedule(executor, cmd, delayFunction.applyAsLong(delay), cancellation, delayFunction);
 			}
 		}
 	}
 	
-	static void schedule(Executor executor, Runnable cmd, long initialDelay, BooleanSupplier cancellation, LongBinaryOperator delayFunction) {
-		addDelayedTask(() -> executeAndReschedule(executor, cmd, initialDelay, cancellation, delayFunction), initialDelay);
+	static void schedule(Executor executor, Runnable cmd, long delay, BooleanSupplier cancellation, LongBinaryOperator delayFunction) {
+		addDelayedTask(() -> executeAndReschedule(executor, cmd, delay, cancellation, delayFunction), delay);
 	}
 	
-	private static void executeAndReschedule(Executor executor, Runnable cmd, long initialDelay, BooleanSupplier cancellation, LongBinaryOperator delayFunction) {
+	private static void executeAndReschedule(Executor executor, Runnable cmd, long delay, BooleanSupplier cancellation, LongBinaryOperator delayFunction) {
 		if (!cancellation.getAsBoolean()) {
 			long start = System.currentTimeMillis();
 			executor.execute(cmd);
 			if (!cancellation.getAsBoolean()) {
-				schedule(executor, cmd, delayFunction.applyAsLong(initialDelay, System.currentTimeMillis() - start), cancellation, delayFunction);
+				schedule(executor, cmd, delayFunction.applyAsLong(delay, System.currentTimeMillis() - start), cancellation, delayFunction);
 			}
 		}
 	}
