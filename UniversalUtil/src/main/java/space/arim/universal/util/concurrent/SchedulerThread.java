@@ -31,6 +31,7 @@ class SchedulerThread extends Thread {
 			synchronized (SchedulerThread.class) {
 				if (inst == null) {
 					inst = new SchedulerThread();
+					inst.setName("space.arim.universal.util.concurrent.EnhancedExecutor scheduling");
 					inst.start();
 				}
 			}
@@ -70,7 +71,7 @@ class SchedulerThread extends Thread {
 	void addTask(ScheduledAction task) {
 		queue.offer(task);
 		synchronized (this) {
-			notify();
+			notifyAll(); // prevents funny business with reflection
 		}
 	}
 	
