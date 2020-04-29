@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 /**
- * Utility class to apply operations to collections and arrays, as well as better unmodifiable collections support. <br>
+ * Utility class to apply operations to collections and arrays. <br>
  * <br>
  * <b>Designed to reduce boilerplate operations</b>.
  * 
@@ -54,7 +54,9 @@ public final class CollectionsUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T getFromMapRecursive(Map<String, Object> map, String key, Class<T> type) {
-		if (!key.contains(".")) {
+		if (key == null) {
+			return null;
+		} else if (!key.contains(".")) {
 			Object obj = map.get(key);
 			return type.isInstance(obj) ? (T) obj : null;
 		} else if (key.startsWith(".") || key.endsWith(".")) {
@@ -166,8 +168,9 @@ public final class CollectionsUtil {
 	 * Gets a random element from a collection. <br>
 	 * If the input collection is <code>null</code> or empty, <code>null</code> is returned. <br>
 	 * <br>
-	 * This method is thread safe. The underlying collection may be concurrently modified
-	 * without comprising the integrity of this method call.
+	 * This method is thread safe so long as the collection's iterator is thread safe.
+	 * The underlying collection may be concurrently modified without compromising
+	 * the integrity of this method call.
 	 * 
 	 * @param <T> the type of the collection
 	 * @param collection the collection
