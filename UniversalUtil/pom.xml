@@ -6,15 +6,10 @@
 	<parent>
 		<groupId>space.arim</groupId>
 		<artifactId>universal</artifactId>
-		<version>0.8.1-SNAPSHOT</version>
+		<version>0.9.0-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>universal-util</artifactId>
 	<name>UniversalUtil</name>
 	<description>Provides simple yet effective multithreaded utilities.</description>
-	
-	<build>
-		<finalName>${project.name}_v${core.version}</finalName>
-		<sourceDirectory>src/main/java</sourceDirectory>
-	</build>	
 </project>
