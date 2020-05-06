@@ -1,6 +1,6 @@
 /* 
- * UniversalRegistry, a common registry for plugin resources
- * Copyright © 2019 Anand Beh <https://www.arim.space>
+ * UniversalRegistry
+ * Copyright © 2020 Anand Beh <https://www.arim.space>
  * 
  * UniversalRegistry is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

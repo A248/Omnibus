@@ -1,5 +1,5 @@
 /* 
- * UniversalUtil, simple utilities for Spigot and BungeeCord
+ * UniversalUtil
  * Copyright © 2020 Anand Beh <https://www.arim.space>
  * 
  * UniversalUtil is free software: you can redistribute it and/or modify

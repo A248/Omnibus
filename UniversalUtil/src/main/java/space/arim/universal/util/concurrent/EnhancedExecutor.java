@@ -1,5 +1,5 @@
 /* 
- * UniversalUtil, simple utilities for Spigot and BungeeCord
+ * UniversalUtil
  * Copyright © 2020 Anand Beh <https://www.arim.space>
  * 
  * UniversalUtil is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @return a <code>CompletableFuture</code> which will return <code>null</code> on {@link Future#get()}
 	 */
 	default CompletableFuture<Void> submit(Runnable command) {
-		return CompetitiveFuture.of(CompletableFuture.runAsync(command, this), this);
+		return HyperFuture.runAsync(command, this);
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @return a <code>CompletableFuture</code>
 	 */
 	default <T> CompletableFuture<T> supply(Supplier<T> supplier) {
-		return CompetitiveFuture.of(CompletableFuture.supplyAsync(supplier, this), this);
+		return HyperFuture.supplyAsync(supplier, this);
 	}
 	
 	/**

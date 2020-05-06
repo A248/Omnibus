@@ -1,5 +1,5 @@
 /* 
- * UniversalUtil, simple utilities for Spigot and BungeeCord
+ * UniversalUtil
  * Copyright © 2020 Anand Beh <https://www.arim.space>
  * 
  * UniversalUtil is free software: you can redistribute it and/or modify
@@ -29,20 +29,19 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import space.arim.universal.util.concurrent.CompetitiveFuture;
-
 /**
  * A parent class for completable futures which simply redirect, a.k.a. <i>proxy</i>, calls to another such future (the backing future). <br>
  * Such "futures" do no work themselves, but merely refer calls to their backing futures. <br>
  * <br>
  * However, the proxy future's additional call layer provides fine tuned control over access to the backing future. <br>
- * Programmers may extend this class to utilise this enhanced control. {@link CompetitiveFuture} is an example. <br>
+ * Programmers may extend this class to utilise this enhanced control.
  * <br>
  * Note that a reference is retained to the backing future. State changes in the backing future are reflected in proxied futures.
  * 
  * @author A248
  *
  * @param <T> the type of the object the future will yield
+ * 
  */
 public abstract class ProxiedCompletableFuture<T> extends CompletableFuture<T> {
 

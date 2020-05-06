@@ -1,5 +1,5 @@
 /* 
- * UniversalUtil, simple utilities for Spigot and BungeeCord
+ * UniversalUtil
  * Copyright © 2020 Anand Beh <https://www.arim.space>
  * 
  * UniversalUtil is free software: you can redistribute it and/or modify
@@ -39,7 +39,12 @@ import space.arim.universal.util.proxy.ProxiedCompletableFuture;
  * @author A248
  *
  * @param <T> the type of the object the future will yield
+ * 
+ * @deprecated Since JDK 1.9 there is native support to change a CompletableFuture's default executor.
+ * Accordingly, please use HyperFuture which is not a subclass of ProxiedCompletableFuture.
+ * 
  */
+@Deprecated
 public class CompetitiveFuture<T> extends ProxiedCompletableFuture<T> {
 
 	private final Executor executor;
