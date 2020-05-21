@@ -32,7 +32,11 @@ package space.arim.universal.util;
  * 
  * @author A248
  *
+ * @deprecated Promotes subpar API design. Interfaces should not be used this way. The purpose of an interface is to
+ * describe capabilities, including among disparate classes. <code>toString()</code> implementations, on the other hand
+ * are strictly specific to the concrete class (or in some cases an abstract class, but never an interface).
  */
+@Deprecated
 public interface Stringable {
 
 	/**
