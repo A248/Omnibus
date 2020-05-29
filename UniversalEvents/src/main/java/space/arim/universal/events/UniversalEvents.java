@@ -195,18 +195,14 @@ public final class UniversalEvents implements Events {
 	private void removeMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
 		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
 		if (existingMethods != null) {
-			synchronized (existingMethods) {
-				existingMethods.removeAll(methods);
-			}
+			existingMethods.removeAll(methods);
 		}
 	}
 	
 	private void removeSingleMethod(Class<?> clazz, ListenerMethod method) {
 		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
 		if (existingMethods != null) {
-			synchronized (existingMethods) {
-				existingMethods.remove(method);
-			}
+			existingMethods.remove(method);
 		}
 	}
 	
