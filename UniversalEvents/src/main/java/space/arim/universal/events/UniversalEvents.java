@@ -21,7 +21,6 @@ package space.arim.universal.events;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -66,14 +65,6 @@ public final class UniversalEvents implements Events {
 	 * 
 	 */
 	private final Util util;
-	
-	/**
-	 * Used to sort all ListenerMethod wrappers by priority <br>
-	 * <br>
-	 * The order is swapped so that lower priority listeners are called first
-	 * 
-	 */
-	private static final Comparator<ListenerMethod> PRIORITY_COMPARATOR = (method1, method2) -> method2.priority - method1.priority;
 	
 	/**
 	 * Instances map to prevent duplicate ids
@@ -188,7 +179,7 @@ public final class UniversalEvents implements Events {
 		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
 		synchronized (existingMethods) {
 			if (existingMethods.addAll(methods)) {
-				existingMethods.sort(PRIORITY_COMPARATOR);
+				existingMethods.sort(null);
 			}
 		}
 	}
@@ -198,7 +189,7 @@ public final class UniversalEvents implements Events {
 		if (existingMethods != null) {
 			synchronized (existingMethods) {
 				if (existingMethods.removeAll(methods)) {
-					existingMethods.sort(PRIORITY_COMPARATOR);
+					existingMethods.sort(null);
 				}
 			}
 		}
@@ -213,7 +204,9 @@ public final class UniversalEvents implements Events {
 				if (parameters.length != 1) {
 					throw new IllegalArgumentException("Listening methods must have 1 parameter!");
 				}
-				methodMap.computeIfAbsent(parameters[0], (clazz) -> new HashSet<AnnotatedListenerMethod>()).add(new AnnotatedListenerMethod(listener, method, annotation.priority(), annotation.ignoreCancelled()));
+				methodMap.computeIfAbsent(parameters[0], (clazz) -> new HashSet<AnnotatedListenerMethod>())
+						.add(new AnnotatedListenerMethod(listener, method, annotation.priority(),
+								annotation.ignoreCancelled()));
 			}
 		}
 		return methodMap;

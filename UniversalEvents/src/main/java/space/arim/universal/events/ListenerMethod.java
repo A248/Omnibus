@@ -24,7 +24,7 @@ package space.arim.universal.events;
  * @author A248
  *
  */
-abstract class ListenerMethod {
+abstract class ListenerMethod implements Comparable<ListenerMethod> {
 
 	final byte priority;
 	final boolean ignoreCancelled;
@@ -35,5 +35,14 @@ abstract class ListenerMethod {
 	}
 	
 	abstract void invoke(Object object) throws Exception;
+	
+	/**
+	 * Compares 2 listener methods.
+	 * 
+	 */
+	@Override
+	public int compareTo(ListenerMethod o) {
+		return priority - o.priority;
+	}
 	
 }
