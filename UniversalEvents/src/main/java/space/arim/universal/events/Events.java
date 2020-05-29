@@ -59,14 +59,15 @@ public interface Events {
 	/**
 	 * Registers an object to listen to events. <br>
 	 * <br>
-	 * In the object registered, listening methods must have the {@link Listen} annotation.
+	 * In the object registered, listening methods must have the {@link Listen} annotation. <br>
+	 * Registering a listener already registered is a no-op.
 	 * 
 	 * @param listener the object to register
 	 */
 	void registerListener(Listener listener);
 	
 	/**
-	 * Dynamically registers a listener.
+	 * Creates and registers a dynamic listener, returning the created listener.
 	 * 
 	 * @param <E> the type of the event
 	 * @param event the event class
@@ -79,7 +80,8 @@ public interface Events {
 	/**
 	 * Unregister an object from any listening. <br>
 	 * <br>
-	 * Opposite of {@link #registerListener(Listener)}
+	 * This is the opposite of {@link #registerListener(Listener)} and {@link #registerListener(Class, byte, Consumer)}.
+	 * Unregistering a listener which is not registered is a no-op.
 	 * 
 	 * @param listener the object to unregister
 	 */
