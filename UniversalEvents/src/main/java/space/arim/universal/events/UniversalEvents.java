@@ -19,13 +19,13 @@
 package space.arim.universal.events;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -57,7 +57,7 @@ public final class UniversalEvents implements Events {
 	 * The listeners themselves
 	 * 
 	 */
-	private final ConcurrentHashMap<Class<?>, List<ListenerMethod>> eventListeners = new ConcurrentHashMap<Class<?>, List<ListenerMethod>>();
+	private final ConcurrentHashMap<Class<?>, CopyOnWriteArrayList<ListenerMethod>> eventListeners = new ConcurrentHashMap<>();
 	
 	/**
 	 * The corresponding {@link Util} instance
@@ -175,7 +175,7 @@ public final class UniversalEvents implements Events {
 	}
 	
 	private void addMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
-		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
+		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new CopyOnWriteArrayList<ListenerMethod>());
 		synchronized (existingMethods) {
 			if (existingMethods.addAll(methods)) {
 				existingMethods.sort(null);
@@ -184,7 +184,7 @@ public final class UniversalEvents implements Events {
 	}
 	
 	private void addSingleMethod(Class<?> clazz, ListenerMethod method) {
-		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
+		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new CopyOnWriteArrayList<ListenerMethod>());
 		synchronized (existingMethods) {
 			if (existingMethods.add(method)) {
 				existingMethods.sort(null);
