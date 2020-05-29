@@ -222,10 +222,10 @@ public final class UniversalEvents implements Events {
 	}
 	
 	private void removeListenerMethodIf(Class<?> clazz, Predicate<ListenerMethod> checker) {
-		eventListeners.computeIfPresent(clazz, (c, existing) -> {
-			List<ListenerMethod> updated = new ArrayList<>();
+		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
+			List<ListenerMethod> updated = new ArrayList<>(existingMethods.length);
 			boolean changed = false;
-			for (ListenerMethod method : existing) {
+			for (ListenerMethod method : existingMethods) {
 				if (checker.test(method)) {
 					changed = true;
 				} else {
@@ -233,7 +233,7 @@ public final class UniversalEvents implements Events {
 				}
 			}
 			if (!changed) {
-				return existing;
+				return existingMethods;
 			}
 			if (updated.isEmpty()) {
 				return null;
