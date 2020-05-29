@@ -190,7 +190,7 @@ public final class UniversalEvents implements Events {
 			}
 			// Add the methods and sort
 			int startLength = existingMethods.length;
-			ListenerMethod[] updated = new ListenerMethod[startLength + methodsToAdd.size()];
+			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + methodsToAdd.size());
 			for (ListenerMethod methodToAdd : methodsToAdd) {
 				updated[startLength++] = methodToAdd;
 			}
@@ -213,7 +213,7 @@ public final class UniversalEvents implements Events {
 			}
 			// Add the method and sort
 			int startLength = existingMethods.length;
-			ListenerMethod[] updated = new ListenerMethod[startLength + 1];
+			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + 1);
 			updated[startLength] = methodToAdd;
 			Arrays.sort(updated);
 			return updated;
