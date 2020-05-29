@@ -42,5 +42,26 @@ class DynamicListener<E extends Event> extends ListenerMethod implements Listene
 	void invoke(Object evt) {
 		listener.accept(clazz.cast(evt));
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + clazz.hashCode();
+		result = prime * result + listener.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (!(object instanceof DynamicListener)) {
+			return false;
+		}
+		DynamicListener<?> other = (DynamicListener<?>) object;
+		return clazz == other.clazz && listener == other.listener;
+	}
 	
 }

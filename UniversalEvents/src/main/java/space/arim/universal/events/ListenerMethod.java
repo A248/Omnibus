@@ -45,4 +45,15 @@ abstract class ListenerMethod implements Comparable<ListenerMethod> {
 		return priority - o.priority;
 	}
 	
+	@Override
+	public abstract int hashCode();
+	
+	/**
+	 * Used to determine whether there are duplicate listeners.
+	 * This method may not necessarily evaluate strict equality.
+	 * 
+	 */
+	@Override
+	public abstract boolean equals(Object object);
+	
 }

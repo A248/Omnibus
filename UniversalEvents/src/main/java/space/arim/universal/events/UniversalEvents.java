@@ -19,14 +19,14 @@
 package space.arim.universal.events;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import space.arim.universal.util.UniversalUtil;
@@ -57,7 +57,7 @@ public final class UniversalEvents implements Events {
 	 * The listeners themselves
 	 * 
 	 */
-	private final ConcurrentHashMap<Class<?>, CopyOnWriteArrayList<ListenerMethod>> eventListeners = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<Class<?>, ListenerMethod[]> eventListeners = new ConcurrentHashMap<>();
 	
 	/**
 	 * The corresponding {@link Util} instance
@@ -160,80 +160,103 @@ public final class UniversalEvents implements Events {
 		}
 		eventListeners.forEach((clazz, listeners) -> {
 			if (clazz.isInstance(event)) {
-				listeners.forEach((listener) -> {
+				for (ListenerMethod listener : listeners) {
 					if (!listener.ignoreCancelled || !(event instanceof Cancellable) || !((Cancellable) event).isCancelled()) {
 						try {
-							listener.invoke(clazz.cast(event));
+							listener.invoke(event);
 						} catch (Throwable ex) {
 							ex.printStackTrace();
 						}
 					}
-				});
+				}
 			}
 		});
 		return !(event instanceof Cancellable) || !((Cancellable) event).isCancelled();
 	}
 	
-	private void addMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
+	private void addMethods(Class<?> clazz, List<ListenerMethod> methodsToAdd) {
 		eventListeners.compute(clazz, (c, existingMethods) -> {
+			// No existing methods
 			if (existingMethods == null) {
-				existingMethods = new CopyOnWriteArrayList<>();
+				ListenerMethod[] updated = methodsToAdd.toArray(new ListenerMethod[] {});
+				Arrays.sort(updated);
+				return updated;
 			}
-			if (existingMethods.addAll(methods)) {
-				existingMethods.sort(null);
-			}
-			return existingMethods;
-		});
-	}
-	
-	private void addSingleMethod(Class<?> clazz, ListenerMethod method) {
-		eventListeners.compute(clazz, (c, existingMethods) -> {
-			if (existingMethods == null) {
-				existingMethods = new CopyOnWriteArrayList<>();
-			}
-			// adds the element into the list according to priority
-			// this is faster than using List#sort
-			int position = Collections.binarySearch(existingMethods, method);
-			if (position < 0) {
-				existingMethods.add(-(position + 1), method);
-			} else {
-				existingMethods.add(position, method);
-			}
-			return existingMethods;
-		});
-	}
-	
-	private void removeMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
-		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
-			if (existingMethods.removeAll(methods) && existingMethods.isEmpty()) {
-				return null;
-			}
-			return existingMethods;
-		});
-	}
-	
-	private void removeSingleMethod(Class<?> clazz, ListenerMethod method) {
-		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
-			if (existingMethods.remove(method) && existingMethods.isEmpty()) {
-				return null;
-			}
-			return existingMethods;
-		});
-	}
-	
-	private static Map<Class<?>, Set<AnnotatedListenerMethod>> getMethodMap(Listener listener) {
-		Map<Class<?>, Set<AnnotatedListenerMethod>> methodMap = new HashMap<Class<?>, Set<AnnotatedListenerMethod>>();
-		for (Method method : listener.getClass().getDeclaredMethods()) {
-			Listen annotation = method.getAnnotation(Listen.class);
-			if (annotation != null) {
-				Class<?>[] parameters = method.getParameterTypes();
-				if (parameters.length != 1) {
-					throw new IllegalArgumentException("Listening methods must have 1 parameter!");
+			// Check for duplicates
+			for (ListenerMethod existing : existingMethods) {
+				// Once we find a single duplicate, we know the listener object is already registered
+				if (methodsToAdd.contains(existing)) {
+					return existingMethods;
 				}
-				methodMap.computeIfAbsent(parameters[0], (clazz) -> new HashSet<AnnotatedListenerMethod>())
-						.add(new AnnotatedListenerMethod(listener, method, annotation.priority(),
-								annotation.ignoreCancelled()));
 			}
+			// Add the methods and sort
+			int startLength = existingMethods.length;
+			ListenerMethod[] updated = new ListenerMethod[startLength + methodsToAdd.size()];
+			for (ListenerMethod methodToAdd : methodsToAdd) {
+				updated[startLength++] = methodToAdd;
+			}
+			Arrays.sort(updated);
+			return updated;
+		});
+	}
+	
+	private void addSingleMethod(Class<?> clazz, ListenerMethod methodToAdd) {
+		eventListeners.compute(clazz, (c, existingMethods) -> {
+			// No existing methods
+			if (existingMethods == null) {
+				return new ListenerMethod[] {methodToAdd};
+			}
+			// Check for duplicates
+			for (ListenerMethod existing : existingMethods) {
+				if (methodToAdd.equals(existing)) {
+					return existingMethods;
+				}
+			}
+			// Add the method and sort
+			int startLength = existingMethods.length;
+			ListenerMethod[] updated = new ListenerMethod[startLength + 1];
+			updated[startLength] = methodToAdd;
+			Arrays.sort(updated);
+			return updated;
+		});
+	}
+	
+	private void removeListenerMethodIf(Class<?> clazz, Predicate<ListenerMethod> checker) {
+		eventListeners.computeIfPresent(clazz, (c, existing) -> {
+			List<ListenerMethod> updated = new ArrayList<>();
+			boolean changed = false;
+			for (ListenerMethod method : existing) {
+				if (checker.test(method)) {
+					changed = true;
+				} else {
+					updated.add(method);
+				}
+			}
+			if (!changed) {
+				return existing;
+			}
+			if (updated.isEmpty()) {
+				return null;
+			}
+			return updated.toArray(new ListenerMethod[] {});
+		});
+	}
+	
+	private static Map<Class<?>, List<ListenerMethod>> getMethodMap(Listener listener) {
+		Map<Class<?>, List<ListenerMethod>> methodMap = new HashMap<>();
+		for (Method method : listener.getClass().getDeclaredMethods()) {
+			Listen annote = method.getAnnotation(Listen.class);
+			if (annote == null) {
+				continue;
+			}
+			Class<?>[] parameters = method.getParameterTypes();
+			if (parameters.length != 1) {
+				throw new IllegalArgumentException("Listening methods must have 1 parameter!");
+			}
+			List<ListenerMethod> list = methodMap.computeIfAbsent(parameters[0], (clazz) -> new ArrayList<>());
+			list.add(new AnnotatedListenerMethod(listener, method, annote.priority(), annote.ignoreCancelled()));
+			// Presorting now may help us later during possible contention
+			list.sort(null);
 		}
 		return methodMap;
 	}
@@ -256,9 +279,9 @@ public final class UniversalEvents implements Events {
 	public void unregisterListener(Listener listener) {
 		if (listener instanceof DynamicListener<?>) {
 			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
-			removeSingleMethod(dynamicListener.clazz, dynamicListener);
+			removeListenerMethodIf(dynamicListener.clazz, (check) -> dynamicListener == check);
 		} else {
-			getMethodMap(listener).forEach(this::removeMethods);
+			getMethodMap(listener).forEach((clazz, methodsToRemove) -> removeListenerMethodIf((clazz), methodsToRemove::contains));
 		}
 	}
 	

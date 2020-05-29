@@ -43,5 +43,29 @@ class AnnotatedListenerMethod extends ListenerMethod {
 	void invoke(Object evt) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		method.invoke(listener, evt);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + listener.hashCode();
+		result = prime * result + method.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (!(object instanceof AnnotatedListenerMethod)) {
+			return false;
+		}
+		/*
+		 * Since we only use this method to determine whether there are
+		 * duplicate listeners, we only need to check listener object equality
+		 */
+		return listener == ((AnnotatedListenerMethod) object).listener;
+	}
 	
 }
