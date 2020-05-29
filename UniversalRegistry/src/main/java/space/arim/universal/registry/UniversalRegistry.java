@@ -250,12 +250,6 @@ public final class UniversalRegistry implements Registry {
 		 * Because #unregister removes empty lists atomically, we can simply check if
 		 * the key is contained in the registry map.
 		 * 
-		 * There is the possibility that an empty list has just been created because
-		 * #register is in an intermediate state and a registration is about to be added.
-		 * In this case we can safely pretend that there is a registration because we know
-		 * there is about to be one in a few nanoseconds. (We're essentially pretending
-		 * that our call happened later)
-		 * 
 		 */
 		return registry.containsKey(service);
 	}
