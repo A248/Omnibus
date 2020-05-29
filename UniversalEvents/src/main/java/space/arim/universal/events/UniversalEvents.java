@@ -20,7 +20,6 @@ package space.arim.universal.events;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -184,13 +183,29 @@ public final class UniversalEvents implements Events {
 		}
 	}
 	
+	private void addSingleMethod(Class<?> clazz, ListenerMethod method) {
+		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new ArrayList<ListenerMethod>());
+		synchronized (existingMethods) {
+			if (existingMethods.add(method)) {
+				existingMethods.sort(null);
+			}
+		}
+	}
+	
 	private void removeMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
 		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
 		if (existingMethods != null) {
 			synchronized (existingMethods) {
-				if (existingMethods.removeAll(methods)) {
-					existingMethods.sort(null);
-				}
+				existingMethods.removeAll(methods);
+			}
+		}
+	}
+	
+	private void removeSingleMethod(Class<?> clazz, ListenerMethod method) {
+		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
+		if (existingMethods != null) {
+			synchronized (existingMethods) {
+				existingMethods.remove(method);
 			}
 		}
 	}
@@ -222,7 +237,7 @@ public final class UniversalEvents implements Events {
 	@Override
 	public <E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<E> listener) {
 		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
-		addMethods(event, Collections.singleton(dynamicListener));
+		addSingleMethod(event, dynamicListener);
 		return dynamicListener;
 	}
 	
@@ -230,7 +245,7 @@ public final class UniversalEvents implements Events {
 	public void unregisterListener(Listener listener) {
 		if (listener instanceof DynamicListener<?>) {
 			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
-			removeMethods(dynamicListener.clazz, Collections.singleton(dynamicListener));
+			removeSingleMethod(dynamicListener.clazz, dynamicListener);
 		} else {
 			getMethodMap(listener).forEach(this::removeMethods);
 		}
