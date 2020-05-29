@@ -178,9 +178,8 @@ public final class UniversalEvents implements Events {
 		eventListeners.compute(clazz, (c, existingMethods) -> {
 			// No existing methods
 			if (existingMethods == null) {
-				ListenerMethod[] updated = methodsToAdd.toArray(new ListenerMethod[] {});
-				Arrays.sort(updated);
-				return updated;
+				// This list is already sorted by us in #getMethodMap
+				return methodsToAdd.toArray(new ListenerMethod[] {});
 			}
 			// Check for duplicates
 			for (ListenerMethod existing : existingMethods) {
@@ -255,7 +254,7 @@ public final class UniversalEvents implements Events {
 			}
 			List<ListenerMethod> list = methodMap.computeIfAbsent(parameters[0], (clazz) -> new ArrayList<>());
 			list.add(new AnnotatedListenerMethod(listener, method, annote.priority(), annote.ignoreCancelled()));
-			// Presorting now may help us later during possible contention
+			// Presorting now helps us later during possible contention
 			list.sort(null);
 		}
 		return methodMap;
