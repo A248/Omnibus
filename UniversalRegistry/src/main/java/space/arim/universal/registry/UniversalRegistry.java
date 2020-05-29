@@ -18,12 +18,13 @@
  */
 package space.arim.universal.registry;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Supplier;
 
 import space.arim.universal.events.Events;
@@ -67,7 +68,7 @@ public final class UniversalRegistry implements Registry {
 	 * particularly if listeners spend a long time.
 	 * 
 	 */
-	private final List<PartialRegistrationEvent<?>> eventsToFire = new ArrayList<PartialRegistrationEvent<?>>();
+	private final BlockingQueue<PartialRegistrationEvent<?>> eventQueue = new LinkedBlockingQueue<>();
 	
 	/**
 	 * Instances map to prevent duplicate ids
@@ -205,15 +206,13 @@ public final class UniversalRegistry implements Registry {
 	}
 	
 	private <T> void addEventToFire(Class<T> service, Registration<T> registration) {
-		synchronized (eventsToFire) {
-			eventsToFire.add(new PartialRegistrationEvent<>(service, registration));
-		}
+		eventQueue.add(new PartialRegistrationEvent<>(service, registration));
 	}
 	
 	private void fireRegistrationEvents() {
-		synchronized (eventsToFire) {
-			eventsToFire.forEach((partial) -> events.fireEvent(partial.toFullEvent(events.getUtil().isAsynchronous())));
-			eventsToFire.clear();
+		PartialRegistrationEvent<?> partial;
+		while ((partial = eventQueue.poll()) != null) {
+			events.fireEvent(partial.toFullEvent(events.getUtil().isAsynchronous()));
 		}
 	}
 	
