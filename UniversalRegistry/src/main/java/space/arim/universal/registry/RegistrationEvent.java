@@ -43,9 +43,7 @@ public class RegistrationEvent<T> extends Event {
 	private final Registration<T> registration;
 	
 	/**
-	 * Constructs a RegistrationEvent for a service and registration <br>
-	 * <br>
-	 * The event will run async if the registration occured async.
+	 * Constructs a RegistrationEvent for a service and registration
 	 * 
 	 * @param async whether the event is running async
 	 * @param service the service type registered

@@ -67,7 +67,7 @@ public final class UniversalRegistry implements Registry {
 	 * particularly if listeners spend a long time.
 	 * 
 	 */
-	private final List<RegistrationEvent<?>> eventsToFire = new ArrayList<RegistrationEvent<?>>();
+	private final List<PartialRegistrationEvent<?>> eventsToFire = new ArrayList<PartialRegistrationEvent<?>>();
 	
 	/**
 	 * Instances map to prevent duplicate ids
@@ -175,7 +175,7 @@ public final class UniversalRegistry implements Registry {
 				}
 			}
 
-			addEventToFire(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, registration));
+			addEventToFire(service, registration);
 			return registrations;
 		});
 	}
@@ -204,15 +204,15 @@ public final class UniversalRegistry implements Registry {
 		return (Registration<T>) registration;
 	}
 	
-	private void addEventToFire(RegistrationEvent<?> event) {
+	private <T> void addEventToFire(Class<T> service, Registration<T> registration) {
 		synchronized (eventsToFire) {
-			eventsToFire.add(event);
+			eventsToFire.add(new PartialRegistrationEvent<>(service, registration));
 		}
 	}
 	
 	private void fireRegistrationEvents() {
 		synchronized (eventsToFire) {
-			eventsToFire.forEach(getEvents()::fireEvent);
+			eventsToFire.forEach((partial) -> events.fireEvent(partial.toFullEvent(events.getUtil().isAsynchronous())));
 			eventsToFire.clear();
 		}
 	}
@@ -272,7 +272,7 @@ public final class UniversalRegistry implements Registry {
 
 			List<Registration<?>> list = new CopyOnWriteArrayList<Registration<?>>();
 			list.add(registration);
-			addEventToFire(new RegistrationEvent<T>(getEvents().getUtil().isAsynchronous(), service, registration));
+			addEventToFire(service, registration);
 			return list;
 		});
 		/*
