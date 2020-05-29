@@ -19,9 +19,9 @@
 package space.arim.universal.events;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -175,35 +175,50 @@ public final class UniversalEvents implements Events {
 	}
 	
 	private void addMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
-		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new CopyOnWriteArrayList<ListenerMethod>());
-		synchronized (existingMethods) {
+		eventListeners.compute(clazz, (c, existingMethods) -> {
+			if (existingMethods == null) {
+				existingMethods = new CopyOnWriteArrayList<>();
+			}
 			if (existingMethods.addAll(methods)) {
 				existingMethods.sort(null);
 			}
-		}
+			return existingMethods;
+		});
 	}
 	
 	private void addSingleMethod(Class<?> clazz, ListenerMethod method) {
-		List<ListenerMethod> existingMethods = eventListeners.computeIfAbsent(clazz, (c) -> new CopyOnWriteArrayList<ListenerMethod>());
-		synchronized (existingMethods) {
-			if (existingMethods.add(method)) {
-				existingMethods.sort(null);
+		eventListeners.compute(clazz, (c, existingMethods) -> {
+			if (existingMethods == null) {
+				existingMethods = new CopyOnWriteArrayList<>();
 			}
-		}
+			// adds the element into the list according to priority
+			// this is faster than using List#sort
+			int position = Collections.binarySearch(existingMethods, method);
+			if (position < 0) {
+				existingMethods.add(-(position + 1), method);
+			} else {
+				existingMethods.add(position, method);
+			}
+			return existingMethods;
+		});
 	}
 	
 	private void removeMethods(Class<?> clazz, Set<? extends ListenerMethod> methods) {
-		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
-		if (existingMethods != null) {
-			existingMethods.removeAll(methods);
-		}
+		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
+			if (existingMethods.removeAll(methods) && existingMethods.isEmpty()) {
+				return null;
+			}
+			return existingMethods;
+		});
 	}
 	
 	private void removeSingleMethod(Class<?> clazz, ListenerMethod method) {
-		List<ListenerMethod> existingMethods = eventListeners.get(clazz);
-		if (existingMethods != null) {
-			existingMethods.remove(method);
-		}
+		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
+			if (existingMethods.remove(method) && existingMethods.isEmpty()) {
+				return null;
+			}
+			return existingMethods;
+		});
 	}
 	
 	private static Map<Class<?>, Set<AnnotatedListenerMethod>> getMethodMap(Listener listener) {
