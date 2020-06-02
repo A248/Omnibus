@@ -27,32 +27,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-
-import space.arim.universal.util.UniversalUtil;
-import space.arim.universal.util.Util;
 
 /**
- * <b>UniversalEvents</b>: Main class <br>
- * 
+ * The main implementation of {@link Events}. <br>
  * <br>
- * Used for retrieving {@link Events} instances: <br>
- * * {@link #get()} <br>
- * * {@link #getByClass(Class)} <br>
- * * {@link #threadLocal()} <br>
- * * {@link #getOrDefault(Class, Supplier)}
+ * To retrieve the central instance, use {@link #get()}. Instances may also be constructed as desired.
  * 
  * @author A248
  *
  */
-public final class UniversalEvents implements Events {
-	
-	/**
-	 * The id of the instance
-	 * 
-	 */
-	private final String id;
-	
+public class UniversalEvents implements Events {
+
 	/**
 	 * The listeners themselves
 	 * 
@@ -60,104 +45,26 @@ public final class UniversalEvents implements Events {
 	private final ConcurrentHashMap<Class<?>, ListenerMethod[]> eventListeners = new ConcurrentHashMap<>();
 	
 	/**
-	 * The corresponding {@link Util} instance
+	 * The main instance id
 	 * 
 	 */
-	private final Util util;
+	private static final UniversalEvents DEFAULT_EVENTS = new UniversalEvents();
 	
-	/**
-	 * Instances map to prevent duplicate ids
-	 * 
-	 */
-	private static final ConcurrentHashMap<String, UniversalEvents> INSTANCES = new ConcurrentHashMap<String, UniversalEvents>();
-	
-	/**
-	 * The thread local
-	 * 
-	 */
-	private static final ThreadLocal<Events> THREAD_LOCAL = ThreadLocal.withInitial(() -> byUtil(UniversalUtil.threadLocal().get()));
-	
-	// Control instantiation
-	private UniversalEvents(String id, Util util) {
-		this.id = id;
-		this.util = util;
-	}
-	
-	static Events demandEvents(String id, Util util) {
-		return INSTANCES.computeIfAbsent(id, (instanceId) -> new UniversalEvents(id, util));
-	}
-	
-	static Events byUtil(Util util) {
-		return demandEvents(((UniversalUtil) util).getId(), util);
-	}
-	
-	/**
-	 * Events instances are thread safe; however, you may wish for a thread specific instance nonetheless.
-	 * 
-	 * @return ThreadLocal a {@link ThreadLocal}
-	 */
-	public static ThreadLocal<Events> threadLocal() {
-		return THREAD_LOCAL;
-	}
-	
-	/**
-	 * Retrieves an Events instance by class.
-	 * If no instance for the classname exists, a new one is created.<br>
-	 * <br>
-	 * This is the preferred approach to using your own Events instances.
-	 * 
-	 * @param clazz the class
-	 * @return the instance. If none exists, a new instance is created.
-	 */
-	public static Events getByClass(Class<?> clazz) {
-		return byUtil(UniversalUtil.getByClass(clazz));
-	}
-	
-	/**
-	 * Gets an Events instance by class with a default value, issued by the Supplier, if it does not exist. <br>
-	 * <br>
-	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
-	 * 
-	 * @param clazz see {@link #getByClass(Class)}
-	 * @param defaultSupplier from which to return back default values.
-	 * @return the instance if it exists, otherwise the default value
-	 */
-	public static Events getOrDefault(Class<?> clazz, Supplier<Events> defaultSupplier) {
-		Events events = INSTANCES.get("class-" + clazz.getName());
-		return events != null ? events : defaultSupplier.get();
+	public UniversalEvents() {
+		
 	}
 	
 	/**
 	 * Gets the main Events instance
 	 * 
-	 * @return the instance
+	 * @return the central instance
 	 */
 	public static Events get() {
-		return byUtil(UniversalUtil.get());
-	}
-	
-	/**
-	 * Returns the id of this UniversalEvents instance. <br>
-	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
-	 * (There may be other Events implementations which do not use an id based system, further,
-	 * UniversalEvents may itself change its internal implementation in the future).
-	 * 
-	 * @return String the id
-	 */
-	public String getId() {
-		return id;
-	}
-	
-	@Override
-	public Util getUtil() {
-		return util;
+		return DEFAULT_EVENTS;
 	}
 	
 	@Override
 	public <E extends Event> boolean fireEvent(E event) {
-		if (event.isAsynchronous() != util.isAsynchronous()) {
-			throw new IllegalStateException("Event#isAsynchronous returned untruthfully!");
-		}
 		eventListeners.forEach((clazz, listeners) -> {
 			if (clazz.isInstance(event)) {
 				for (ListenerMethod listener : listeners) {

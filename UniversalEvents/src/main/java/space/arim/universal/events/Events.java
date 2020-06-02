@@ -20,8 +20,6 @@ package space.arim.universal.events;
 
 import java.util.function.Consumer;
 
-import space.arim.universal.util.Util;
-
 /**
  * A framework for firing events and listening to them. <br>
  * <b>For an implementation, use {@link UniversalEvents}</b> <br>
@@ -34,21 +32,18 @@ import space.arim.universal.util.Util;
  *
  */
 public interface Events {
-
-	/**
-	 * Gets the {@link Util} instance corresponding to this event manager. <br>
-	 * <br>
-	 * The returned Util instance is the same one used to validate the truthfulness of {@link Event#isAsynchronous()} values.
-	 * 
-	 * @return Util the accompanying utility instance
-	 */
-	Util getUtil();
 	
 	/**
 	 * Fires an event, invoking all applicable listeners. <br>
-	 * If {@link Event#isAsynchronous()} returns untruthfully, an unchecked exception is thrown.
+	 * <br>
+	 * For any listener, if the event fired is an instance of the listener's targeted event class,
+	 * as specified in either the parameter type of {@link Listen} or the event class
+	 * passed to {@link #registerListener(Class, byte, Consumer)}, the listener will be invoked. <br>
+	 * <br>
+	 * If the event is a {@link Cancellable} and was cancelled, this method will return <code>false</code>.
+	 * Otherwise, it will return <code>true</code>
 	 * 
-	 * @param <E> event
+	 * @param <E> the event type
 	 * @param event the event itself
 	 * @return false if the event is a Cancellable and was cancelled, true otherwise
 	 * 
@@ -67,7 +62,8 @@ public interface Events {
 	void registerListener(Listener listener);
 	
 	/**
-	 * Creates and registers a dynamic listener, returning the created listener.
+	 * Creates and registers a dynamic listener, returning the created listener. <br>
+	 * The returned listener may be unregistered when desired.
 	 * 
 	 * @param <E> the type of the event
 	 * @param event the event class

@@ -21,21 +21,13 @@ package space.arim.universal.events;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 public class UniversalEventsTest {
 	
-	@RepeatedTest(20)
-	public void shouldNotCompletelyBreak() {
-		assertNotNull(UniversalEvents.get());
-		assertNotNull(UniversalEvents.getByClass(UniversalEventsTest.class));
-		assertNotNull(UniversalEvents.threadLocal().get());
-	}
-	
 	@Test
 	public void shouldModifyEventValue() {
-		Events events = UniversalEvents.get();
+		Events events = new UniversalEvents();
 		assertNotNull(events);
 		events.registerListener(new IntOperatorTestListener());
 
@@ -44,7 +36,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void shouldModifyEventValueDynamic() {
-		Events events = UniversalEvents.getByClass(UniversalEventsTest.class);
+		Events events = new UniversalEvents();
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
@@ -63,7 +55,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void shouldMaintainProperOrder() {
-		Events events = UniversalEvents.threadLocal().get();
+		Events events = new UniversalEvents();
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = te.someValue + 1;
 		});
@@ -78,7 +70,7 @@ public class UniversalEventsTest {
 	@Test
 	public void shouldProperlyUnregister() {
 		StringOperatorTestListener sotl = new StringOperatorTestListener();
-		Events events = UniversalEvents.get();
+		Events events = new UniversalEvents();
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
 
@@ -95,7 +87,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void shouldProperlyUnregisterDynamic() {
-		Events events = UniversalEvents.getByClass(UniversalEventsTest.class);
+		Events events = new UniversalEvents();
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
 
