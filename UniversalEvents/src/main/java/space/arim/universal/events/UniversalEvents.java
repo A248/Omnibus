@@ -50,6 +50,12 @@ public class UniversalEvents implements Events {
 	 */
 	private static final UniversalEvents DEFAULT_EVENTS = new UniversalEvents();
 	
+	/**
+	 * Creates a UniversalEvents. <br>
+	 * This may be useful for creating one's own instances. An event fired in one instance
+	 * has no relation to other instances.
+	 * 
+	 */
 	public UniversalEvents() {
 		
 	}
