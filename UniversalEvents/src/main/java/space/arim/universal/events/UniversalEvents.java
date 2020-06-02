@@ -39,13 +39,13 @@ import java.util.function.Predicate;
 public class UniversalEvents implements Events {
 
 	/**
-	 * The listeners themselves
+	 * The listeners themselves, a map of event classes to listener methods
 	 * 
 	 */
 	private final ConcurrentHashMap<Class<?>, ListenerMethod[]> eventListeners = new ConcurrentHashMap<>();
 	
 	/**
-	 * The main instance id
+	 * The main instance
 	 * 
 	 */
 	private static final UniversalEvents DEFAULT_EVENTS = new UniversalEvents();
