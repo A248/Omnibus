@@ -18,13 +18,12 @@
  */
 package space.arim.universal.util.concurrent;
 
-import java.util.function.LongBinaryOperator;
 import java.util.function.LongUnaryOperator;
 
 /**
  * Provides default implementations for {@link EnhancedExecutor}'s scheduling methods' delay functions. <br>
  * <br>
- * Recall that <code>Binary</code> operators take into account execution time, while <code>Unary</code> operators do not. <br>
+ * Recall that "Advanced" operators take into account execution time, while "Simple" operators do not. <br>
  * Also, note that delay functions are applied after each execution. The first delay is determined by the initial
  * delay passed as a parameter to the scheduling methods themselves. Therefore,
  * <code>executor.schedule(this::runSomeTask, 5, DelayFunctions.exponential(2), TimeUnit.SECONDS)</code>, where <code>executor</code>
@@ -49,10 +48,10 @@ public final class DelayFunctions {
 	/**
 	 * Schedules at a constant delay <i>between</i> executions.
 	 * 
-	 * @return a LongUnaryOperator which yields the same delay
+	 * @return a delay function which yields the same delay
 	 */
-	public static LongUnaryOperator fixedDelay() {
-		return LongUnaryOperator.identity();
+	public static SimpleDelayCalculator fixedDelay() {
+		return (d) -> (d);
 	}
 	
 	/**
@@ -71,10 +70,10 @@ public final class DelayFunctions {
 	 * 2. Temporarily accelerate future executions in order to "correct" any waverings from the fixed rate schedule.
 	 * Thus, if a single execution takes a long time, it will not permanently ruin the rate
 	 * 
-	 * @return a LongBinaryOperator which yields the same rate of delay
+	 * @return a delay function which yields the same rate of delay
 	 */
-	public static LongBinaryOperator fixedRate() {
-		return variableRate(LongUnaryOperator.identity());
+	public static AdvancedDelayCalculator fixedRate() {
+		return variableRate(fixedDelay());
 	}
 	
 	/**
@@ -95,9 +94,9 @@ public final class DelayFunctions {
 	 * would produce a rate which doubles after each execution.
 	 * 
 	 * @param rateFunction the rate determining function
-	 * @return a LongBinaryOperator which yields a rate of delay as specified by the rate function
+	 * @return a delay function which yields a rate of delay as specified by the rate function
 	 */
-	public static LongBinaryOperator variableRate(LongUnaryOperator rateFunction) {
+	public static AdvancedDelayCalculator variableRate(SimpleDelayCalculator rateFunction) {
 		return new VariableRateFunction(rateFunction);
 	}
 	
@@ -110,7 +109,7 @@ public final class DelayFunctions {
 	 * @param slope the amount to add each invocation
 	 * @return a linear delay function
 	 */
-	public static LongUnaryOperator linear(long slope) {
+	public static SimpleDelayCalculator linear(long slope) {
 		return (previousDelay) -> previousDelay + slope;
 	}
 	
@@ -123,7 +122,7 @@ public final class DelayFunctions {
 	 * @param base the amount by which to multiply each invocation
 	 * @return an exponential delay function
 	 */
-	public static LongUnaryOperator exponential(long base) {
+	public static SimpleDelayCalculator exponential(long base) {
 		return (previousDelay) -> previousDelay*base;
 	}
 	
@@ -135,7 +134,7 @@ public final class DelayFunctions {
 	 * @param base the logarithmic base
 	 * @return a logarithmic delay function
 	 */
-	public static LongUnaryOperator logarithmic(long base) {
+	public static SimpleDelayCalculator logarithmic(long base) {
 		return (previousDelay) -> (long) (Math.log(base^previousDelay + 1)/Math.log(base));
 	}
 	
@@ -149,13 +148,13 @@ public final class DelayFunctions {
  * @author A248
  *
  */
-class VariableRateFunction implements LongBinaryOperator {
+class VariableRateFunction implements AdvancedDelayCalculator {
 	
 	/**
 	 * the rate determining function
 	 * 
 	 */
-	private final LongUnaryOperator rateFunction;
+	private final SimpleDelayCalculator rateFunction;
 	
 	/**
 	 * the rate we want to schedule at,
@@ -171,18 +170,18 @@ class VariableRateFunction implements LongBinaryOperator {
 	 */
 	private long offset = 0;
 	
-	VariableRateFunction(LongUnaryOperator rateFunction) {
+	VariableRateFunction(SimpleDelayCalculator rateFunction) {
 		this.rateFunction = rateFunction;
 	}
 	
 	@Override
-	public long applyAsLong(long previousDelay, long executionTime) {
+	public long calculateNext(long previousDelay, long executionTime) {
 		/*
 		 * if this is the first invocation, we have to determine the initial rate
 		 * otherwise, we'll use the rate function to calculate the next rate
 		 * 
 		 */
-		rate = (rate == -1L) ? previousDelay : rateFunction.applyAsLong(rate);
+		rate = (rate == -1L) ? previousDelay : rateFunction.calculateNext(rate);
 		// the time at which we'd like to delay in order to maintain the rate schedule
 		long delay = rate - executionTime;
 		if (delay > 0) {
