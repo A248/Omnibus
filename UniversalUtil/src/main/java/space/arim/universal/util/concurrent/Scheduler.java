@@ -42,7 +42,13 @@ import java.util.function.Consumer;
  * 
  * @author A248
  *
+ * @deprecated {@link EnhancedExecutor} is a much more powerful and advanced framework for scheduling. For one,
+ * it provides the ability to specify the time units of delays. For two, it enables delay calculators based
+ * on mathematical functions. For three, it has better method names. For four, it is combined with basic
+ * concurrent execution in a single logical interface.
+ * 
  */
+@Deprecated
 public interface Scheduler {
 	
 	/**
