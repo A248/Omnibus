@@ -1,6 +1,6 @@
 /* 
- * UniversalEvents, a common server event-handling api
- * Copyright © 2019 Anand Beh <https://www.arim.space>
+ * UniversalEvents
+ * Copyright © 2020 Anand Beh <https://www.arim.space>
  * 
  * UniversalEvents is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,32 @@
 package space.arim.universal.events;
 
 /**
- * Marker interface for an event which is fired and listened to using {@link Events}. <br>
- * <br>
- * If an event should be cancellable, it should implement {@link Cancellable}.
+ * An implementation of {@link Cancellable} using a volatile variable
+ * to guarantee memory consistency effects.
  * 
  * @author A248
  *
  */
-public interface Event {
+public class AbstractCancellable implements Cancellable {
+
+	private volatile boolean cancelled = false;
 	
+	/**
+	 * Creates a cancellable event. By default events are not cancelled.
+	 * 
+	 */
+	protected AbstractCancellable() {
+		
+	}
+
+	@Override
+	public void cancel() {
+		cancelled = true;
+	}
 	
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
+	}
 	
 }

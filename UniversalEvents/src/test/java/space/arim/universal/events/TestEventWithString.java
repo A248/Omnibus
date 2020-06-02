@@ -18,7 +18,7 @@
  */
 package space.arim.universal.events;
 
-public class TestEventWithString extends Event {
+public class TestEventWithString implements Event {
 
 	volatile String str;
 	

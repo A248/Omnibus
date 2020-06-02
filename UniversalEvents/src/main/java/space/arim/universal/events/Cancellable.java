@@ -19,51 +19,36 @@
 package space.arim.universal.events;
 
 /**
- * An event which may be cancelled via {@link #setCancelled(boolean)}.
+ * An event which may be cancelled via {@link #setCancelled(boolean)}. <br>
+ * <br>
+ * This is an interface, and not an abstract class, so that users may
+ * define their own object hierarchies. Nevertheless, to ensure the visibility
+ * of cancellation in {@link #isCancelled()}, users should use {@link AbstractCancellable}
+ * or understand and create a memory-concise cancellation flag.
  * 
  * @author A248
  *
  */
-public abstract class Cancellable extends Event {
-	
-	private volatile boolean cancelled = false;
+public interface Cancellable extends Event {
 	
 	/**
-	 * Creates a cancellable event, specifying whether it runs
-	 * synchronously or asynchronously. <br>
-	 * See {@link Event#Event(boolean)}
-	 * 
-	 * @param async whether the event is fired asynchronously
-	 */
-	protected Cancellable(boolean async) {
-		super(async);
-	}
-	
-	/**
-	 * Creates a cancellable event, which runs synchronously. <br>
-	 * See {@link Event#Event(boolean)}
+	 * Marks an event as cancelled. The event may never be "uncancelled". <br>
+	 * <br>
+	 * The effect of cancellation is determined by the implementer of the event.
+	 * Event listeners are still invoked regardless of cancellation.
 	 * 
 	 */
-	protected Cancellable() {
-		
-	}
+	void cancel();
 	
 	/**
-	 * Whether the event has been cancelled, presumably by another listener.
+	 * Whether the event has been cancelled, possibly by another listener. <br>
+	 * <br>
+	 * To preserve the integrity of this method call in concurrent environments,
+	 * implementers must guarantee memory-consistency effects. This is typically
+	 * done with a volatile variable.
 	 * 
 	 * @return true if the event is cancelled, false otherwise
 	 */
-	public boolean isCancelled() {
-		return cancelled;
-	}
-	
-	/**
-	 * Cancels (or uncancels) the event.
-	 * 
-	 * @param cancelled whether or not to cancel
-	 */
-	public void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
+	boolean isCancelled();
 	
 }
