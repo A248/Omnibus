@@ -172,6 +172,17 @@ public class UniversalRegistry implements Registry {
 	}
 	
 	@Override
+	public <T> T registerAndLoad(Class<T> service, byte priority, T provider, String name) {
+		return registerAndGet(service, priority, provider, name).getProvider();
+	}
+	
+	@Override
+	public <T> T load(Class<T> service) {
+		Registration<T> registration = getRegistration(service);
+		return (registration != null) ? registration.getProvider() : null;
+	}
+	
+	@Override
 	public <T> Registration<T> getRegistration(Class<T> service) {
 		List<Registration<?>> registrations = registry.get(service);
 		return (registrations != null) ? getHighestPriorityFrom(registrations) : null;

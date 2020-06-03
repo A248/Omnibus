@@ -124,9 +124,7 @@ public interface Registry {
 	 * @param name a user friendly name for the implementation
 	 * @return the highest priority provider
 	 */
-	default <T> T registerAndLoad(Class<T> service, byte priority, T provider, String name) {
-		return registerAndGet(service, priority, provider, name).getProvider();
-	}
+	<T> T registerAndLoad(Class<T> service, byte priority, T provider, String name);
 	
 	/**
 	 * Automatically finds the highest priority registration for a service
@@ -141,10 +139,7 @@ public interface Registry {
 	 * @param service the service class
 	 * @return the provider or <code>null</code> if not found
 	 */
-	default <T> T load(Class<T> service) {
-		Registration<T> registration = getRegistration(service);
-		return (registration != null) ? registration.getProvider() : null;
-	}
+	<T> T load(Class<T> service);
 	
 	/**
 	 * Retrieves the highest priority registration for a service. <br>
