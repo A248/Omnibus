@@ -69,6 +69,11 @@ public class Registration<T> implements Comparable<Registration<T>> {
 	}
 	
 	@Override
+	public String toString() {
+		return "Registration [priority=" + priority + ", provider=" + provider + ", name=" + name + "]";
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
