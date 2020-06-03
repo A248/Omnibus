@@ -26,8 +26,7 @@ package space.arim.universal.util.proxy;
  * Accordingly, ProxiedObject is only used as a default implementation; do not rely on proxying classes extending ProxiedObject. <br>
  * If the proxy type is an interface, then the proxy object may extend this class and use it for basic implementation.
  * However, if the proxy type is a class, then the proxy object, in order to maintain the same type as its backing object,
- * must extend the proxy type, thereby preventing it from extending ProxiedObject. Consider {@link ProxiedCompletableFuture}. 
- * It must extend <code>CompletableFuture</code> in order to disguise itself likewise, meaning it cannot extend ProxiedObject. <br>
+ * must extend the proxy type, thereby preventing it from extending ProxiedObject.
  * 
  * @author A248
  *
