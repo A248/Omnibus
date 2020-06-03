@@ -19,7 +19,7 @@
 package space.arim.universal.events;
 
 /**
- * An event which may be cancelled via {@link #setCancelled(boolean)}. <br>
+ * An event which may be cancelled via {@link #cancel()}. <br>
  * <br>
  * This is an interface, and not an abstract class, so that users may
  * define their own object hierarchies. Nevertheless, to ensure the visibility
@@ -35,7 +35,7 @@ public interface Cancellable extends Event {
 	 * Marks an event as cancelled. The event may never be "uncancelled". <br>
 	 * <br>
 	 * The effect of cancellation is determined by the implementer of the event.
-	 * Event listeners are still invoked regardless of cancellation.
+	 * Event listeners are always invoked, regardless of cancellation.
 	 * 
 	 */
 	void cancel();
