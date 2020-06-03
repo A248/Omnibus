@@ -18,8 +18,6 @@
  */
 package space.arim.universal.util.concurrent;
 
-import java.util.function.LongUnaryOperator;
-
 /**
  * Provides default implementations for {@link EnhancedExecutor}'s scheduling methods' delay functions. <br>
  * <br>
@@ -32,7 +30,7 @@ import java.util.function.LongUnaryOperator;
  * <br>
  * Fixed delay: {@link #fixedDelay()} <br>
  * Fixed rate: {@link #fixedRate()} <br>
- * Variable rate: {@link #variableRate(LongUnaryOperator)} <br>
+ * Variable rate: {@link #variableRate(SimpleDelayFunction)} <br>
  * Linear delay: {@link #linear(long)} <br>
  * Exponential delay: {@link #exponential(long)} <br>
  * Logarithmic delay: {@link #logarithmic(long)}
