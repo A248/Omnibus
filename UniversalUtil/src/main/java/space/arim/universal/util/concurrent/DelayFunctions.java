@@ -30,7 +30,7 @@ package space.arim.universal.util.concurrent;
  * <br>
  * Fixed delay: {@link #fixedDelay()} <br>
  * Fixed rate: {@link #fixedRate()} <br>
- * Variable rate: {@link #variableRate(SimpleDelayFunction)} <br>
+ * Variable rate: {@link #variableRate(SimpleDelayCalculator)} <br>
  * Linear delay: {@link #linear(long)} <br>
  * Exponential delay: {@link #exponential(long)} <br>
  * Logarithmic delay: {@link #logarithmic(long)}
