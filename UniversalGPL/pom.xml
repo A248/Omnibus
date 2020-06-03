@@ -11,29 +11,5 @@
 
 	<artifactId>universal-gpl</artifactId>
 	<name>UniversalGPL</name>
-	<description>Incredibly basic license distributor to be utilised by other projects.</description>
-	<packaging>pom</packaging>
-	
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>make shared resources</id>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<phase>package</phase>
-						<configuration>
-							<descriptors>
-								<descriptor>src/main/assembly/resources.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+	<description>Basic license distributor to be utilised by other projects through shading.</description>
 </project>
