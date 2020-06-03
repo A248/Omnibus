@@ -31,25 +31,15 @@ import space.arim.universal.events.Events;
 import space.arim.universal.events.UniversalEvents;
 
 /**
- * <b>UniversalRegistry</b>: Main class <br>
+ * The main implementation of {@link Registry}. <br>
  * <br>
- * Used for retrieving {@link Registry} instances: <br>
- * * {@link #get()} <br>
- * * {@link #getByClass(Class)} <br>
- * * {@link #threadLocal()} <br>
- * * {@link #getOrDefault(Class, Supplier)}
+ * To retrieve the central instance, use {@link #get()}. Instances may also be constructed as desired.
  * 
  * @author A248
  *
  */
-public final class UniversalRegistry implements Registry {
-	
-	/**
-	 * The id of the instance
-	 * 
-	 */
-	private final String id;
-	
+public class UniversalRegistry implements Registry {
+
 	/**
 	 * The registry itself
 	 * 
@@ -68,89 +58,34 @@ public final class UniversalRegistry implements Registry {
 	 * particularly if listeners spend a long time.
 	 * 
 	 */
-	private final BlockingQueue<PartialRegistrationEvent<?>> eventQueue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<RegistrationEvent<?>> eventQueue = new LinkedBlockingQueue<>();
 	
 	/**
-	 * Instances map to prevent duplicate ids
+	 * The main instance
 	 * 
 	 */
-	private static final ConcurrentHashMap<String, UniversalRegistry> INSTANCES = new ConcurrentHashMap<String, UniversalRegistry>();
+	private static final UniversalRegistry DEFAULT_REGISTRY = new UniversalRegistry(UniversalEvents.get());
 	
 	/**
-	 * The thread local
+	 * Creates a UniversalRegistry. <br>
+	 * This may be useful for creating one's own instances. A service registered in one instance
+	 * has no relation to any other. <br>
+	 * <br>
+	 * The backing events instance provided is used for firing {@link RegistrationEvent}s.
 	 * 
+	 * @param events the events instance on which to fire registration events
 	 */
-	private static final ThreadLocal<Registry> THREAD_LOCAL = ThreadLocal.withInitial(() -> byEvents(UniversalEvents.threadLocal().get()));
-	
-	// Control instantiation
-	private UniversalRegistry(String id, Events events) {
-		this.id = id;
+	public UniversalRegistry(Events events) {
 		this.events = events;
 	}
 	
-	static Registry demandRegistry(String id, Events events) {
-		return INSTANCES.computeIfAbsent(id, (instanceId) -> new UniversalRegistry(instanceId, events));
-	}
-	
-	static Registry byEvents(Events events) {
-		return demandRegistry(((UniversalEvents) events).getId(), events);
-	}
-	
 	/**
-	 * Registry instances are thread safe; however, you may wish for a thread specific instance nonetheless.
+	 * Gets the main Registry instance
 	 * 
-	 * @return ThreadLocal a {@link ThreadLocal}
-	 */
-	public static ThreadLocal<Registry> threadLocal() {
-		return THREAD_LOCAL;
-	}
-	
-	/**
-	 * Retrieves a Registry instance by class.
-	 * If no instance for the classname exists, a new one is created.<br>
-	 * <br>
-	 * This is the preferred approach to using your own UniversalRegistry instances.
-	 * 
-	 * @param clazz the class
-	 * @return the instance. If none exists, a new instance is created.
-	 */
-	public static Registry getByClass(Class<?> clazz) {
-		return byEvents(UniversalEvents.getByClass(clazz));
-	}
-	
-	/**
-	 * Gets a Registry instance by class with a default value, issued by the Supplier, if it does not exist. <br>
-	 * <br>
-	 * This method is useful for checking for a specific instance and falling back to a default value. <br>
-	 * 
-	 * @param clazz see {@link #getByClass(Class)}
-	 * @param defaultSupplier from which to return back default values.
-	 * @return the instance if it exists, otherwise the default value
-	 */
-	public static Registry getOrDefault(Class<?> clazz, Supplier<Registry> defaultSupplier) {
-		Registry registry = INSTANCES.get("class-" + clazz.getName());
-		return registry != null ? registry : defaultSupplier.get();
-	}
-	
-	/**
-	 * Gets the main instance of UniversalRegistry
-	 * 
-	 * @return the instance
+	 * @return the central instance
 	 */
 	public static Registry get() {
-		return byEvents(UniversalEvents.get());
-	}
-	
-	/**
-	 * Returns the id of this Registry instance. <br>
-	 * <b>This method is purposefully not exposed since it is not part of the officially supported API.</b>
-	 * (There may be other Registry implementations which do not use an id based system, further,
-	 * UniversalRegistry may itself change its internal implementation in the future).
-	 * 
-	 * @return String the id
-	 */
-	public String getId() {
-		return id;
+		return DEFAULT_REGISTRY;
 	}
 	
 	@Override
@@ -206,13 +141,13 @@ public final class UniversalRegistry implements Registry {
 	}
 	
 	private <T> void addEventToFire(Class<T> service, Registration<T> registration) {
-		eventQueue.add(new PartialRegistrationEvent<>(service, registration));
+		eventQueue.add(new RegistrationEvent<>(service, registration));
 	}
 	
 	private void fireRegistrationEvents() {
-		PartialRegistrationEvent<?> partial;
-		while ((partial = eventQueue.poll()) != null) {
-			events.fireEvent(partial.toFullEvent(events.getUtil().isAsynchronous()));
+		RegistrationEvent<?> event;
+		while ((event = eventQueue.poll()) != null) {
+			events.fireEvent(event);
 		}
 	}
 	

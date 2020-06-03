@@ -37,7 +37,7 @@ import space.arim.universal.events.Event;
  *
  * @param <T> the service for which the resource was registered
  */
-public class RegistrationEvent<T> extends Event {
+public class RegistrationEvent<T> implements Event {
 
 	private final Class<T> service;
 	private final Registration<T> registration;
@@ -45,12 +45,10 @@ public class RegistrationEvent<T> extends Event {
 	/**
 	 * Constructs a RegistrationEvent for a service and registration
 	 * 
-	 * @param async whether the event is running async
 	 * @param service the service type registered
 	 * @param provider the provider of the service
 	 */
-	RegistrationEvent(boolean async, Class<T> service, Registration<T> registration) {
-		super(async);
+	RegistrationEvent(Class<T> service, Registration<T> registration) {
 		this.service = service;
 		this.registration = registration;
 	}
