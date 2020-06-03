@@ -108,13 +108,13 @@ public interface EnhancedExecutor extends Executor {
 	 * Differs from {@link #schedule(Runnable, long, SimpleDelayCalculator, TimeUnit)} in that it accepts a <code>Consumer</code>
 	 * which may be used to cancel further scheduling of the task from within the execution itself.
 	 * 
-	 * @param cmd the consumer to accept the task
+	 * @param command the consumer to accept the task
 	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
 	 * @param delayFunction the function to use when calculating the next delay
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return the same task the consumer received, never <code>null</code>
 	 */
-	Task schedule(Consumer<Task> cmd, long initialDelay, SimpleDelayCalculator delayFunction, TimeUnit units);
+	Task schedule(Consumer<Task> command, long initialDelay, SimpleDelayCalculator delayFunction, TimeUnit units);
 	
 	/**
 	 * Schedules a repeating task where further delays are calculated after each execution by the provided function. <br>
@@ -128,7 +128,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return a task which may be cancelled, never <code>null</code>
 	 */
-	Task schedule(Runnable cmd, long initialDelay, AdvancedDelayCalculator delayFunction, TimeUnit units);
+	Task schedule(Runnable command, long initialDelay, AdvancedDelayCalculator delayFunction, TimeUnit units);
 	
 	/**
 	 * Schedules a repeating task where further delays are calculated after each execution by the provided function. <br>
@@ -136,12 +136,12 @@ public interface EnhancedExecutor extends Executor {
 	 * Differs from {@link #schedule(Runnable, long, AdvancedDelayCalculator, TimeUnit)} in that it accepts a <code>Consumer</code>
 	 * which may be used to cancel further scheduling of the task from within the execution itself.
 	 * 
-	 * @param cmd the consumer to accept the task
+	 * @param command the consumer to accept the task
 	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
 	 * @param delayFunction the function to use when calculating the next delay
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return the same task the consumer received, never <code>null</code>
 	 */
-	Task schedule(Consumer<Task> cmd, long initialDelay, AdvancedDelayCalculator delayFunction, TimeUnit units);
+	Task schedule(Consumer<Task> command, long initialDelay, AdvancedDelayCalculator delayFunction, TimeUnit units);
 	
 }
