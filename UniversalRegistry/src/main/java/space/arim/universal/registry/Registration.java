@@ -94,9 +94,5 @@ public class Registration<T> implements Comparable<Registration<T>> {
 		Registration<?> other = (Registration<?>) object;
 		return priority == other.priority && provider.equals(other.provider) && name.equals(other.name);
 	}
-
-
-
-
 	
 }
