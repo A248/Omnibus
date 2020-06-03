@@ -20,12 +20,27 @@ package space.arim.universal.registry;
 
 import java.util.Objects;
 
+/**
+ * A registration wrapper for a specific service, including a registration priority,
+ * service provider implementing the service, and accompanying optional display name.
+ * 
+ * @author A248
+ *
+ * @param <T> the service type
+ */
 public class Registration<T> implements Comparable<Registration<T>> {
 	
 	private final byte priority;
 	private final T provider;
 	private final String name;
 	
+	/**
+	 * Creates from a priority, provider, and display name.
+	 * 
+	 * @param priority the priority of the registration
+	 * @param provider the provider which implements the service
+	 * @param name the name, may be null or empty if none is desired
+	 */
 	public Registration(byte priority, T provider, String name) {
 		this.priority = priority;
 		this.provider = Objects.requireNonNull(provider, "Provider must not be null");
