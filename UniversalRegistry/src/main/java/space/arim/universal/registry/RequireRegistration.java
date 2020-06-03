@@ -27,10 +27,12 @@ import java.lang.annotation.Target;
 
 /**
  * Denotes a requirement that specific service types be registered in a {@link Registry}. <br>
- * Therefore, this annotation should be applied to <code>Registry</code> parameters or method specifications (e.g., in interfaces) returning a <code>Registry</code>. <br>
+ * Should be applied to <code>Registry</code> parameters or methods returning a <code>Registry</code>. <br>
  * <br>
- * If applied to a parameter, the parameter supplied should have the service types registered. <br>
- * If applied to a method in an interface or abstract class, the implementation should return a registry with the service types registered.
+ * It is recommended that such requirements be validated immediately when the <code>Registry</code> is passed. <br>
+ * <br>
+ * If applied to a parameter, the parameter passed should have the service types registered. <br>
+ * If applied to a method, such method should return a registry with the service types registered.
  * 
  * @author A248
  *
