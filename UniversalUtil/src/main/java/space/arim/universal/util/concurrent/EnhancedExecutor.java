@@ -59,6 +59,18 @@ import java.util.function.Supplier;
 public interface EnhancedExecutor extends Executor {
 
 	/**
+	 * Executes an asynchronous action. <br>
+	 * <br>
+	 * The command may execute in the calling thread, but only if the calling thread is one which is pooled
+	 * or managed by the implementation, such that the command is run later. <br>
+	 * For example, actions submitted from within one of the threads in <code>ForkJoinPool.commonPool</code>
+	 * may run later on the same pooled thread.
+	 * 
+	 */
+	@Override
+	void execute(Runnable command);
+	
+	/**
 	 * Execute an asynchronous action. <br>
 	 * Differs from {@link #execute(Runnable)} in that the returned {@link CompletableFuture} provides additional functionality,
 	 * including the ability to listen for completion or block until complete.
