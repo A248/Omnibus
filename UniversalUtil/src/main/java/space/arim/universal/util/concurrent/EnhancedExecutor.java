@@ -43,15 +43,19 @@ import java.util.function.Supplier;
  * which allow for powerful usage of repeating delayed tasks. <br>
  * The <code>Runnable</code> is the execution to run, or a <code>Consumer</code> if the task must be able to access itself.
  * The <code>long</code> is the initial delay. If negative, nothing happens and all further scheduling is cancelled.
- * If zero, task execution begins immediately. <br>
+ * If zero, task execution begins immediately. Note that, for small initial delays, it is possible (though unlikely)
+ * that the task is run before the method returns, due to the nature of concurrent execution. <br>
  * <br>
  * The <code>SimpleDelayCalculator</code> or <code>AdvancedDelayCalculator</code> is the <i>delay function</i>
- * used to calculate the delay before the next execution. No executions will overlap. <br>
+ * used to calculate the delay before the next execution. No task executions will overlap. <br>
  * If the delay function is "Simple", it takes the last delay as the input and calculates the next delay accordingly.
- * If "Advanced", the delay function takes the last delay and the last execution time to calculate the next delay. <br>
+ * If "Advanced", the delay function takes the last delay and the last execution time to calculate the next delay.
+ * The execution time includes the time for the task to be scheduled (generally the same overhead necessitated
+ * by {@link #execute(Runnable)} and the time which the task itself takes to execute. <br>
  * For useful implementations of delay functions, {@link DelayFunctions} may be used. <br>
  * <br>
- * The TimeUnit is the unit which the initial delay is specified in and the unit which the delay function uses.
+ * The TimeUnit is the unit in which the initial delay is specified AND the units which the delay function uses;
+ * both the inputs and the outputs of the delay function are in such units.
  * 
  * @author A248
  *
