@@ -19,9 +19,7 @@
 package space.arim.universal.util.concurrent;
 
 /**
- * A scheduled task which may be cancelled via {@link #cancel()}. <br>
- * <br>
- * See {@link #cancel()} for specifications.
+ * Represents scheduled work which may be cancelled via {@link #cancel()}.
  * 
  * @author A248
  *
@@ -29,12 +27,11 @@ package space.arim.universal.util.concurrent;
 public interface Task {
 
 	/**
-	 * Cancels the task, preventing further scheduling or rescheduling. <br>
-	 * Cancellation should not stop a single pending execution of a task if execution has initiated (no interruption required). <br>
+	 * Cancels the task, preventing further scheduling, rescheduling, or upcoming execution. <br>
 	 * <br>
-	 * <b>Specifications</b>: <br>
-	 * * A {@link EnhancedExecutor} or {@link Scheduler} MUST cease further scheduling of the task in timed or delayed executions. <br>
-	 * * Method MUST be idempotent for repeated calls.
+	 * A task which is currently executing will not be interrupted; merely, it will not be rescheduled.
+	 * <br>
+	 * Calling <code>cancel()</code> on a cancelled task is a no-op.
 	 * 
 	 */
 	void cancel();
@@ -45,5 +42,18 @@ public interface Task {
 	 * @return true if the task is cancelled, false otherwise
 	 */
 	boolean isCancelled();
+	
+	/**
+	 * Whether this object is equal to another. <br>
+	 * <br>
+	 * Two task objects are considered equal if they represent the same scheduled work.
+	 * Thus, if <code>task1.equals(task2)</code>, then <code>task1.cancel()</code> is
+	 * equivalent to <code>task2.cancel()</code>.
+	 * 
+	 * @param object the object to evaluate equality with
+	 * @return true if equal, false otherwise
+	 */
+	@Override
+	boolean equals(Object object);
 	
 }
