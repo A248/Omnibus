@@ -19,6 +19,7 @@
 package space.arim.universal.events;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -168,9 +169,13 @@ public class UniversalEvents implements Events {
 			if (annote == null) {
 				continue;
 			}
+			int modifiers = method.getModifiers();
+			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+				throw new IllegalArgumentException("Listening methods must be public and non-static");
+			}
 			Class<?>[] parameters = method.getParameterTypes();
 			if (parameters.length != 1) {
-				throw new IllegalArgumentException("Listening methods must have 1 parameter!");
+				throw new IllegalArgumentException("Listening methods must have 1 parameter");
 			}
 			List<ListenerMethod> list = methodMap.computeIfAbsent(parameters[0], (clazz) -> new ArrayList<>());
 			list.add(new AnnotatedListenerMethod(listener, method, annote.priority(), annote.ignoreCancelled()));

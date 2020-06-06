@@ -25,9 +25,15 @@ import java.lang.annotation.Target;
 
 /**
  * Used for detecting listener methods <br>
- * To mark a method for listening, use this annotation. The method must have a single parameter
- * whose parameter type is that of the event which will be listened to. If the method has
- * multiple parameters, an unchecked exception will be thrown.
+ * To mark a method for listening, use this annotation. If the method is annotated but does not meet
+ * the following requirements, an unchecked exception is thrown: <br>
+ * The method must have a single parameter. <br>
+ * The method is public. <br>
+ * The method is not static. <br>
+ * <br>
+ * The single parameter of the listening method determines the event which will be listened to. More formally,
+ * for any event <code>evt</code>, if the <code>evt</code> is an instance of the parameter type,
+ * the listening method will be invoked when the method is thrown.
  * 
  * @author A248
  *
