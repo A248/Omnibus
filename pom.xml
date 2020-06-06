@@ -92,6 +92,14 @@
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.junit.jupiter</groupId>
+							<artifactId>junit-jupiter-engine</artifactId>
+							<version>${junit.version}</version>
+							<scope>runtime</scope>
+						</dependency>
+					</dependencies>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -143,12 +151,6 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-api</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-engine</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
