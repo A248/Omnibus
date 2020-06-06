@@ -61,7 +61,7 @@ class DynamicListener<E extends Event> extends ListenerMethod implements Listene
 			return false;
 		}
 		DynamicListener<?> other = (DynamicListener<?>) object;
-		return clazz == other.clazz && listener == other.listener;
+		return priority == other.priority && clazz == other.clazz && listener == other.listener;
 	}
 	
 }
