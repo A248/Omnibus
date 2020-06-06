@@ -12,4 +12,12 @@
 	<artifactId>universal-util</artifactId>
 	<name>UniversalUtil</name>
 	<description>Provides simple yet effective multithreaded utilities.</description>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
