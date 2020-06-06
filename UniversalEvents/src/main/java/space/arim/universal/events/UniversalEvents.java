@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import space.arim.universal.util.ArraysUtil;
+
 /**
  * The main implementation of {@link Events}. <br>
  * <br>
@@ -104,9 +106,7 @@ public class UniversalEvents implements Events {
 			// Add the methods and sort
 			int startLength = existingMethods.length;
 			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + methodsToAdd.size());
-			for (ListenerMethod methodToAdd : methodsToAdd) {
-				updated[startLength++] = methodToAdd;
-			}
+			System.arraycopy(methodsToAdd, 0, updated, startLength, methodsToAdd.size());
 			Arrays.sort(updated);
 			return updated;
 		});
@@ -124,12 +124,19 @@ public class UniversalEvents implements Events {
 					return existingMethods;
 				}
 			}
-			// Add the method and sort
-			int startLength = existingMethods.length;
-			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + 1);
-			updated[startLength] = methodToAdd;
-			Arrays.sort(updated);
-			return updated;
+			// Add the method maintaining sorting
+			int insertionIndex = - (Arrays.binarySearch(existingMethods, methodToAdd) + 1);
+			return ArraysUtil.expandAndInsert(existingMethods, methodToAdd, insertionIndex);
+		});
+	}
+	
+	private void removeSingleMethod(Class<?> clazz, ListenerMethod methodToRemove) {
+		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
+			int removalIndex = Arrays.binarySearch(existingMethods, methodToRemove);
+			if (removalIndex < 0) {
+				return existingMethods;
+			}
+			return ArraysUtil.contractAndRemove(existingMethods, removalIndex);
 		});
 	}
 	
@@ -191,7 +198,7 @@ public class UniversalEvents implements Events {
 	public void unregisterListener(Listener listener) {
 		if (listener instanceof DynamicListener<?>) {
 			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
-			removeListenerMethodIf(dynamicListener.clazz, (check) -> dynamicListener == check);
+			removeSingleMethod(dynamicListener.clazz, dynamicListener);
 		} else {
 			getMethodMap(listener).forEach((clazz, methodsToRemove) -> removeListenerMethodIf((clazz), methodsToRemove::contains));
 		}
