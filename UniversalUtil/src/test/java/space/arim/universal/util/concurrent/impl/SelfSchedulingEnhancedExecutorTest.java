@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import space.arim.universal.util.concurrent.DelayFunctions;
@@ -35,9 +37,15 @@ import space.arim.universal.util.concurrent.Task;
 
 public class SelfSchedulingEnhancedExecutorTest {
 	
+	private EnhancedExecutor executor;
+	
+	@BeforeEach
+	public void setup() {
+		executor = new BasicThreadedEnhancedExecutor();
+	}
+	
 	@Test
 	public void testNegativeDelaysNeverRun() {
-		EnhancedExecutor executor = new BasicThreadedEnhancedExecutor();
 		Runnable failureRunnable = () -> fail("This runnable should not execute");
 		Consumer<Task> failureConsumer = (task) -> fail("This consumer should not execute");
 		assertTrue(executor.schedule(failureRunnable, -1L, DelayFunctions.fixedDelay(), TimeUnit.SECONDS).isCancelled(),
@@ -52,7 +60,6 @@ public class SelfSchedulingEnhancedExecutorTest {
 	
 	@Test
 	public void testDelayedExecution() {
-		EnhancedExecutor executor = new BasicThreadedEnhancedExecutor();
 		CompletableFuture<Object> future = new CompletableFuture<>();
 		Object result = new Object();
 		Task task = executor.schedule(() -> {
@@ -60,17 +67,11 @@ public class SelfSchedulingEnhancedExecutorTest {
 			return;
 		}, 1L, TimeUnit.SECONDS);
 		assertFalse(task.isCancelled(), "Task should not already be cancelled");
-		try {
-			assertEquals(result, future.get(5L, TimeUnit.SECONDS));
-		} catch (InterruptedException | ExecutionException | TimeoutException ex) {
-			fail(ex);
-		}
+		assertWithTimeout(result, future, 5L, TimeUnit.SECONDS);
 	}
 	
 	@Test
 	public void testRepeatedExecution() {
-		EnhancedExecutor executor = new BasicThreadedEnhancedExecutor();
-
 		CompletableFuture<Object> firstFuture = new CompletableFuture<>();
 		Object firstResult = new Object();
 		AtomicInteger firstCounter = new AtomicInteger();
