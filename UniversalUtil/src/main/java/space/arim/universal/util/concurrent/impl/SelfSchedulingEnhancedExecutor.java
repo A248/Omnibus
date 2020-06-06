@@ -34,8 +34,8 @@ import space.arim.universal.util.concurrent.StoppableService;
 import space.arim.universal.util.concurrent.Task;
 
 /**
- * A nearly complete scheduling implementation for {@link EnhancedExecutor}. The only method left to subclasses to implement
- * is {@link #execute(Runnable)}. <br>
+ * A nearly complete scheduling implementation for {@link space.arim.universal.util.concurrent.EnhancedExecutor EnhancedExecutor}.
+ * The only method left to subclasses to implement is {@link #execute(Runnable)}. <br>
  * <br>
  * Internally the scheduling implementation uses a dedicated runnable on which delays are calculated and execution is managed.
  * Everything resolves around 1.) the dedicated runnable 2.) the <code>execute()</code> method.
