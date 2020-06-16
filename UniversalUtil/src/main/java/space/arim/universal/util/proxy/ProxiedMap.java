@@ -21,6 +21,9 @@ package space.arim.universal.util.proxy;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * A parent class for maps which simply redirect, a.k.a. <i>proxy</i>, calls to another map (the backing map). <br>
@@ -38,7 +41,7 @@ import java.util.Set;
  */
 @SuppressWarnings("unlikely-arg-type")
 public abstract class ProxiedMap<K, V> extends ProxiedObject<Map<K, V>> implements Map<K, V> {
-	
+
 	/**
 	 * Creates a ProxiedMap based on a backing map
 	 * 
@@ -48,6 +51,7 @@ public abstract class ProxiedMap<K, V> extends ProxiedObject<Map<K, V>> implemen
 		super(original);
 	}
 	
+	// Main methods
 	@Override
 	public int size() {return getOriginal().size();}
 	@Override
@@ -72,5 +76,37 @@ public abstract class ProxiedMap<K, V> extends ProxiedObject<Map<K, V>> implemen
 	public Collection<V> values() {return getOriginal().values();}
 	@Override
 	public Set<Entry<K, V>> entrySet() {return getOriginal().entrySet();}
+	// Default methods
+	@Override
+	public V getOrDefault(Object key, V defaultValue) {return getOriginal().getOrDefault(key, defaultValue);}
+	@Override
+	public void forEach(BiConsumer<? super K, ? super V> action) {getOriginal().forEach(action);}
+	@Override
+	public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {getOriginal().replaceAll(function);}
+	@Override
+	public V putIfAbsent(K key, V value) {return getOriginal().putIfAbsent(key, value);}
+	@Override
+	public boolean remove(Object key, Object value) {return getOriginal().remove(key, value);}
+	@Override
+	public boolean replace(K key, V oldValue, V newValue) {return getOriginal().replace(key, oldValue, newValue);}
+	@Override
+	public V replace(K key, V value) {return getOriginal().replace(key, value);}
+	@Override
+	public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {return getOriginal().computeIfAbsent(key, mappingFunction);}
+	@Override
+	public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {return getOriginal().computeIfPresent(key, remappingFunction);}
+	@Override
+	public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {return getOriginal().compute(key, remappingFunction);}
+	@Override
+	public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {return getOriginal().merge(key, value, remappingFunction);}
+	// toString
+	@Override
+	public String toString() {
+		return "ProxiedMap [getOriginal()=" + getOriginal() + "]";}
+	// equals and hashCode
+	@Override
+	public boolean equals(Object o) {return getOriginal().equals(o);}
+	@Override
+	public int hashCode() {return getOriginal().hashCode();}
 	
 }
