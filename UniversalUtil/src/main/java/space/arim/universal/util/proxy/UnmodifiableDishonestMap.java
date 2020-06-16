@@ -34,7 +34,14 @@ import java.util.function.UnaryOperator;
  *
  * @param <K> the key tpye
  * @param <V> the value type
+ * 
+ * @deprecated This class does not make sense with regards to the contract of {@link DishonestMap}. The former
+ * states only that changes are made to {@link #get(Object)}. If an "unmodifiable" dishonest map is required,
+ * a DishonestMap may be simply constructed from a map which is itself already unmodifiable. Hence,
+ * {@link DishonestMap#DishonestMap(Map, UnaryOperator)} should be used as a total replacement for this class,
+ * with the map passed being itself unmodifiable.
  */
+@Deprecated
 public class UnmodifiableDishonestMap<K, V> extends DishonestMap<K, V> {
 	
     private volatile transient Set<K> keySetView;
