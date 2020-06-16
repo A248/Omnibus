@@ -19,7 +19,7 @@
 package space.arim.universal.util.proxy;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 
 /**
  * A {@link ProxiedCollection} which prohibits changes to the underlying, backing collection. <br>
@@ -39,42 +39,7 @@ public class UnmodifiableCollection<E> extends ProxiedCollection<E> {
 	 * @param original the original, backing collection
 	 */
 	public UnmodifiableCollection(Collection<E> original) {
-		super(original);
-	}
-	
-	@Override
-	public Iterator<E> iterator() {
-		return new UnmodifiableIterator<E>(super.iterator());
-	}
-	
-	@Override
-	public boolean add(E e) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public boolean remove(Object o) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public boolean addAll(Collection<? extends E> c) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public void clear() {
-		throw new UnsupportedOperationException();
+		super(Collections.unmodifiableCollection(original));
 	}
 	
 }

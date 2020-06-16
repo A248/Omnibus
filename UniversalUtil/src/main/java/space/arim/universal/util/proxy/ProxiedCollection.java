@@ -20,6 +20,11 @@ package space.arim.universal.util.proxy;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * A parent class for collections which simply redirect, a.k.a. <i>proxy</i>, calls to another collection (the backing collection). <br>
@@ -46,6 +51,7 @@ public abstract class ProxiedCollection<E> extends ProxiedObject<Collection<E>> 
 		super(original);
 	}
 	
+	// Main methods
 	@Override
 	public int size() {return getOriginal().size();}
 	@Override
@@ -72,5 +78,22 @@ public abstract class ProxiedCollection<E> extends ProxiedObject<Collection<E>> 
 	public boolean retainAll(Collection<?> c) {return getOriginal().retainAll(c);}
 	@Override
 	public void clear() {getOriginal().clear();}
+	// Default methods
+	@Override
+	public void forEach(Consumer<? super E> action) {getOriginal().forEach(action);}
+	@Override
+	public <T> T[] toArray(IntFunction<T[]> generator) {return getOriginal().toArray(generator);}
+	@Override
+	public boolean removeIf(Predicate<? super E> filter) {return getOriginal().removeIf(filter);}
+	@Override
+	public boolean equals(Object o) {return getOriginal().equals(o);}
+	@Override
+	public int hashCode() {return getOriginal().hashCode();}
+	@Override
+	public Spliterator<E> spliterator() {return getOriginal().spliterator();}
+	@Override
+	public Stream<E> stream() {return getOriginal().stream();}
+	@Override
+	public Stream<E> parallelStream() {return getOriginal().parallelStream();}
 	
 }

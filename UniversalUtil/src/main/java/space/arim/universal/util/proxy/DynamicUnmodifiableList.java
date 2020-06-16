@@ -18,9 +18,8 @@
  */
 package space.arim.universal.util.proxy;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.function.Supplier;
 
 /**
@@ -32,72 +31,20 @@ import java.util.function.Supplier;
  *
  * @param <E> the type of the list
  */
-public class DynamicUnmodifiableList<E> extends DynamicUnmodifiableCollection<E> implements List<E> {
-
+public class DynamicUnmodifiableList<E> extends ProxiedList<E> {
+	
 	/**
 	 * Creates a DynamicUnmodifiableList based on a supplier of backing lists.
 	 * 
 	 * @param originalSupplier the supplier of backing lists
 	 */
 	public DynamicUnmodifiableList(Supplier<? extends List<E>> originalSupplier) {
-		super(originalSupplier);
-	}
-	
-	@Override
-	protected List<E> getOriginal() {
-		return (List<E>) super.getOriginal();
-	}
-	
-	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public E get(int index) {
-		return getOriginal().get(index);
-	}
-	
-	@Override
-	public E set(int index, E element) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void add(int index, E element) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public E remove(int index) {
-		throw new UnsupportedOperationException();
-	}
-	
-	@SuppressWarnings("unlikely-arg-type")
-	@Override
-	public int indexOf(Object o) {
-		return getOriginal().indexOf(o);
-	}
-	
-	@SuppressWarnings("unlikely-arg-type")
-	@Override
-	public int lastIndexOf(Object o) {
-		return getOriginal().lastIndexOf(o);
-	}
-	
-	@Override
-	public ListIterator<E> listIterator() {
-		return new UnmodifiableListIterator<E>(getOriginal().listIterator());
-	}
-	
-	@Override
-	public ListIterator<E> listIterator(int index) {
-		return new UnmodifiableListIterator<E>(getOriginal().listIterator(index));
-	}
-	
-	@Override
-	public List<E> subList(int fromIndex, int toIndex) {
-		return new DynamicUnmodifiableList<E>(() -> getOriginal().subList(fromIndex, toIndex));
+		super(Collections.unmodifiableList(new ProxiedList<E>(null) {
+			@Override
+			protected List<E> getOriginal() {
+				return originalSupplier.get();
+			}
+		}));
 	}
 	
 }

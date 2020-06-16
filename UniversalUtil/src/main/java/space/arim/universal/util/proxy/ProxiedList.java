@@ -19,8 +19,10 @@
 package space.arim.universal.util.proxy;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.UnaryOperator;
 
 /**
  * A {@link ProxiedCollection}, specifically a <code>List</code>. <br>
@@ -32,7 +34,7 @@ import java.util.ListIterator;
  */
 @SuppressWarnings("unlikely-arg-type")
 public abstract class ProxiedList<E> extends ProxiedCollection<E> implements List<E> {
-
+	
 	protected ProxiedList(List<E> original) {
 		super(original);
 	}
@@ -43,7 +45,7 @@ public abstract class ProxiedList<E> extends ProxiedCollection<E> implements Lis
 	 * @return the original, backing list
 	 */
 	@Override
-	protected final List<E> getOriginal() {
+	protected List<E> getOriginal() {
 		return (List<E>) super.getOriginal();
 	}
 	
@@ -67,5 +69,9 @@ public abstract class ProxiedList<E> extends ProxiedCollection<E> implements Lis
 	public ListIterator<E> listIterator(int index) {return getOriginal().listIterator(index);}
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {return getOriginal().subList(fromIndex, toIndex);}
+	@Override
+	public void replaceAll(UnaryOperator<E> operator) {getOriginal().replaceAll(operator);}
+	@Override
+	public void sort(Comparator<? super E> comparator) {getOriginal().sort(comparator);}
 
 }

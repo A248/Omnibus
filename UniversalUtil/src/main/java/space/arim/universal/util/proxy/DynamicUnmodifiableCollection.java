@@ -31,8 +31,6 @@ import java.util.function.Supplier;
  * @param <E> the type of the collection
  */
 public class DynamicUnmodifiableCollection<E> extends UnmodifiableCollection<E> {
-
-	private final Supplier<? extends Collection<E>> originalSupplier;
 	
 	/**
 	 * Creates a DynamicUnmodifiableCollection based on a supplier of backing collections.
@@ -40,13 +38,12 @@ public class DynamicUnmodifiableCollection<E> extends UnmodifiableCollection<E> 
 	 * @param originalSupplier the supplier of backing collections
 	 */
 	public DynamicUnmodifiableCollection(Supplier<? extends Collection<E>> originalSupplier) {
-		super(null);
-		this.originalSupplier = originalSupplier;
-	}
-	
-	@Override
-	protected Collection<E> getOriginal() {
-		return originalSupplier.get();
+		super(new ProxiedCollection<E>(null) {
+			@Override
+			protected Collection<E> getOriginal() {
+				return originalSupplier.get();
+			}
+		});
 	}
 
 }
