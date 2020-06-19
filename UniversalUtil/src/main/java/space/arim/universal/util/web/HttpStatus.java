@@ -102,6 +102,8 @@ public enum HttpStatus {
 	private final String name;
 	private final String description;
 	
+	private static final HttpStatus[] VALUES = HttpStatus.values();
+	
 	private HttpStatus(int code, String name, String description) {
 		this.code = code;
 		this.name = name;
@@ -112,11 +114,11 @@ public enum HttpStatus {
 	 * Gets a HttpStatus from a raw code. <br>
 	 * If no corresponding HttpStatus is found, {@link #UNKNOWN} is returned.
 	 * 
-	 * @param code the integer code, use {@link java.net.HttpURLConnection#getResponseCode() HttpURLConnection.getResponseCode()}
-	 * @return the code if found, otherwise <code>UNKNOWN</code>
+	 * @param code the integer code, e.g. {@link java.net.HttpURLConnection#getResponseCode() HttpURLConnection.getResponseCode()}
+	 * @return the code if found, otherwise <code>UNKNOWN</code>, never null
 	 */
 	public static HttpStatus fromCode(final int code) {
-		for (HttpStatus status : HttpStatus.values()) {
+		for (HttpStatus status : VALUES) {
 			if (status.code == code) {
 				return status;
 			}
