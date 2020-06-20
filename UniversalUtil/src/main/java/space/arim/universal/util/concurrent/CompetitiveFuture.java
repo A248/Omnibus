@@ -25,24 +25,24 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 
 /**
- * A CompletableFuture with a specified default executor,
- * as opposed to <code>ForkJoinPool.commonPool()</code>
+ * A CompletableFuture with a specified default executor, which is used as the default
+ * executor in all future async operations.
  * 
  * @author A248
  *
- * @param <T> the type of the future
+ * @param <T> the result type of the future
  */
-public class HyperFuture<T> extends CompletableFuture<T> {
+public class CompetitiveFuture<T> extends CompletableFuture<T> {
 
 	private final Executor defaultExecutor;
 	
-	private HyperFuture(Executor defaultExecutor) {
+	private CompetitiveFuture(Executor defaultExecutor) {
 		this.defaultExecutor = (defaultExecutor != null) ? defaultExecutor : ForkJoinPool.commonPool();
 	}
 	
 	@Override
 	public <U> CompletableFuture<U> newIncompleteFuture() {
-		return new HyperFuture<>(defaultExecutor);
+		return new CompetitiveFuture<>(defaultExecutor);
 	}
 	
 	@Override
@@ -58,7 +58,7 @@ public class HyperFuture<T> extends CompletableFuture<T> {
 	 * @param defaultExecutor the default executor, used for async methods not specifying an executor
 	 * @return a completable future corresponding to the progress of the action
 	 */
-	public static HyperFuture<Void> runAsync(Runnable command, Executor defaultExecutor) {
+	public static CompetitiveFuture<Void> runAsync(Runnable command, Executor defaultExecutor) {
 		Objects.requireNonNull(command, "Runnable must not be null");
 		return supplyAsync(() -> {
 			command.run();
@@ -75,8 +75,8 @@ public class HyperFuture<T> extends CompletableFuture<T> {
 	 * @param defaultExecutor the default executor, used for async methods not specifying an executor
 	 * @return a completable future corresponding to the progress of the action
 	 */
-	public static <T> HyperFuture<T> supplyAsync(Supplier<T> supplier, Executor defaultExecutor) {
-		return (HyperFuture<T>) new HyperFuture<T>(defaultExecutor).completeAsync(supplier);
+	public static <T> CompetitiveFuture<T> supplyAsync(Supplier<T> supplier, Executor defaultExecutor) {
+		return (CompetitiveFuture<T>) new CompetitiveFuture<T>(defaultExecutor).completeAsync(supplier);
 	}
 	
 }
