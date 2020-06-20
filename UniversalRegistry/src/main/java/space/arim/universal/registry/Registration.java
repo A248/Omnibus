@@ -28,7 +28,7 @@ import java.util.Objects;
  *
  * @param <T> the service type
  */
-public class Registration<T> implements Comparable<Registration<T>> {
+public final class Registration<T> implements Comparable<Registration<T>> {
 	
 	private final byte priority;
 	private final T provider;
