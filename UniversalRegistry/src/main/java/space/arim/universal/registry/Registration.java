@@ -44,7 +44,7 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	public Registration(byte priority, T provider, String name) {
 		this.priority = priority;
 		this.provider = Objects.requireNonNull(provider, "Provider must not be null");
-		this.name = (name != null) ? name : "";
+		this.name = name;
 	}
 
 	/**
@@ -67,12 +67,10 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	}
 	
 	/**
-	 * Gets a nonnull, friendly display name for the service. <br>
-	 * <br>
-	 * If the resource was registered under a null name, this will
-	 * return an empty string.
+	 * Gets a friendly display name for the service. <br>
+	 * May be null or empty
 	 * 
-	 * @return the nonnull name
+	 * @return the name
 	 */
 	public String getName() {
 		return name;
@@ -80,7 +78,12 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	
 	@Override
 	public int compareTo(Registration<T> o) {
-		return priority - o.priority;
+		int priorityDiff = priority - o.priority;
+		if (priorityDiff == 0) {
+			// Same priority, different registration
+			return provider.hashCode() - o.provider.hashCode();
+		}
+		return priorityDiff;
 	}
 	
 	@Override
@@ -92,7 +95,7 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + name.hashCode();
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + priority;
 		result = prime * result + provider.hashCode();
 		return result;
@@ -107,7 +110,7 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 			return false;
 		}
 		Registration<?> other = (Registration<?>) object;
-		return priority == other.priority && provider.equals(other.provider) && name.equals(other.name);
+		return priority == other.priority && provider == other.provider;
 	}
 	
 }
