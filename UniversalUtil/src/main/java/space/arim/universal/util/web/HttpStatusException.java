@@ -43,5 +43,14 @@ public class HttpStatusException extends Exception {
 		super("Encountered HttpStatus " + status.getCode() + ": " + status.getName());
 		this.status = status;
 	}
+	
+	/**
+	 * Creates a HttpStatusException for the given code
+	 * 
+	 * @param code the http status code
+	 */
+	public HttpStatusException(int code) {
+		this(HttpStatus.fromCode(code));
+	}
 
 }
