@@ -20,27 +20,43 @@ package space.arim.universal.registry;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Denotes a requirement that specific service types be registered in a {@link Registry}. <br>
- * Should be applied to <code>Registry</code> parameters or methods returning a <code>Registry</code>. <br>
+ * Denotes a requirement there must be a registration of specific service types in a {@link Registry}. <br>
+ * Should be applied to either {@code Registry} parameters, or methods returning a <code>Registry</code>. <br>
  * <br>
- * It is recommended that such requirements be validated immediately when the <code>Registry</code> is passed. <br>
+ * If applied to a parameter, the parameter passed should have the service types registered.
+ * If applied to a method, such method should return a registry with the service types registered. <br>
+ * Such requirements should be validated immediately when the {@code Registry} is passed. <br>
  * <br>
- * If applied to a parameter, the parameter passed should have the service types registered. <br>
- * If applied to a method, such method should return a registry with the service types registered.
+ * For example, the constructor of the following example class would require its {@code Registry} parameter
+ * to have a registration for the {@code Dummy} service: <br>
+ * <pre>
+ * public class Example {
+ * 
+ *   public Example(@RequireServices(Dummy.class) Registry registry) {
+ *     // ...
+ *   }
+ * }
+ * </pre>
  * 
  * @author A248
  *
  */
-@Retention(SOURCE)
+@Retention(CLASS)
 @Target({ METHOD, PARAMETER })
-public @interface RequireRegistration {
+public @interface RequireServices {
 
+	/**
+	 * The service types required, represented by their classes, for which
+	 * providers must be registered in the relevant {@link Registry}.
+	 * 
+	 * @return all the service types required
+	 */
 	Class<?>[] value();
 	
 }
