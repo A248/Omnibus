@@ -24,16 +24,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used for detecting listener methods <br>
- * To mark a method for listening, use this annotation. If the method is annotated but does not meet
- * the following requirements, an unchecked exception is thrown: <br>
- * The method must have a single parameter. <br>
- * The method is public. <br>
- * The method is not static. <br>
+ * Marks methods for listening to events. <br>
+ * <br>
+ * If the method is annotated but does not meet the following requirements, an unchecked exception is thrown: <br>
+ * * The method must have a single parameter. <br>
+ * * The method is public. <br>
+ * * The method is not static. <br>
  * <br>
  * The single parameter of the listening method determines the event which will be listened to. More formally,
  * for any event <code>evt</code>, if the <code>evt</code> is an instance of the parameter type,
- * the listening method will be invoked when the method is thrown.
+ * the listening method will be invoked when the method is thrown. Listening to superclasses is, therefore,
+ * supported.
  * 
  * @author A248
  *
@@ -43,18 +44,18 @@ import java.lang.annotation.Target;
 public @interface Listen {
 	
 	/**
-	 * The priority of the listening <br>
-	 * <br>
-	 * <b>Higher priorities are called last</b>
+	 * The priority of the listening. <b>Higher priorities are called last</b>
 	 * 
 	 * @return byte the priority
 	 */
 	byte priority() default 0;
 	
 	/**
-	 * If <code>true</code>, the method will not be invoked if the event is cancelled.
+	 * Specifies whether this listener should be called for cancelled events. <br>
+	 * If <code>true</code>, the method will not be invoked if the event is cancellable
+	 * and was cancelled.
 	 * 
-	 * @return whether to ignore cancelled events
+	 * @return true to ignore cancelled events, false otherwise
 	 */
 	boolean ignoreCancelled() default false;
 	

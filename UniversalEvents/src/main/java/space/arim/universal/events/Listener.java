@@ -19,12 +19,13 @@
 package space.arim.universal.events;
 
 /**
- * There are no specifications for a listener. <br>
- * It is provided for convenience of programming, by differentiating between
- * classes intended to listen and others.
+ * Marker interface for objects with listening methods. There are no specifications for a listener. <br>
+ * It is provided for convenience of programming, by differentiating between classes intended to listen
+ * and those not.
  * 
  * @author A248
- *
+ * 
+ * @see Listen
  */
 public interface Listener {
 
