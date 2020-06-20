@@ -6,7 +6,7 @@
 	<groupId>space.arim</groupId>
 	<artifactId>universal</artifactId>
 	<!-- Remember to update  versions in all child modules -->
-	<version>0.10.2-SNAPSHOT</version>
+	<version>0.10.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<name>Universal</name>
