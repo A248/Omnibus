@@ -26,7 +26,11 @@ import java.util.function.UnaryOperator;
  * @author A248
  *
  * @param <T> the type of the proxied object
+ * 
+ * @deprecated See {@link ProxiedReference} deprecation
  */
+@SuppressWarnings({"deprecation", "removal"})
+@Deprecated(forRemoval = true)
 public class DishonestReference<T> extends CaptiveReference<T> {
 
 	private final UnaryOperator<T> processor;

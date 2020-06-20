@@ -30,7 +30,10 @@ package space.arim.universal.util.proxy;
  * @author A248
  *
  * @param <T> the type of the proxied object
+ * 
+ * @deprecated This isn't actually a {@link java.lang.ref.Reference} as its name implies. It's just a confusing, low-value class.
  */
+@Deprecated(forRemoval = true)
 public abstract class ProxiedReference<T> {
 
 	/**

@@ -24,7 +24,11 @@ package space.arim.universal.util.proxy;
  * @author A248
  *
  * @param <T> the type of the proxied object
+ * 
+ * @deprecated See {@link ProxiedReference} deprecation
  */
+@SuppressWarnings({"deprecation", "removal"})
+@Deprecated(forRemoval = true)
 public class CaptiveReference<T> extends ProxiedReference<T> {
 
 	private final T value;
