@@ -98,7 +98,7 @@ public interface EnhancedExecutor extends Executor {
 	 * The returned {@link Task} may be used to cancel execution <i>if</i> it has not yet started.
 	 * 
 	 * @param command the <code>Runnable</code> to run
-	 * @param delay the delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
+	 * @param delay the delay duration. If negative, nothing happens and all further scheduling is cancelled; if zero, run immediately.
 	 * @param units the time units of the <i>delay</i>
 	 * @return a task which may be cancelled, never <code>null</code>
 	 */
@@ -111,7 +111,7 @@ public interface EnhancedExecutor extends Executor {
 	 * Use {@link DelayFunctions} for default implementations of delay functions.
 	 * 
 	 * @param command the <code>Runnable</code> to run
-	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
+	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if zero, run immediately.
 	 * @param delayFunction the function to use when calculating the next delay
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return a task which may be cancelled, never <code>null</code>
@@ -125,7 +125,7 @@ public interface EnhancedExecutor extends Executor {
 	 * which may be used to cancel further scheduling of the task from within the execution itself.
 	 * 
 	 * @param command the consumer to accept the task
-	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
+	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if zero, run immediately.
 	 * @param delayFunction the function to use when calculating the next delay
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return the same task the consumer received, never <code>null</code>
@@ -139,7 +139,7 @@ public interface EnhancedExecutor extends Executor {
 	 * Use {@link DelayFunctions} for default implementations of delay functions.
 	 * 
 	 * @param command the runnable to run
-	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
+	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if zero, run immediately.
 	 * @param delayFunction the function to use when calculating the next delay
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return a task which may be cancelled, never <code>null</code>
@@ -153,7 +153,7 @@ public interface EnhancedExecutor extends Executor {
 	 * which may be used to cancel further scheduling of the task from within the execution itself.
 	 * 
 	 * @param command the consumer to accept the task
-	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if positive, run immediately.
+	 * @param initialDelay the initial delay duration. If negative, nothing happens and all further scheduling is cancelled; if zero, run immediately.
 	 * @param delayFunction the function to use when calculating the next delay
 	 * @param units the time units the <i>initialDelay</i> and <i>delayFunction</i> use
 	 * @return the same task the consumer received, never <code>null</code>
