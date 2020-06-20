@@ -21,12 +21,14 @@ package space.arim.universal.events;
 import java.util.function.Consumer;
 
 /**
- * A framework for firing events and listening to them. <br>
- * <b>For an implementation, use {@link UniversalEvents}</b> <br>
+ * A framework for firing events and listening to them. <b>For an implementation, use {@link UniversalEvents}</b> <br>
  * <br>
- * <b>Usage</b>: to fire and listen to events. <br>
- * To fire events: {@link #fireEvent(Event)} <br>
- * To listen to events: {@link Listen} <br>
+ * To listen to events, first create an object implementing {@link Listener} with listening methods. All listening methods
+ * must be annotated with {@link Listen}. Then, register the listener using {@link #registerListener(Listener)}. <br>
+ * <br>
+ * To listen to events dynamically, use {@link #registerListener(Class, byte, Consumer)}. <br>
+ * <br>
+ * To fire events, implement {@link Event} on the event object. Construct such an object and call {@link #fireEvent(Event)}.
  * 
  * @author A248
  *
@@ -46,6 +48,7 @@ public interface Events {
 	 * @param <E> the event type
 	 * @param event the event itself
 	 * @return false if the event is a Cancellable and was cancelled, true otherwise
+	 * @throws NullPointerException if the event is null
 	 * 
 	 * @see Cancellable
 	 */
@@ -58,6 +61,7 @@ public interface Events {
 	 * Registering a listener already registered is a no-op.
 	 * 
 	 * @param listener the object to register
+	 * @throws NullPointerException if the listener is null
 	 */
 	void registerListener(Listener listener);
 	
@@ -70,6 +74,7 @@ public interface Events {
 	 * @param priority the priority at which the listener listens, same as in {@link Listen}
 	 * @param listener the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
+	 * @throws NullPointerException if the event class or listener is null
 	 */
 	<E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<E> listener);
 	
@@ -80,6 +85,7 @@ public interface Events {
 	 * Unregistering a listener which is not registered is a no-op.
 	 * 
 	 * @param listener the object to unregister
+	 * @throws NullPointerException if the listener is null
 	 */
 	void unregisterListener(Listener listener);
 	
