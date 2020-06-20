@@ -36,7 +36,8 @@ import java.util.function.Supplier;
  * Adds several scheduling methods to enable timed execution. Programmers may, if desired, dynamically provide
  * the time between executions based on a delay function. <br>
  * Scheduling comes in many variants. First, {@link #schedule(Runnable, long, TimeUnit)} may be used
- * for a one{@literal -}off delayed task (delays and then fires once, without repeating). <br>
+ * for a one{@literal -}off delayed task (delays and then fires once, without repeating). To turn this delayed
+ * execution into a future, use {@link #supplyLater(Supplier, long, TimeUnit)}. <br>
  * <br>
  * There variant methods follow the pattern
  * <i>{@literal schedule(Runnable/Consumer, long, SimpleDelayCalculator/AdvancedDelayCalculator, TimeUnit)}</i>,
@@ -92,6 +93,17 @@ public interface EnhancedExecutor extends Executor {
 	 * @return a completable future of the supplied value, never null
 	 */
 	<T> CompletableFuture<T> supply(Supplier<T> supplier);
+	
+	/**
+	 * Supplies a value asynchronously after an initial delay using this executor to decide the context of execution.
+	 * 
+	 * @param <T> the type of the supplier
+	 * @param supplier the delay duration. If negative, nothing happens; if zero, supply immediately.
+	 * @param delay the delay duration
+	 * @param units the time units of the <i>delay</i>
+	 * @return a completable future which is completed in accordance with the supplier after the delay is passed
+	 */
+	<T> CompletableFuture<T> supplyLater(Supplier<T> supplier, long delay, TimeUnit units);
 	
 	/**
 	 * Schedules a one{@literal -}shot delayed task. <br>
