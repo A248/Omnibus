@@ -149,24 +149,23 @@ public final class DelayFunctions {
 class VariableRateFunction implements AdvancedDelayCalculator {
 	
 	/**
-	 * the rate determining function
+	 * The rate determining function
 	 * 
 	 */
 	private final SimpleDelayCalculator rateFunction;
 	
 	/**
-	 * the rate we want to schedule at,
-	 * starts at {@literal -}1 to indicate unknown.
+	 * The rate we want to schedule at, starts at {@literal -}1 to indicate unknown.
 	 * 
 	 */
-	private long rate = -1L;
+	private volatile long rate = -1L;
 	
 	/**
-	 * if we're behind, by how much are we late?
-	 * (always a positive number)
+	 * If we're behind, by how much are we late?
+	 * Always a positive number
 	 * 
 	 */
-	private long offset = 0;
+	private volatile long offset = 0;
 	
 	VariableRateFunction(SimpleDelayCalculator rateFunction) {
 		this.rateFunction = rateFunction;
@@ -175,35 +174,32 @@ class VariableRateFunction implements AdvancedDelayCalculator {
 	@Override
 	public long calculateNext(long previousDelay, long executionTime) {
 		/*
-		 * if this is the first invocation, we have to determine the initial rate
+		 * If this is the first invocation, we have to determine the initial rate
 		 * otherwise, we'll use the rate function to calculate the next rate
 		 * 
 		 */
-		rate = (rate == -1L) ? previousDelay : rateFunction.calculateNext(rate);
-		// the time at which we'd like to delay in order to maintain the rate schedule
-		long delay = rate - executionTime;
-		if (delay > 0) {
-			if (offset == 0) { // all is well. We're up to speed
-				return delay;
-			} else if (delay >= offset) { // recovering from a slowdown and back to speed
-				offset = 0;
-				return delay - offset;
+		long rate = this.rate;
+		if (rate == -1L) {
+			rate = previousDelay;
+		} else {
+			rate = rateFunction.calculateNext(rate);
+			if (rate < 0) {
+				// rate-determining function decided to cancel
+				return -1L;
 			}
 		}
-		/*
-		 * Case 1:
-		 * delay is zero because the execution time took up all our time
-		 * 
-		 * Case 2:
-		 * offset is zero (we were up to speed), but delay is negative
-		 * because execution went overtime, so offset must be set to the delay.
-		 * 
-		 * Case 3:
-		 * offset is positive (we're already behind), and delay is negative
-		 * because execution went overtime, so offset must be increased.
-		 * 
-		 */
-		offset = offset - delay; 
-		return 0;
+		this.rate = rate;
+
+		long offset = this.offset;
+		long delay = rate - executionTime - offset;
+		if (delay >= 0L) {
+			offset = 0L;
+		} else {
+			offset = -delay;
+			delay = 0L;
+		}
+		this.offset = offset;
+		return delay;
 	}
+
 }
