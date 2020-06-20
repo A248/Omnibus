@@ -21,6 +21,7 @@ package space.arim.universal.util.concurrent.impl;
 class SchedulerRunnable implements Runnable {
 
 	private final SelfSchedulingEnhancedExecutor executor;
+	volatile ScheduledTask currentAwaitee;
 	
 	SchedulerRunnable(SelfSchedulingEnhancedExecutor executor) {
 		this.executor = executor;
@@ -29,23 +30,37 @@ class SchedulerRunnable implements Runnable {
 	@Override
 	public void run() {
 		try {
-			while (executor.isRunning) {
-				ScheduledTask task = executor.taskQueue.take();
-				long startTime = System.nanoTime();
-				long timeToWait = task.runTime - startTime;
-				if (timeToWait > 0) {
-					synchronized (this) {
-						wait(timeToWait / 1_000_000L, (int) (timeToWait % 1_000_000L));
-					}
-					if (!task.isCancelled()) {
-						if (System.nanoTime() - startTime >= timeToWait) {
-							task.run();
-						} else {
-							executor.taskQueue.offer(task);
+			synchronized (this) {
+				mainLoop:
+				while (executor.isRunning) {
+					ScheduledTask task;
+					while ((task = executor.taskQueue.poll()) == null) {
+						wait();
+						if (!executor.isRunning) {
+							// shutdown
+							break mainLoop;
 						}
 					}
-				} else {
-					task.run();
+					long startTime = System.nanoTime();
+					long timeToWait = task.runTime - startTime;
+					if (timeToWait > 0) {
+
+						wait(timeToWait / 1_000_000L, (int) (timeToWait % 1_000_000L));
+						if (!executor.isRunning) {
+							// shutdown
+							break mainLoop;
+						}
+
+						if (!task.isCancelled()) {
+							if (System.nanoTime() - startTime >= timeToWait) {
+								task.run();
+							} else {
+								executor.taskQueue.offer(task);
+							}
+						}
+					} else {
+						task.run();
+					}
 				}
 			}
 		} catch (InterruptedException ex) {

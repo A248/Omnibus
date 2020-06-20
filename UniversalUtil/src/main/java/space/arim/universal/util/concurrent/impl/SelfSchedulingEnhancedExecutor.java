@@ -18,10 +18,13 @@
  */
 package space.arim.universal.util.concurrent.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,7 @@ import java.util.function.Consumer;
 
 import space.arim.universal.util.concurrent.AdvancedDelayCalculator;
 import space.arim.universal.util.concurrent.SimpleDelayCalculator;
+import space.arim.universal.util.concurrent.StoppableExecutor;
 import space.arim.universal.util.concurrent.StoppableService;
 import space.arim.universal.util.concurrent.Task;
 
@@ -41,11 +45,13 @@ import space.arim.universal.util.concurrent.Task;
  * Everything resolves around 1.) the dedicated runnable 2.) the <code>execute()</code> method.
  * When a task is fired from the scheduling runnable, it is run with <code>execute()</code>. Also, the runnable itself
  * is ran using <code>execute()</code> when the implementation is started. To prevent a chicken-or-the-egg problem
- * with instantiation and initiation of the runnable, subclasses must call {@link #start()} like so:
+ * with instantiation and initiation of the runnable, subclasses must call {@link #start()} before beginning operation.
+ * This may be done at the end of the subclass's constructor, if the class is not meant to be extended:
  * <pre>
- * public class EnhancedExecutorImpl extends SelfSchedulingEnhancedExecutor {
+ * public final class EnhancedExecutorImpl extends SelfSchedulingEnhancedExecutor {
  * 
  *   public EnhancedExecutorImpl() {
+ *     // initiate other components
  *     start(); // or super.start() if start() is already used
  *   }
  * }
@@ -57,7 +63,7 @@ import space.arim.universal.util.concurrent.Task;
  * @author A248
  *
  */
-public abstract class SelfSchedulingEnhancedExecutor extends AbstractEnhancedExecutor implements StoppableService {
+public abstract class SelfSchedulingEnhancedExecutor extends AbstractEnhancedExecutor implements StoppableExecutor {
 
 	volatile boolean isRunning = false;
 	/**
@@ -73,21 +79,41 @@ public abstract class SelfSchedulingEnhancedExecutor extends AbstractEnhancedExe
 	 */
 	final BlockingQueue<ScheduledTask> taskQueue = new PriorityBlockingQueue<>();
 	
+	/**
+	 * Creates the self scheduling executor
+	 * 
+	 */
 	protected SelfSchedulingEnhancedExecutor() {
 		schedulerRunnable = new SchedulerRunnable(this);
 	}
 	
 	/**
 	 * Initiates the scheduling implementation by running the scheduling runnable. <br>
-	 * Should only be called <b>ONCE</b>. Behaviour is undefined for multiple calls to this method.
+	 * This or {@link #start(Executor)} should only be called <b>ONCE</b>.
+	 * Behaviour is undefined for multiple calls to these methods.
 	 * 
 	 */
 	protected void start() {
+		start(this);
+	}
+	
+	/**
+	 * Initiates the scheduling implementation by running the scheduling runnable
+	 * on the specified {@link Executor}. <br>
+	 * This or {@link #start(Executor)} should only be called <b>ONCE</b>.
+	 * Behaviour is undefined for multiple calls to these methods. <br>
+	 * <br>
+	 * This method differs in that it provides the ability to specify a custom
+	 * {@code Executor} to use only for the scheduling calculations themselves.
+	 * 
+	 * @param schedulerExecutor the executor to use for the scheduling runnable
+	 */
+	protected void start(Executor schedulerExecutor) {
 		if (schedulerFuture != null) {
 			throw new IllegalStateException("SelfSchedulingEnhancedExecutor#start should only be called once");
 		}
 		isRunning = true;
-		schedulerFuture = CompletableFuture.runAsync(schedulerRunnable, this);
+		schedulerFuture = CompletableFuture.runAsync(schedulerRunnable, schedulerExecutor);
 	}
 	
 	private void checkNotShutdown() {
@@ -260,6 +286,17 @@ public abstract class SelfSchedulingEnhancedExecutor extends AbstractEnhancedExe
 	@Override
 	public void shutdown() {
 		isRunning = false;
+	}
+	
+	@Override
+	public List<Runnable> shutdownNow() {
+		isRunning = false;
+		synchronized (schedulerRunnable) {
+			schedulerRunnable.notify();
+		}
+		List<Runnable> result = new ArrayList<>();
+		taskQueue.drainTo(result);
+		return result;
 	}
 
 	@Override
