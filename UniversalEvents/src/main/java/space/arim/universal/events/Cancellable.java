@@ -22,9 +22,9 @@ package space.arim.universal.events;
  * An event which may be cancelled via {@link #cancel()}. <br>
  * <br>
  * This is an interface, and not an abstract class, so that users may
- * define their own object hierarchies. Nevertheless, to ensure the visibility
- * of cancellation in {@link #isCancelled()}, users should use {@link AbstractCancellable}
- * or understand and create a memory-concise cancellation flag.
+ * define their own object hierarchies. Nevertheless, users must ensure the visibility
+ * of cancellation in {@link #isCancelled()}. To do this, either {@link AbstractCancellable}
+ * or an own memory-concise implementation may be used.
  * 
  * @author A248
  *

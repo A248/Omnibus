@@ -23,7 +23,8 @@ package space.arim.universal.events;
  * to guarantee memory consistency effects.
  * 
  * @author A248
- *
+ * 
+ * @see Cancellable
  */
 public class AbstractCancellable implements Cancellable {
 
