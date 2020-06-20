@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public interface StoppableService {
 
     /**
-     * Initiates an orderly shutdown in which previously work
+     * Initiates an orderly shutdown in which previously submitted work
      * is executed, but no service-related method calls will be accepted.
      * Invocation has no additional effect if already shutdown or shutting down.
      *
