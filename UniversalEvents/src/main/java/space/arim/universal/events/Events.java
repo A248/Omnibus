@@ -67,7 +67,9 @@ public interface Events {
 	
 	/**
 	 * Creates and registers a dynamic listener, returning the created listener. <br>
-	 * The returned listener may be unregistered when desired.
+	 * The returned listener may be unregistered when desired. <br>
+	 * <br>
+	 * The same Consumer may be registered multiple times without issue.
 	 * 
 	 * @param <E> the type of the event
 	 * @param event the event class
