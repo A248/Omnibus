@@ -26,7 +26,7 @@ package space.arim.universal.events;
  * 
  * @see Cancellable
  */
-public class AbstractCancellable implements Cancellable {
+public abstract class AbstractCancellable implements Cancellable {
 
 	private volatile boolean cancelled = false;
 	
