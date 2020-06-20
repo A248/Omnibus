@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -74,10 +75,28 @@ public class UniversalEvents implements Events {
 	
 	@Override
 	public <E extends Event> boolean fireEvent(E event) {
-		eventListeners.forEach((clazz, listeners) -> {
-			if (clazz.isInstance(event)) {
-				for (ListenerMethod listener : listeners) {
-					if (!listener.ignoreCancelled || !(event instanceof Cancellable) || !((Cancellable) event).isCancelled()) {
+		Objects.requireNonNull(event, "Event must not be null");
+		if (event instanceof Cancellable) {
+			Cancellable cancellable = (Cancellable) event;
+			eventListeners.forEach((clazz, listeners) -> {
+				if (clazz.isInstance(cancellable)) {
+					for (ListenerMethod listener : listeners) {
+						if (listener.ignoreCancelled && cancellable.isCancelled()) {
+							continue;
+						}
+						try {
+							listener.invoke(cancellable);
+						} catch (Throwable ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			});
+			return !cancellable.isCancelled();
+		} else {
+			eventListeners.forEach((clazz, listeners) -> {
+				if (clazz.isInstance(event)) {
+					for (ListenerMethod listener : listeners) {
 						try {
 							listener.invoke(event);
 						} catch (Throwable ex) {
@@ -85,9 +104,9 @@ public class UniversalEvents implements Events {
 						}
 					}
 				}
-			}
-		});
-		return !(event instanceof Cancellable) || !((Cancellable) event).isCancelled();
+			});
+			return true;
+		}
 	}
 	
 	private void addMethods(Class<?> clazz, List<ListenerMethod> methodsToAdd) {
@@ -187,6 +206,7 @@ public class UniversalEvents implements Events {
 	
 	@Override
 	public void registerListener(Listener listener) {
+		Objects.requireNonNull(listener, "Listener must not be null");
 		if (!(listener instanceof DynamicListener<?>)) {
 			getMethodMap(listener).forEach(this::addMethods);
 		}
@@ -194,6 +214,8 @@ public class UniversalEvents implements Events {
 	
 	@Override
 	public <E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<E> listener) {
+		Objects.requireNonNull(event, "Event must not be null");
+		Objects.requireNonNull(listener, "Listener must not be null");
 		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
 		addSingleMethod(event, dynamicListener);
 		return dynamicListener;
@@ -201,6 +223,7 @@ public class UniversalEvents implements Events {
 	
 	@Override
 	public void unregisterListener(Listener listener) {
+		Objects.requireNonNull(listener, "Listener must not be null");
 		if (listener instanceof DynamicListener<?>) {
 			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
 			removeSingleMethod(dynamicListener.clazz, dynamicListener);
