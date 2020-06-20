@@ -127,13 +127,6 @@
 		<dependencies>
 			<dependency>
 				<groupId>space.arim</groupId>
-				<artifactId>universal-gpl</artifactId>
-				<version>${project.version}</version>
-				<type>zip</type>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>space.arim</groupId>
 				<artifactId>universal-util</artifactId>
 				<version>${project.version}</version>
 			</dependency>
