@@ -38,9 +38,10 @@ class DynamicListener<E extends Event> extends ListenerMethod implements Listene
 		this.listener = listener;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	void invoke(Object evt) {
-		listener.accept(clazz.cast(evt));
+		listener.accept((E) evt);
 	}
 
 	@Override
