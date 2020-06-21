@@ -24,7 +24,10 @@ package space.arim.universal.events;
  * This is an interface, and not an abstract class, so that users may
  * define their own object hierarchies. Nevertheless, users must ensure the visibility
  * of cancellation in {@link #isCancelled()}. To do this, either {@link AbstractCancellable}
- * or an own memory-concise implementation may be used.
+ * or an own memory-concise implementation may be used. <br>
+ * <br>
+ * The method calls in implementations of this interface are trusted by {@link Events}
+ * implementations such as {@link UniversalEvents}. They should never throw exceptions.
  * 
  * @author A248
  *
