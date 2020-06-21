@@ -18,6 +18,7 @@
  */
 package space.arim.universal.registry;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -38,7 +39,7 @@ import space.arim.universal.events.Events;
  * These details comprise a <i>registration</i> (which is really just a wrapper
  * class for the provider, priority, and optional name). See {@link Registration}. <br>
  * <br>
- * The service class is just the class corresponding to the service type. <br>
+ * The service class is the class corresponding to the service type. <br>
  * <br>
  * Note that while implementations should be thread safe, there is no requirement
  * for happens{@literal -}before relationships.
@@ -61,8 +62,8 @@ public interface Registry {
 	 * Registers a resource as a specific service and generates a {@link Registration}
 	 * to represent the registration which was just added. <br>
 	 * <br>
-	 * The provider must be nonnull. If the name is null, an empty string is used. <br>
-	 * Higher priority registrations will be preferred for {@link #load(Class)}. <br>
+	 * The provider must be nonnull. The name may be null or empty. <br>
+	 * Higher priority registrations will be preferred for {@link #getProvider(Class)}. <br>
 	 * <br>
 	 * Services should be registered under all intended service types, thus: <br>
 	 * <br>
@@ -89,6 +90,7 @@ public interface Registry {
 	 * @param provider the resource to register, cannot be null
 	 * @param name a user friendly name for the implementation
 	 * @return the registration which was added to the registry, formed from the parameters
+	 * @throws DuplicateRegistrationException if the provider is already registered for the service type
 	 */
 	<T> Registration<T> register(Class<T> service, byte priority, T provider, String name);
 	
@@ -99,7 +101,7 @@ public interface Registry {
 	 * of returning a {@link Registration} based on the resource registered,
 	 * this returns the highest priority registration after computations. <br>
 	 * <br>
-	 * The provider must be nonnull. If the name is null, an empty string is used.
+	 * The provider must be nonnull. The name may be null or empty.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
@@ -107,39 +109,23 @@ public interface Registry {
 	 * @param provider the resource to register, cannot be null
 	 * @param name a user friendly name for the implementation
 	 * @return the highest priority registration after the resource is registered
+	 * @throws DuplicateRegistrationException if the provider is already registered for the service type
 	 */
 	<T> Registration<T> registerAndGet(Class<T> service, byte priority, T provider, String name);
 	
 	/**
-	 * Registers a resource as a specific service and automatically finds
-	 * the highest priority registration for the service after computations are
-	 * applied. <br>
-	 * This is essentially a combination of {@link #register(Class, byte, Object, String)}
-	 * and {@link #load(Class)}, completed in a thread safe manner.
-	 * 
-	 * @param <T> the service type
-	 * @param service the service class
-	 * @param priority the registration priority
-	 * @param provider the resource to register, cannot be null
-	 * @param name a user friendly name for the implementation
-	 * @return the highest priority provider
-	 */
-	<T> T registerAndLoad(Class<T> service, byte priority, T provider, String name);
-	
-	/**
-	 * Automatically finds the highest priority registration for a service
-	 * and returns its provider. <br>
+	 * Finds the highest priority registration for a service and returns its provider. <br>
 	 * If no registration for the service is found, <code>null</code> is returned. <br>
 	 * <br>
 	 * The proper way to retrieve registrations is to call this method once,
 	 * and check if the returned value is nonnull. If nonnull, proceed normally.
-	 * If null, there is no registration for the service. (You could then print an explanatory error message)
+	 * If null, there is no registration for the service.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
-	 * @return the provider or <code>null</code> if not found
+	 * @return the highest priority provider or <code>null</code> if not found
 	 */
-	<T> T load(Class<T> service);
+	<T> T getProvider(Class<T> service);
 	
 	/**
 	 * Retrieves the highest priority registration for a service. <br>
@@ -148,9 +134,21 @@ public interface Registry {
 	 * 
 	 * @param <T> the service
 	 * @param service the service class
-	 * @return the registration
+	 * @return the highest priority registration
 	 */
 	<T> Registration<T> getRegistration(Class<T> service);
+	
+	/**
+	 * Gets all registrations for a specific service, as an immutable copy. <br>
+	 * The list is sorted in ascending priority. The last element has the highest priority. <br>
+	 * <br>
+	 * If no registrations for the service are found, an empty list is returned.
+	 * 
+	 * @param <T> the service
+	 * @param service the service class
+	 * @return an unmodifiable copy of all registrations for the service, never null
+	 */
+	<T> List<Registration<T>> getAllRegistrations(Class<T> service);
 	
 	/**
 	 * Checks whether a service has any accompanying provider <br>
