@@ -26,6 +26,9 @@ package space.arim.universal.registry;
  * This event has a unique specification in that it guarantees a happens-before relationship
  * for service changes. That is, if the provider changes from A to B to C, the event for
  * the service change from A to B <i>will</i> happen before the event for that from B to C.
+ * This means it is acceptable to use this event to track changes in the current highest
+ * priority provider. However, it may be preferable to instead call {@link Registry#getProvider(Class)}
+ * each the provider is required.
  * 
  * @author A248
  *
