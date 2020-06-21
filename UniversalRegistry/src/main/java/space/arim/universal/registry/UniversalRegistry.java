@@ -18,17 +18,16 @@
  */
 package space.arim.universal.registry;
 
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
 import space.arim.universal.events.Events;
 import space.arim.universal.events.UniversalEvents;
+import space.arim.universal.util.ArraysUtil;
 
 /**
  * The main implementation of {@link Registry}. <br>
@@ -44,7 +43,7 @@ public class UniversalRegistry implements Registry {
 	 * The registry itself
 	 * 
 	 */
-	private final ConcurrentHashMap<Class<?>, List<Registration<?>>> registry = new ConcurrentHashMap<Class<?>, List<Registration<?>>>();
+	private final ConcurrentHashMap<Class<?>, Registration<?>[]> registry = new ConcurrentHashMap<>();
 	
 	/**
 	 * The corresponding {@link Events} instance
@@ -58,13 +57,15 @@ public class UniversalRegistry implements Registry {
 	 * particularly if listeners spend a long time.
 	 * 
 	 */
-	private final BlockingQueue<RegistrationEvent<?>> eventQueue = new LinkedBlockingQueue<>();
+	private final Queue<RegistryEvent<?>> eventQueue = new ConcurrentLinkedQueue<>();
 	
 	/**
-	 * The main instance
+	 * The main instance, lazily initialized
 	 * 
 	 */
-	private static final UniversalRegistry DEFAULT_REGISTRY = new UniversalRegistry(UniversalEvents.get());
+	private static class MainInstance {
+		static final UniversalRegistry INST = new UniversalRegistry(UniversalEvents.get());
+	}
 	
 	/**
 	 * Creates a UniversalRegistry. <br>
@@ -85,7 +86,7 @@ public class UniversalRegistry implements Registry {
 	 * @return the central instance
 	 */
 	public static Registry get() {
-		return DEFAULT_REGISTRY;
+		return MainInstance.INST;
 	}
 	
 	@Override
@@ -93,70 +94,48 @@ public class UniversalRegistry implements Registry {
 		return events;
 	}
 	
-	private <T> List<Registration<?>> computeRegistrations(Class<T> service, Registration<T> registration) {
-		return registry.compute(service, (s, registrations) -> {
+	private void fireRegistryEvents() {
+		synchronized (eventQueue) {
+			RegistryEvent<?> event;
+			while ((event = eventQueue.poll()) != null) {
+				events.fireEvent(event);
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T> Registration<T>[] addRegistration(Class<T> service, Registration<T> registration, T provider) {
+		events.fireEvent(new RegistrationAddEventImpl<>(service, registration));
 
-			if (registrations == null) {
-				registrations = new CopyOnWriteArrayList<Registration<?>>();
-				registrations.add(registration);
-
-			} else {
-				// adds the element into the list according to priority
-				// this is faster than using List#sort
-				int position = Collections.binarySearch(registrations, registration);
-				if (position < 0) {
-					registrations.add(-(position + 1), registration);
-				} else {
-					registrations.add(position, registration);
+		Registration<?>[] result = registry.compute(service, (s, registers) -> {
+			if (registers == null) {
+				// no existing registrations
+				eventQueue.offer(new ServiceChangeEventImpl<T>(service, null, registration));
+				return new Registration<?>[] {registration};
+			}
+			for (Registration<?> existing : registers) {
+				if (existing.getProvider() == provider) {
+					throw new DuplicateRegistrationException(
+							"Provider " + provider + " already registered for service " + service);
 				}
 			}
-
-			addEventToFire(service, registration);
-			return registrations;
+			int highPriorityIndex = registers.length - 1;
+			int insertionIndex = - (Arrays.binarySearch(registers, registration) + 1);
+			if (highPriorityIndex == insertionIndex) {
+				Registration<T> previous = (Registration<T>) registers[highPriorityIndex];
+				eventQueue.offer(new ServiceChangeEventImpl<T>(service, previous, registration));
+			}
+			return ArraysUtil.expandAndInsert(registers, registration, insertionIndex);
 		});
-	}
-	
-	/**
-	 * Get the highest priority element in the list in a thread safe,
-	 * efficient manner, using the iterator. <br>
-	 * CopyOnWriteArrayList's iterator returns a snapshot of the list state.
-	 * 
-	 * @param <T> the registration type to cast to
-	 * @param registrations the list of registrations
-	 * @return the registration, casted
-	 */
-	@SuppressWarnings("unchecked")
-	private <T> Registration<T> getHighestPriorityFrom(List<Registration<?>> registrations) {
-		/*
-		 * Note that our lists are sorted in ascending order because Collections#binarySearch
-		 * requires ascending order. Therefore we have to get the last element, because
-		 * the last element will have the highest priority.
-		 * 
-		 */
-		Registration<?> registration = null;
-		for (Iterator<Registration<?>> it = registrations.iterator(); it.hasNext();) {
-			registration = it.next();
-		}
-		return (Registration<T>) registration;
-	}
-	
-	private <T> void addEventToFire(Class<T> service, Registration<T> registration) {
-		eventQueue.add(new RegistrationEvent<>(service, registration));
-	}
-	
-	private void fireRegistrationEvents() {
-		RegistrationEvent<?> event;
-		while ((event = eventQueue.poll()) != null) {
-			events.fireEvent(event);
-		}
+		fireRegistryEvents();
+		return (Registration<T>[]) result;
 	}
 	
 	@Override
 	public <T> Registration<T> register(Class<T> service, byte priority, T provider, String name) {
-		Registration<T> registration = new Registration<T>(priority, provider, name); // constructor checks for null params
+		Registration<T> registration = new Registration<>(priority, provider, name); // constructor checks for null params
 
-		computeRegistrations(service, registration);
-		fireRegistrationEvents();
+		addRegistration(service, registration, provider);
 
 		return registration;
 	}
@@ -165,98 +144,81 @@ public class UniversalRegistry implements Registry {
 	public <T> Registration<T> registerAndGet(Class<T> service, byte priority, T provider, String name) {
 		Registration<T> registration = new Registration<T>(priority, provider, name); // constructor checks for null params
 
-		Registration<T> result = getHighestPriorityFrom(computeRegistrations(service, registration));
-		fireRegistrationEvents();
+		Registration<T>[] updated = addRegistration(service, registration, provider);
 
-		return result;
+		return updated[updated.length - 1];
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T> Registration<T>[] getRegistered(Class<T> service) {
+		return (Registration<T>[]) registry.get(service);
 	}
 	
 	@Override
-	public <T> T registerAndLoad(Class<T> service, byte priority, T provider, String name) {
-		return registerAndGet(service, priority, provider, name).getProvider();
-	}
-	
-	@Override
-	public <T> T load(Class<T> service) {
-		Registration<T> registration = getRegistration(service);
-		return (registration != null) ? registration.getProvider() : null;
+	public <T> T getProvider(Class<T> service) {
+		Registration<T>[] registrations = getRegistered(service);
+		return (registrations == null) ? null : registrations[registrations.length - 1].getProvider();
 	}
 	
 	@Override
 	public <T> Registration<T> getRegistration(Class<T> service) {
-		List<Registration<?>> registrations = registry.get(service);
-		return (registrations != null) ? getHighestPriorityFrom(registrations) : null;
+		Registration<T>[] registrations = getRegistered(service);
+		return (registrations == null) ? null : registrations[registrations.length - 1];
+	}
+	
+	@Override
+	public <T> List<Registration<T>> getAllRegistrations(Class<T> service) {
+		Registration<T>[] registrations = getRegistered(service);
+		return (registrations == null) ? List.of() : List.of(registrations);
 	}
 	
 	@Override
 	public <T> boolean isProvidedFor(Class<T> service) {
-		/*
-		 * A service is provided for if there are registrations for it.
-		 * 
-		 * Because #unregister removes empty lists atomically, we can simply check if
-		 * the key is contained in the registry map.
-		 * 
-		 */
 		return registry.containsKey(service);
 	}
 	
 	@Override
-	public <T> Registration<T> registerIfAbsent(Class<T> service, Supplier<Registration<T>> computer) {
-		List<Registration<?>> registrations = registry.computeIfAbsent(service, (c) -> {
-
-			Registration<T> registration = computer.get();
-			if (registration == null) {
-				return null; // don't enter the mapping
+	public <T> Registration<T> registerIfAbsent(Class<T> service, Supplier<Registration<T>> supplier) {
+		@SuppressWarnings("unchecked")
+		Registration<T>[] result = (Registration<T>[]) registry.computeIfAbsent(service, (s) -> {
+			Registration<T> supplied = supplier.get();
+			if (supplied == null) {
+				return null;
 			}
-
-			List<Registration<?>> list = new CopyOnWriteArrayList<Registration<?>>();
-			list.add(registration);
-			addEventToFire(service, registration);
-			return list;
+			eventQueue.offer(new RegistrationAddEventImpl<>(service, supplied));
+			eventQueue.offer(new ServiceChangeEventImpl<>(service, null, supplied));
+			return new Registration<?>[] {supplied};
 		});
-		/*
-		 * Now, there are 4 possibilities regarding the list we now have:
-		 * 
-		 * 1. The list has just been created and the result of the supplier has
-		 * been added to it, so is nonempty.
-		 * 2. The list is null because the result of the supplier was null.
-		 * 3. The list contains existing registrations, so is nonempty.
-		 * 4. The list is empty because it is in an intermediate state where
-		 * #unregister is in progress and has just removed the last element from the list.
-		 * 
-		 * 
-		 * If #2, we just return null per the specifications of Registry.
-		 */
-		if (registrations == null) {
+		if (result == null) {
 			return null;
 		}
-		fireRegistrationEvents();
-		/*
-		 * Otherwise, we have to return a nonnull value, either an existing registration
-		 * or a registration we have just added.
-		 * 
-		 * If the list is nonempty (majority of cases) #getHighestPriorityFrom
-		 * will return the nonnull registration, so we can return that.
-		 * 
-		 * If the list is empty, we have to double back until the intermediate state
-		 * has passed. So we recurse.
-		 */
-		Registration<T> registration = getHighestPriorityFrom(registrations);
-		return (registration != null) ? registration : registerIfAbsent(service, computer);
+		fireRegistryEvents();
+		return result[result.length - 1];
 	}
 	
 	@Override
-	public <T> void unregister(Class<T> service, Registration<T> registration) {
-		/*
-		 * If the list of registrations for the service does not exist, nothing happens.
-		 * Otherwise, if the removal of the registration changed the registration list,
-		 * and the resulting list is therefore empty, remove it.
-		 * 
-		 * This way, the registry will not retain empty lists after unregistration.
-		 * 
-		 */
-		registry.compute(service, (clazz, registrations) -> (registrations != null && registrations.remove(registration)
-				&& registrations.isEmpty()) ? null : registrations);
+	public <T> Registration<T> unregister(Class<T> service, Registration<T> registration) {
+		@SuppressWarnings("unchecked")
+		Registration<T>[] result = (Registration<T>[]) registry.computeIfPresent(service, (s, registers) -> {
+			int locationIndex = Arrays.binarySearch(registers, registration);
+			if (locationIndex < 0) {
+				// silently ignore
+				return registers;
+			}
+			eventQueue.offer(new RegistrationRemoveEventImpl<T>(service, registration));
+			if (registers.length == 1) {
+				eventQueue.offer(new ServiceChangeEventImpl<>(service, registration, null));
+				return null;
+			}
+			@SuppressWarnings("unchecked")
+			Registration<T>[] updated = (Registration<T>[]) ArraysUtil.contractAndRemove(registers, locationIndex);
+			if (locationIndex == registers.length - 1) {
+				eventQueue.offer(new ServiceChangeEventImpl<>(service, registration, updated[updated.length - 1]));
+			}
+			return updated;
+		});
+		fireRegistryEvents();
+		return (result == null) ? null : result[result.length - 1];
 	}
 	
 }
