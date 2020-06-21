@@ -19,14 +19,12 @@
 package space.arim.universal.registry;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import space.arim.universal.events.Events;
 
 /**
  * A framework for registering and loading services. <br>
- * <b>For an implementation, use {@link UniversalRegistry}</b> <br>
  * <br>
  * Used to register providers of services which will be utilised
  * by dependents according to the priority of registration. <br>
@@ -39,12 +37,11 @@ import space.arim.universal.events.Events;
  * These details comprise a <i>registration</i> (which is really just a wrapper
  * class for the provider, priority, and optional name). See {@link Registration}. <br>
  * <br>
- * The service class is the class corresponding to the service type. <br>
- * <br>
- * Note that while implementations should be thread safe, there is no requirement
- * for happens{@literal -}before relationships.
+ * The service class is the class corresponding to the service type.
  * 
  * @author A248
+ * 
+ * @see UniversalRegistry
  *
  */
 public interface Registry {
@@ -52,9 +49,9 @@ public interface Registry {
 	/**
 	 * Gets the {@link Events} instance corresponding to this registry. <br>
 	 * <br>
-	 * The returned Events instance is the same one on which RegistrationEvents are fired.
+	 * The returned Events instance is the same one on which {@link RegistryEvent}s are fired.
 	 * 
-	 * @return Events the accompanying events instance
+	 * @return the accompanying events instance
 	 */
 	Events getEvents();
 	
@@ -97,9 +94,9 @@ public interface Registry {
 	/**
 	 * Registers a resource as a specific service and returns the highest priority
 	 * registration for the service. <br>
-	 * This is similar to {@link #register(Class, byte, Object, String)}, but instead
-	 * of returning a {@link Registration} based on the resource registered,
-	 * this returns the highest priority registration after computations. <br>
+	 * This is similar to {@link #register(Class, byte, Object, String)}, but instead of returning
+	 * a {@link Registration} based on the resource registered, this returns the highest priority
+	 * registration <i>after</i> computations. <br>
 	 * <br>
 	 * The provider must be nonnull. The name may be null or empty.
 	 * 
@@ -119,7 +116,11 @@ public interface Registry {
 	 * <br>
 	 * The proper way to retrieve registrations is to call this method once,
 	 * and check if the returned value is nonnull. If nonnull, proceed normally.
-	 * If null, there is no registration for the service.
+	 * If null, there is no registration for the service. <br>
+	 * <br>
+	 * <b>The return value of this method should not be cached in a field under any circumstances. </b>
+	 * Instead, the current provider should be re-obtained every time it is required. This should
+	 * be done to properly handle unregistrations.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
@@ -128,11 +129,28 @@ public interface Registry {
 	<T> T getProvider(Class<T> service);
 	
 	/**
+	 * Gets a supplier which, when invoked, will retrieve the current highest priority
+	 * provider for the given service, using {@link #getProvider(Class)}. <br>
+	 * <br>
+	 * This method is provided as a convenience so as to encourage decoupling of dependent
+	 * projects from the {@code Registry}. For example, instead of passing a reference to
+	 * the {@code Registry}, and calling {@link #getProvider(Class)} multiple times,
+	 * the returned {@code Supplier} may rather be passed.
+	 * 
+	 * @param <T> the service type
+	 * @param service the service class
+	 * @return a supplier returning the current highest priority provider for the service at any given time
+	 */
+	default <T> Supplier<T> getProviderSupplier(Class<T> service) {
+		return () -> getProvider(service);
+	}
+	
+	/**
 	 * Retrieves the highest priority registration for a service. <br>
 	 * <br>
 	 * If no registration for the service is found, <code>null</code> is returned.
 	 * 
-	 * @param <T> the service
+	 * @param <T> the service type
 	 * @param service the service class
 	 * @return the highest priority registration
 	 */
@@ -144,7 +162,7 @@ public interface Registry {
 	 * <br>
 	 * If no registrations for the service are found, an empty list is returned.
 	 * 
-	 * @param <T> the service
+	 * @param <T> the service type
 	 * @param service the service class
 	 * @return an unmodifiable copy of all registrations for the service, never null
 	 */
@@ -153,47 +171,40 @@ public interface Registry {
 	/**
 	 * Checks whether a service has any accompanying provider <br>
 	 * <br>
-	 * This method should only be called in the rare case where
-	 * you need to check whether a service is registered but you do not
-	 * need to retrieve the registration itself. <br>
-	 * <br>
-	 * <b>Do not use this method to determine if a registration exists. </b>
-	 * Else, you may experience concurrency problems if providers are
-	 * unregistered.
+	 * This method should only be used in the rare case where one needs to check
+	 * whether a service is registered but does not need to retrieve the registration itself.
 	 * 
-	 * @param <T> the service
+	 * @param <T> the service type
 	 * @param service the service class
 	 * @return true if the service is provided for, false if not
 	 */
 	<T> boolean isProvidedFor(Class<T> service);
 	
 	/**
-	 * Adds a registration if there is no existing registration
-	 * for the service type. <br>
+	 * Adds a registration if there is no existing registration for the service type. <br>
 	 * <br>
-	 * If there is a registration for the service, it is returned. <br>
-	 * <br>
-	 * Otherwise, the provider generated by the Supplier is registered, and then returned.
-	 * If the generated provider is <code>null</code>, it is not registered, since the registry
-	 * does not permit null providers, and then <code>null</code> is returned. <br>
-	 * <br>
-	 * Functions similarly to {@link Map#computeIfAbsent(Object, java.util.function.Function)}
-	 * in that it returns the updated, current value after calculations are applied.
+	 * If there are registration for the service, the highest priority one is returned. <br>
+	 * Otherwise, the {@link Registration} generated by the Supplier is registered, and then returned.
+	 * If the supplied {@code Registration} is {@code null}, nothing happens, and {@code null} is returned.
 	 * 
-	 * @param <T> the service
+	 * @param <T> the service type
 	 * @param service the service class
 	 * @param computer if there is no registration for the service, the registration is demanded from this Supplier
-	 * @return the registration for the service once the operation is complete
+	 * @return the highest priority registration for the service once the operation is complete
 	 */
 	<T> Registration<T> registerIfAbsent(Class<T> service, Supplier<Registration<T>> computer);
 	
 	/**
-	 * Unregisters the specified Registration.
+	 * Unregisters the specified {@link Registration}, and returns the updated highest priority
+	 * registration after the specified {@code Registration} is unregistered. <br>
+	 * <br>
+	 * If the specified {@code Registration} was not registered, this is a no-op.
 	 * 
-	 * @param <T> the service
+	 * @param <T> the service type
 	 * @param service the service class
 	 * @param registration the registration to unregister
+	 * @return the updated highest priority registration for the service, or null if there is none
 	 */
-	<T> void unregister(Class<T> service, Registration<T> registration);
+	<T> Registration<T> unregister(Class<T> service, Registration<T> registration);
 	
 }
