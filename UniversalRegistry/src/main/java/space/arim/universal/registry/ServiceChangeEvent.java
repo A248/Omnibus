@@ -21,7 +21,11 @@ package space.arim.universal.registry;
 /**
  * Indicates the prioritised provider for a specific service changed. This happens
  * whenever a new registration is added with a higher priority than the existing
- * highest priority registration, or the highest priority registration was unregistered.
+ * highest priority registration, or the highest priority registration was unregistered. <br>
+ * <br>
+ * This event has a unique specification in that it guarantees a happens-before relationship
+ * for service changes. That is, if the provider changes from A to B to C, the event for
+ * the service change from A to B <i>will</i> happen before the event for that from B to C.
  * 
  * @author A248
  *
