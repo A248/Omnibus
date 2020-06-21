@@ -49,10 +49,12 @@ public class UniversalEvents implements Events {
 	private final ConcurrentHashMap<Class<?>, ListenerMethod[]> eventListeners = new ConcurrentHashMap<>();
 	
 	/**
-	 * The main instance
+	 * The main instance, lazily initialized
 	 * 
 	 */
-	private static final UniversalEvents DEFAULT_EVENTS = new UniversalEvents();
+	private static class MainInstance {
+		static final UniversalEvents INST = new UniversalEvents();
+	}
 	
 	/**
 	 * Creates a UniversalEvents. <br>
@@ -70,7 +72,7 @@ public class UniversalEvents implements Events {
 	 * @return the central instance
 	 */
 	public static Events get() {
-		return DEFAULT_EVENTS;
+		return MainInstance.INST;
 	}
 	
 	@Override
