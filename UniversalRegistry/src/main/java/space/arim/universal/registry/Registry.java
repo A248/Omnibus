@@ -118,9 +118,11 @@ public interface Registry {
 	 * and check if the returned value is nonnull. If nonnull, proceed normally.
 	 * If null, there is no registration for the service. <br>
 	 * <br>
-	 * <b>The return value of this method should not be cached in a field under any circumstances. </b>
-	 * Instead, the current provider should be re-obtained every time it is required. This should
-	 * be done to properly handle unregistrations.
+	 * To handle unregistrations, <b>the return value of this method should not
+	 * be cached in a field</b> unless the caller is prepared to update the field
+	 * by listening to {@link ServiceChangeEvent}. As a convenience to avoid
+	 * listening to said event, {@link #getProviderSupplier(Class)} may be used
+	 * and the resulting supplier invoked whenever the provider is needed.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
