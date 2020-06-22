@@ -20,6 +20,7 @@ package space.arim.universal.registry;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -62,15 +63,17 @@ public class RegistryTest {
 	}
 	
 	@Test
-	public void testPrioritisation() {
+	public void testMultipleRegistrations() {
 		TestService alt = new TestServiceImpl();
-		registry.register(TestService.class, RegistryPriority.LOWER, provider, "low priority");
-		registry.register(TestService.class, RegistryPriority.HIGHER, alt, "higher priority");
+		Registration<TestService> regis1 = registry.register(TestService.class, RegistryPriority.LOWER, provider, "low priority");
+		Registration<TestService> regis2 = registry.register(TestService.class, RegistryPriority.HIGHER, alt, "higher priority");
+		assertEquals(alt, regis2.getProvider());
 		assertEquals(alt, registry.getProvider(TestService.class));
 		TestService highest = new TestServiceImpl();
-		Registration<TestService> result = registry.registerAndGet(TestService.class, RegistryPriority.HIGHEST, highest, "highest priority");
-		assertEquals(highest, result.getProvider());
+		Registration<TestService> regis3 = registry.registerAndGet(TestService.class, RegistryPriority.HIGHEST, highest, "highest priority");
+		assertEquals(highest, regis3.getProvider());
 		assertEquals(highest, registry.getProvider(TestService.class));
+		assertEquals(List.of(regis1, regis2, regis3), registry.getAllRegistrations(TestService.class));
 	}
 	
 }
