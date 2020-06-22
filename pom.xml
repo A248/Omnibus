@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>space.arim</groupId>
-	<artifactId>universal</artifactId>
+	<groupId>space.arim.universal</groupId>
+	<artifactId>universal-parent</artifactId>
 	<!-- Remember to update  versions in all child modules -->
 	<version>0.10.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -15,17 +15,16 @@
 	<inceptionYear>2019</inceptionYear>
 	
 	<properties>
-		<core.author>A248</core.author>
-    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    	<maven.compiler.source>11</maven.compiler.source>
-    	<maven.compiler.target>11</maven.compiler.target>
-    	<junit.version>5.6.2</junit.version>
-    </properties>
-    
-    <licenses>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<junit.version>5.6.2</junit.version>
+	</properties>
+
+	<licenses>
 		<license>
 			<name>GNU General Public License, Version 3</name>
-			<url>https://www.gnu.org/licenses/</url>
+			<url>https://www.gnu.org/licenses/gpl-3.0-standalone.html</url>
 			<distribution>repo</distribution>
 			<comments>Strong copyleft license, commonly known as the GNU GPL v3</comments>
 		</license>
@@ -106,10 +105,10 @@
 	</build>
 	
 	<modules>
-		<module>UniversalGPL</module>
-		<module>UniversalUtil</module>
-		<module>UniversalEvents</module>
-		<module>UniversalRegistry</module>
+		<module>gpl</module>
+		<module>util</module>
+		<module>events</module>
+		<module>registry</module>
 	</modules>
 	
 	<distributionManagement>
@@ -133,11 +132,6 @@
 			<dependency>
 				<groupId>space.arim</groupId>
 				<artifactId>universal-events</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim</groupId>
-				<artifactId>universal-registry</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- Test Dependencies -->

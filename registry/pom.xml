@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-		<groupId>space.arim</groupId>
-		<artifactId>universal</artifactId>
+		<groupId>space.arim.universal</groupId>
+		<artifactId>universal-parent</artifactId>
 		<version>0.10.3-SNAPSHOT</version>
 	</parent>
 	
