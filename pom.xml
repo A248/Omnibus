@@ -125,12 +125,12 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>space.arim</groupId>
+				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-util</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>space.arim</groupId>
+				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-events</artifactId>
 				<version>${project.version}</version>
 			</dependency>

@@ -15,7 +15,7 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>space.arim</groupId>
+			<groupId>space.arim.universal</groupId>
 			<artifactId>universal-events</artifactId>
 		</dependency>
 	</dependencies>
