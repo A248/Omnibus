@@ -72,7 +72,7 @@ public class UniversalRegistry implements Registry {
 	 * This may be useful for creating one's own instances. A service registered in one instance
 	 * has no relation to any other. <br>
 	 * <br>
-	 * The backing events instance provided is used for firing {@link RegistrationEvent}s.
+	 * The backing events instance provided is used for firing {@link RegistryEvent}s.
 	 * 
 	 * @param events the events instance on which to fire registration events
 	 */
