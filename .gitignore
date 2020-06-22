@@ -9,6 +9,8 @@ pom.xml.versionsBackup
 
 ### Eclipse ###
 
+.classpath
+.project
 bin/
 .metadata
 tmp/
