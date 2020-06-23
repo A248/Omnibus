@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutorService;
  * @author A248
  *
  */
-public interface StoppableExecutor {
+public interface StoppableExecutor extends StoppableService {
 
     /**
      * Initiates an orderly shutdown in which previously submitted
@@ -49,7 +49,8 @@ public interface StoppableExecutor {
      *         or the security manager's {@code checkAccess} method
      *         denies access.
      */
-    void shutdown();
+    @Override
+	void shutdown();
 
     /**
      * Attempts to stop all actively executing tasks, halts the
@@ -81,7 +82,8 @@ public interface StoppableExecutor {
      *
      * @return {@code true} if this executor has been shut down
      */
-    boolean isShutdown();
+    @Override
+	boolean isShutdown();
 
     /**
      * Returns {@code true} if all tasks have completed following shut down.
@@ -90,7 +92,8 @@ public interface StoppableExecutor {
      *
      * @return {@code true} if all tasks have completed following shut down
      */
-    boolean isTerminated();
+    @Override
+	boolean isTerminated();
 
     /**
      * Blocks until all tasks have completed execution after a shutdown
@@ -103,7 +106,8 @@ public interface StoppableExecutor {
      *         {@code false} if the timeout elapsed before termination
      * @throws InterruptedException if interrupted while waiting
      */
-    boolean awaitTermination(long timeout, TimeUnit unit)
+    @Override
+	boolean awaitTermination(long timeout, TimeUnit unit)
         throws InterruptedException;
 	
 }
