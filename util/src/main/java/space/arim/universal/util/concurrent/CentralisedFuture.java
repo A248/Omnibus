@@ -44,12 +44,16 @@ public abstract class CentralisedFuture<T> extends CompletableFuture<T> implemen
 	@Override
 	public abstract <U> CentralisedFuture<U> newIncompleteFuture();
 	
+	@Override
+	public abstract ReactionStage<T> minimalCompletionStage();
+	
 	/*
 	 * Methods not overridden as of JDK 11:
 	 * 
-	 * defaultExecutor() join(), get(), get(long, TimeUnit), minimalCompletionStage(), isDone(), getNow(T), complete(T),
-	 * completeExceptionally(Throwable), cancel(boolean), isCancelled(), isCompletedExceptionally(), obtrudeValue(T),
-	 * obtrudeException(Throwable), getNumberOfDependents()
+	 * defaultExecutor() join(), get(), get(long, TimeUnit), isDone(), getNow(T),
+	 * complete(T), completeExceptionally(Throwable), cancel(boolean), isCancelled(),
+	 * isCompletedExceptionally(), obtrudeValue(T), obtrudeException(Throwable),
+	 * getNumberOfDependents()
 	 * 
 	 */
 
