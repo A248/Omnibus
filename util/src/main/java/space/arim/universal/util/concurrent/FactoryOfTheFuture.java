@@ -103,13 +103,40 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	<T> CentralisedFuture<T> supplySync(Supplier<T> supplier);
 	
 	/**
-	 * Creates a precompleted future
+	 * Creates a precompleted future which has completed normally with the given value.
 	 * 
 	 * @param <T> the result type of the future
 	 * @param value the value with which to complete the future
-	 * @return a future completed with the given value
+	 * @return a future completed normally with the given value
 	 */
 	<T> CentralisedFuture<T> completedFuture(T value);
+	
+	/**
+	 * Creates a precompleted stage which has completed normally with the given value.
+	 * 
+	 * @param <T> the result type of the stage
+	 * @param value the value with which to complete the stage
+	 * @return a stage completed normally with the given value
+	 */
+	<T> ReactionStage<T> completedStage(T value);
+	
+	/**
+	 * Creates a precompleted future which has completed exceptionally with the given exception.
+	 * 
+	 * @param <T> the result type of the future
+	 * @param ex the exception with which to complete the future
+	 * @return a future completeld exceptionally with the given exception
+	 */
+	<T> CentralisedFuture<T> failedFuture(Throwable ex);
+	
+	/**
+	 * Creates a precompleted stage which has completed exceptionally with the given exception.
+	 * 
+	 * @param <T> the result type of the stage
+	 * @param ex the exception with which to complete the stage
+	 * @return a stage completeld exceptionally with the given exception
+	 */
+	<T> ReactionStage<T> failedStage(Throwable ex);
 	
 	/**
 	 * Copies a {@code CompletableFuture} to a {@code CentralisedFuture}. <br>
