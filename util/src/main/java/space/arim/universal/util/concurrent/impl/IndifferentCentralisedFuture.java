@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import space.arim.universal.util.concurrent.CentralisedFuture;
+import space.arim.universal.util.concurrent.ReactionStage;
 
 /**
  * {@link CentralisedFuture} implementation which regards <i>Sync</i> method calls
@@ -48,6 +49,11 @@ public class IndifferentCentralisedFuture<T> extends CentralisedFuture<T> {
 	@Override
 	public <U> CentralisedFuture<U> newIncompleteFuture() {
 		return new IndifferentCentralisedFuture<>();
+	}
+	
+	@Override
+	public ReactionStage<T> minimalCompletionStage() {
+		return new MinimalReactionStage<>(this);
 	}
 
 	@Override

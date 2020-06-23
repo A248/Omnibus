@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import space.arim.universal.util.concurrent.CentralisedFuture;
+import space.arim.universal.util.concurrent.ReactionStage;
 import space.arim.universal.util.concurrent.SynchronousExecutor;
 
 /**
@@ -58,6 +59,11 @@ public class BaseCentralisedFuture<T> extends CentralisedFuture<T> {
 	@Override
 	public <U> CentralisedFuture<U> newIncompleteFuture() {
 		return new BaseCentralisedFuture<>(syncExecutor);
+	}
+	
+	@Override
+	public ReactionStage<T> minimalCompletionStage() {
+		return new MinimalReactionStage<>(this);
 	}
 	
 	@Override
