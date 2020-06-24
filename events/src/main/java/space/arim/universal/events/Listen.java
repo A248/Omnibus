@@ -26,10 +26,9 @@ import java.lang.annotation.Target;
 /**
  * Marks methods for listening to events. <br>
  * <br>
- * If the method is annotated but does not meet the following requirements, an unchecked exception is thrown: <br>
- * * The method must have a single parameter. <br>
- * * The method is public. <br>
- * * The method is not static. <br>
+ * The method must be public and non-static. It must have {@code void} return type. Also, it must have a single
+ * parameter which is assignment-compatible with <code>Event.class</code>. If any of these requirements are not met,
+ * an unchecked exception is thrown (usually {@link IllegalListenerException}. <br>
  * <br>
  * The single parameter of the listening method determines the event which will be listened to. More formally,
  * for any event <code>evt</code>, if the <code>evt</code> is an instance of the parameter type,
