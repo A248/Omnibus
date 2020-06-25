@@ -35,14 +35,14 @@ public class UniversalEventsTest {
 	}
 	
 	@Test
-	public void shouldModifyEventValue() {
+	public void testModifyEventValue() {
 		events.registerListener(new IntOperatorTestListener());
 
 		callTestEventAndCheck(events);
 	}
 	
 	@Test
-	public void shouldModifyEventValueDynamic() {
+	public void testModifyEventValueDynamic() {
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
@@ -64,7 +64,7 @@ public class UniversalEventsTest {
 	}
 	
 	@Test
-	public void shouldMaintainProperOrder() {
+	public void testMaintainOrder() {
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = te.someValue + 1;
 		});
@@ -73,11 +73,11 @@ public class UniversalEventsTest {
 		});
 		TestEventWithInteger te = new TestEventWithInteger(0);
 		events.fireEvent(te);
-		assertEquals(te.someValue, 2); // (0 + 1) * 2 = 2
+		assertEquals(2, te.someValue); // (0 + 1) * 2 = 2
 	}
 	
 	@Test
-	public void shouldProperlyUnregister() {
+	public void testUnregister() {
 		StringOperatorTestListener sotl = new StringOperatorTestListener();
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
@@ -85,16 +85,16 @@ public class UniversalEventsTest {
 		events.registerListener(sotl);
 		TestEventWithString tews1 = new TestEventWithString(initial);
 		events.fireEvent(tews1);
-		assertEquals(tews1.str, result);
+		assertEquals(result, tews1.str);
 
 		events.unregisterListener(sotl);
 		TestEventWithString tews2 = new TestEventWithString(initial);
 		events.fireEvent(tews2);
-		assertEquals(tews2.str, initial);
+		assertEquals(initial, tews2.str);
 	}
 	
 	@Test
-	public void shouldProperlyUnregisterDynamic() {
+	public void testUnregisterDynamic() {
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
 
@@ -103,23 +103,23 @@ public class UniversalEventsTest {
 		});
 		TestEventWithString tews1 = new TestEventWithString(initial);
 		events.fireEvent(tews1);
-		assertEquals(tews1.str, result);
+		assertEquals(result, tews1.str);
 
 		events.unregisterListener(listener);
 		TestEventWithString tews2 = new TestEventWithString(initial);
 		events.fireEvent(tews2);
-		assertEquals(tews2.str, initial);
+		assertEquals(initial, tews2.str);
 	}
 	
 	@Test
-	public void shouldSupportSubclassedEvents() {
+	public void testSubclassedEvents() {
 		events.registerListener(new IntOperatorTestListener());
 
 		callTestEventAndCheck(events, new TestEventWithIntegerAndBoolean(ThreadLocalRandom.current().nextInt(), false));
 	}
 	
 	@Test
-	public void shouldSupportSubclassedEventsDynamic() {
+	public void testSubclassedEventsDynamic() {
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
@@ -128,7 +128,7 @@ public class UniversalEventsTest {
 	}
 	
 	@Test
-	public void identicalPriorities() {
+	public void testIdenticalPriorities() {
 		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
 			te.someValue = te.someValue + 1;
 		});
