@@ -18,14 +18,18 @@
  */
 package space.arim.universal.events;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -42,6 +46,8 @@ import space.arim.universal.util.ArraysUtil;
  */
 public class UniversalEvents implements Events {
 
+	private static final MethodHandles.Lookup LOOKUP = MethodHandles.publicLookup();
+	
 	/**
 	 * The listeners themselves, a map of event classes to listener methods
 	 * 
@@ -134,7 +140,7 @@ public class UniversalEvents implements Events {
 		});
 	}
 	
-	private void addSingleMethod(Class<?> clazz, ListenerMethod methodToAdd) {
+	private <E extends Event> void addSingleMethod(Class<E> clazz, ListenerMethod methodToAdd) {
 		eventListeners.compute(clazz, (c, existingMethods) -> {
 			// No existing methods
 			if (existingMethods == null) {
@@ -192,26 +198,68 @@ public class UniversalEvents implements Events {
 			}
 			int modifiers = method.getModifiers();
 			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
-				throw new IllegalArgumentException("Listening methods must be public and non-static");
+				throw new IllegalListenerException("Listening methods must be public and non-static");
+			}
+			if (method.getReturnType() != void.class) {
+				throw new IllegalListenerException("Listening methods must have void return type");
 			}
 			Class<?>[] parameters = method.getParameterTypes();
 			if (parameters.length != 1) {
-				throw new IllegalArgumentException("Listening methods must have 1 parameter");
+				throw new IllegalListenerException("Listening methods must have 1 parameter");
+			}
+			Class<?> evtClass = parameters[0];
+			if (!Event.class.isAssignableFrom(evtClass)) {
+				throw new IllegalListenerException("Listening method parameter type must be assignment-compatible with Event");
+			}
+			MethodHandle handle;
+			try {
+				handle = LOOKUP.unreflect(method);
+			} catch (Throwable ex) {
+				throw new IllegalListenerException("Internal exception: Cannot generate accessors to event listener", ex);
 			}
 			List<ListenerMethod> list = methodMap.computeIfAbsent(parameters[0], (clazz) -> new ArrayList<>());
-			list.add(new AnnotatedListenerMethod(listener, method, annote.priority(), annote.ignoreCancelled()));
+			list.add(new AnnotatedListenerMethod(listener, handle, annote.priority(), annote.ignoreCancelled()));
 			// Presorting now helps us later during possible contention
 			list.sort(null);
 		}
 		return methodMap;
 	}
 	
+	private static Set<Class<?>> getEventClasses(Listener listener) {
+		Set<Class<?>> set = new HashSet<>();
+		for (Method method : listener.getClass().getDeclaredMethods()) {
+			Listen annote = method.getAnnotation(Listen.class);
+			if (annote == null) {
+				continue;
+			}
+			int modifiers = method.getModifiers();
+			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+				continue;
+			}
+			if (method.getReturnType() != void.class) {
+				continue;
+			}
+			Class<?>[] parameters = method.getParameterTypes();
+			if (parameters.length != 1) {
+				continue;
+			}
+			Class<?> evtClass = parameters[0];
+			if (!Event.class.isAssignableFrom(evtClass)) {
+				continue;
+			}
+			set.add(evtClass);
+		}
+		return set;
+	}
+	
 	@Override
 	public void registerListener(Listener listener) {
 		Objects.requireNonNull(listener, "Listener must not be null");
-		if (!(listener instanceof DynamicListener<?>)) {
-			getMethodMap(listener).forEach(this::addMethods);
+		if (listener instanceof DynamicListener<?>) {
+			// already registered
+			return;
 		}
+		getMethodMap(listener).forEach(this::addMethods);
 	}
 	
 	@Override
@@ -230,7 +278,12 @@ public class UniversalEvents implements Events {
 			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
 			removeSingleMethod(dynamicListener.clazz, dynamicListener);
 		} else {
-			getMethodMap(listener).forEach((clazz, methodsToRemove) -> removeListenerMethodIf((clazz), methodsToRemove::contains));
+			getEventClasses(listener).forEach((clazz) -> {
+				removeListenerMethodIf(clazz, (methodToCheck) -> {
+					return (methodToCheck instanceof AnnotatedListenerMethod
+							&& listener == ((AnnotatedListenerMethod) methodToCheck).listener);
+				});
+			});
 		}
 	}
 	

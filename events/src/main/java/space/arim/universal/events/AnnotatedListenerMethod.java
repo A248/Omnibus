@@ -18,8 +18,7 @@
  */
 package space.arim.universal.events;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
 
 /**
  * Internal wrapper for listening methods with the {@link Listen} annotation detected 
@@ -29,19 +28,18 @@ import java.lang.reflect.Method;
  */
 class AnnotatedListenerMethod extends ListenerMethod {
 
-	private final Object listener;
-	private final Method method;
+	final Object listener;
+	private final MethodHandle handle;
 	
-	AnnotatedListenerMethod(Object listener, Method method, byte priority, boolean ignoreCancelled) {
+	AnnotatedListenerMethod(Object listener, MethodHandle handle, byte priority, boolean ignoreCancelled) {
 		super(priority, ignoreCancelled);
 		this.listener = listener;
-		this.method = method;
-		method.setAccessible(true);
+		this.handle = handle;
 	}
 	
 	@Override
-	void invoke(Object evt) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		method.invoke(listener, evt);
+	void invoke(Object evt) throws Throwable {
+		handle.invoke(listener, evt);
 	}
 
 	@Override
@@ -49,7 +47,7 @@ class AnnotatedListenerMethod extends ListenerMethod {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + listener.hashCode();
-		result = prime * result + method.hashCode();
+		result = prime * result + handle.hashCode();
 		return result;
 	}
 
@@ -61,11 +59,8 @@ class AnnotatedListenerMethod extends ListenerMethod {
 		if (!(object instanceof AnnotatedListenerMethod)) {
 			return false;
 		}
-		/*
-		 * Since we only use this method to determine whether there are
-		 * duplicate listeners, we only need to check listener object equality
-		 */
-		return listener == ((AnnotatedListenerMethod) object).listener;
+		AnnotatedListenerMethod other = (AnnotatedListenerMethod) object;
+		return listener == other.listener && handle.equals(other.handle);
 	}
 	
 }

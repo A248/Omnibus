@@ -34,7 +34,7 @@ abstract class ListenerMethod implements Comparable<ListenerMethod> {
 		this.ignoreCancelled = ignoreCancelled;
 	}
 	
-	abstract void invoke(Object object) throws Exception;
+	abstract void invoke(Object object) throws Throwable;
 	
 	/**
 	 * Compares 2 listener methods.
