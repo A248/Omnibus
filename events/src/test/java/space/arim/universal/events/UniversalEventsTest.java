@@ -127,4 +127,17 @@ public class UniversalEventsTest {
 		callTestEventAndCheck(events, new TestEventWithIntegerAndBoolean(ThreadLocalRandom.current().nextInt(), false));
 	}
 	
+	@Test
+	public void identicalPriorities() {
+		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+			te.someValue = te.someValue + 1;
+		});
+		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+			te.someValue = te.someValue + 1;
+		});
+		TestEventWithInteger te = new TestEventWithInteger(1);
+		events.fireEvent(te);
+		assertEquals(3, te.someValue);
+	}
+	
 }

@@ -37,12 +37,16 @@ abstract class ListenerMethod implements Comparable<ListenerMethod> {
 	abstract void invoke(Object object) throws Throwable;
 	
 	/**
-	 * Compares 2 listener methods.
+	 * Compares 2 listener methods by priority
 	 * 
 	 */
 	@Override
 	public int compareTo(ListenerMethod o) {
-		return priority - o.priority;
+		int priorityDiff = priority - o.priority;
+		if (priorityDiff == 0) {
+			return hashCode() - o.hashCode();
+		}
+		return priorityDiff;
 	}
 	
 	@Override
