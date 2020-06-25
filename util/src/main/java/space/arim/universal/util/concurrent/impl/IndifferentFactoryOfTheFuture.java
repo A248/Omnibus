@@ -19,6 +19,7 @@
 package space.arim.universal.util.concurrent.impl;
 
 import space.arim.universal.util.concurrent.CentralisedFuture;
+import space.arim.universal.util.concurrent.FactoryOfTheFuture;
 
 /**
  * {@link FactoryOfTheFuture} implementation which regards <i>Sync</i> method calls to

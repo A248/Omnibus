@@ -17,7 +17,11 @@
  * <br>
  * Additionally, there are a few miscellanous helper classes, including {@link CompetitiveFuture} to change
  * the default executor of a {@code CompletableFuture} by subclassing, as well as {@link StoppableExecutor}
- * to mirror some of the shutdown-related methods of {@link java.util.concurrent.ExecutorService ExecutorService}.
+ * to mirror some of the shutdown-related methods of {@link ExecutorService}.
  * 
  */
 package space.arim.universal.util.concurrent;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
