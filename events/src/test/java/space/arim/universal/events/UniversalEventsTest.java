@@ -21,6 +21,7 @@ package space.arim.universal.events;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -168,13 +169,12 @@ public class UniversalEventsTest {
 	}
 	
 	@Test
-	public void testIdenticalPrioritiesDynamic() {
-		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+	public void testIdenticalDynamicConsumers() {
+		Consumer<TestEventWithInteger> consumer = (te) -> {
 			te.someValue = te.someValue + 1;
-		});
-		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
-			te.someValue = te.someValue + 1;
-		});
+		};
+		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, consumer);
+		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, consumer);
 		TestEventWithInteger te = new TestEventWithInteger(1);
 		events.fireEvent(te);
 		assertEquals(3, te.someValue); // 1 + 1 + 1 = 3
@@ -199,6 +199,13 @@ public class UniversalEventsTest {
 		callTestEventAssuming1Listener(events);
 	}
 	
+	private static void callTestEventAssumingNoListeners(Events events) {
+		int startValue = ThreadLocalRandom.current().nextInt();
+		TestEventWithInteger te = new TestEventWithInteger(startValue);
+		events.fireEvent(te);
+		assertEquals(startValue, te.someValue); // no change
+	}
+	
 	@Test
 	public void testAlreadyUnregister() {
 		Listener listener = new IntOperatorTestListener();
@@ -206,9 +213,17 @@ public class UniversalEventsTest {
 		events.registerListener(listener);
 		events.unregisterListener(listener);
 		events.unregisterListener(listener); // should be no-op
-		TestEventWithInteger te = new TestEventWithInteger(1);
-		events.fireEvent(te);
-		assertEquals(1, te.someValue); // no change
+		callTestEventAssumingNoListeners(events);
+	}
+	
+	@Test
+	public void testAlreadyUnregisterDynamic() {
+		Listener listener = events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
+		});
+		events.unregisterListener(listener);
+		events.unregisterListener(listener); // should be no-op
+		callTestEventAssumingNoListeners(events);
 	}
 	
 }

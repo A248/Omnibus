@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 class DynamicListener<E extends Event> extends ListenerMethod implements Listener {
 
 	final Class<E> clazz;
-	final Consumer<E> listener;
+	private final Consumer<E> listener;
 	
 	DynamicListener(Class<E> clazz, Consumer<E> listener, byte priority) {
 		super(priority, false);
@@ -46,23 +46,12 @@ class DynamicListener<E extends Event> extends ListenerMethod implements Listene
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + clazz.hashCode();
-		result = prime * result + listener.hashCode();
-		return result;
+		return System.identityHashCode(this);
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (!(object instanceof DynamicListener)) {
-			return false;
-		}
-		DynamicListener<?> other = (DynamicListener<?>) object;
-		return priority == other.priority && clazz == other.clazz && listener == other.listener;
+		return this == object;
 	}
 	
 }
