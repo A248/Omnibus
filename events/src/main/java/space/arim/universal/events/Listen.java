@@ -33,7 +33,11 @@ import java.lang.annotation.Target;
  * The single parameter of the listening method determines the event which will be listened to. More formally,
  * for any event <code>evt</code>, if the <code>evt</code> is an instance of the parameter type,
  * the listening method will be invoked when the method is thrown. Listening to superclasses is, therefore,
- * supported.
+ * supported. <br>
+ * <br>
+ * <b>Inheritance</b>
+ * Listening methods, unlike normal methods, cannot be inherited. If inheritance is required, then it may be better
+ * to switch to dynamic event listening via {@link Events#registerListener(Class, byte, java.util.function.Consumer)}.
  * 
  * @author A248
  *
