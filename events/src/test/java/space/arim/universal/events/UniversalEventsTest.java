@@ -226,4 +226,11 @@ public class UniversalEventsTest {
 		callTestEventAssumingNoListeners(events);
 	}
 	
+	@Test
+	public void testNonInheritableAnnotatedListeners() {
+		events.registerListener(new SubclassedIntOperatorTestListener());
+		events.registerListener(new IntOperatorTestListener() {});
+		callTestEventAssumingNoListeners(events);
+	}
+	
 }
