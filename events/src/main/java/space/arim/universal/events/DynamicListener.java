@@ -30,9 +30,9 @@ import java.util.function.Consumer;
 class DynamicListener<E extends Event> extends ListenerMethod implements Listener {
 
 	final Class<E> clazz;
-	private final Consumer<E> listener;
+	private final Consumer<? super E> listener;
 	
-	DynamicListener(Class<E> clazz, Consumer<E> listener, byte priority) {
+	DynamicListener(Class<E> clazz, Consumer<? super E> listener, byte priority) {
 		super(priority, false);
 		this.clazz = clazz;
 		this.listener = listener;

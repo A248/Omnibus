@@ -268,7 +268,7 @@ public class UniversalEvents implements Events {
 	}
 	
 	@Override
-	public <E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<E> listener) {
+	public <E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<? super E> listener) {
 		Objects.requireNonNull(event, "Event must not be null");
 		Objects.requireNonNull(listener, "Listener must not be null");
 		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
