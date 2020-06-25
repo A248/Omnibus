@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import space.arim.universal.util.ArraysUtil;
 
@@ -117,68 +116,36 @@ public class UniversalEvents implements Events {
 		}
 	}
 	
-	private void addMethods(Class<?> clazz, List<ListenerMethod> methodsToAdd) {
-		if (methodsToAdd.size() == 1) {
-			addSingleMethod(clazz, methodsToAdd.get(0));
-			return;
-		}
+	private void addAnnotatedListeners(Class<?> clazz, Listener listener, AnnotatedListenerMethod[] methodsToAdd) {
 		eventListeners.compute(clazz, (c, existingMethods) -> {
 			// No existing methods
 			if (existingMethods == null) {
-				// This list is already sorted by us in #getMethodMap
-				return methodsToAdd.toArray(new ListenerMethod[] {});
+				// Already sorted by us in #getMethodMap
+				return methodsToAdd;
 			}
-			// Check for duplicates
+			// Check for duplicates based on listener object equality
 			for (ListenerMethod existing : existingMethods) {
-				// Once we find a single duplicate, we know the listener object is already registered
-				if (methodsToAdd.contains(existing)) {
+				if (existing instanceof AnnotatedListenerMethod
+						&& ((AnnotatedListenerMethod) existing).listener == listener) {
 					return existingMethods;
 				}
 			}
-			ListenerMethod[] toAdd = methodsToAdd.toArray(new ListenerMethod[] {});
 			// Add the methods and sort
 			int startLength = existingMethods.length;
-			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + toAdd.length);
-			System.arraycopy(toAdd, 0, updated, startLength, methodsToAdd.size());
+			int addLength = methodsToAdd.length;
+			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + addLength);
+			System.arraycopy(methodsToAdd, 0, updated, startLength, addLength);
 			Arrays.sort(updated);
 			return updated;
 		});
 	}
 	
-	private void addSingleMethod(Class<?> clazz, ListenerMethod methodToAdd) {
-		eventListeners.compute(clazz, (c, existingMethods) -> {
-			// No existing methods
-			if (existingMethods == null) {
-				return new ListenerMethod[] {methodToAdd};
-			}
-			// Check for duplicates
-			for (ListenerMethod existing : existingMethods) {
-				if (methodToAdd.equals(existing)) {
-					return existingMethods;
-				}
-			}
-			// Add the method maintaining sorting
-			int insertionIndex = - (Arrays.binarySearch(existingMethods, methodToAdd) + 1);
-			return ArraysUtil.expandAndInsert(existingMethods, methodToAdd, insertionIndex);
-		});
-	}
-	
-	private void removeSingleMethod(Class<?> clazz, ListenerMethod methodToRemove) {
-		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
-			int removalIndex = Arrays.binarySearch(existingMethods, methodToRemove);
-			if (removalIndex < 0) {
-				return existingMethods;
-			}
-			return ArraysUtil.contractAndRemove(existingMethods, removalIndex);
-		});
-	}
-	
-	private void removeListenerMethodIf(Class<?> clazz, Predicate<ListenerMethod> checker) {
+	private void removeAnnotatedListenersFor(Class<?> clazz, Listener listener) {
 		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
 			List<ListenerMethod> updated = new ArrayList<>(existingMethods.length);
 			boolean changed = false;
 			for (ListenerMethod method : existingMethods) {
-				if (checker.test(method)) {
+				if (method instanceof AnnotatedListenerMethod && ((AnnotatedListenerMethod) method).listener == listener) {
 					changed = true;
 				} else {
 					updated.add(method);
@@ -191,6 +158,29 @@ public class UniversalEvents implements Events {
 				return null;
 			}
 			return updated.toArray(new ListenerMethod[] {});
+		});
+	}
+	
+	private void addDynamicListener(DynamicListener<?> methodToAdd) {
+		eventListeners.compute(methodToAdd.clazz, (c, existingMethods) -> {
+			// No existing methods
+			if (existingMethods == null) {
+				return new ListenerMethod[] {methodToAdd};
+			}
+			// Add the method maintaining sorting
+			int insertionIndex = - (Arrays.binarySearch(existingMethods, methodToAdd) + 1);
+			return ArraysUtil.expandAndInsert(existingMethods, methodToAdd, insertionIndex);
+		});
+	}
+	
+	private void removeDynamicListener(DynamicListener<?> methodToRemove) {
+		eventListeners.computeIfPresent(methodToRemove.clazz, (c, existingMethods) -> {
+			int removalIndex = Arrays.binarySearch(existingMethods, methodToRemove);
+			if (removalIndex < 0) {
+				// not present
+				return existingMethods;
+			}
+			return ArraysUtil.contractAndRemove(existingMethods, removalIndex);
 		});
 	}
 	
@@ -219,10 +209,10 @@ public class UniversalEvents implements Events {
 			MethodHandle handle;
 			try {
 				handle = LOOKUP.unreflect(method);
-			} catch (Throwable ex) {
+			} catch (IllegalAccessException ex) {
 				throw new IllegalListenerException("Internal exception: Cannot generate accessors to event listener", ex);
 			}
-			List<ListenerMethod> list = methodMap.computeIfAbsent(parameters[0], (clazz) -> new ArrayList<>());
+			List<ListenerMethod> list = methodMap.computeIfAbsent(evtClass, (c) -> new ArrayList<>());
 			list.add(new AnnotatedListenerMethod(listener, handle, annote.priority(), annote.ignoreCancelled()));
 			// Presorting now helps us later during possible contention
 			list.sort(null);
@@ -230,7 +220,7 @@ public class UniversalEvents implements Events {
 		return methodMap;
 	}
 	
-	private static Set<Class<?>> getEventClasses(Listener listener) {
+	private static Set<Class<?>> getListenedEventClasses(Listener listener) {
 		Set<Class<?>> set = new HashSet<>();
 		for (Method method : listener.getClass().getDeclaredMethods()) {
 			Listen annote = method.getAnnotation(Listen.class);
@@ -264,7 +254,8 @@ public class UniversalEvents implements Events {
 			// already registered
 			return;
 		}
-		getMethodMap(listener).forEach(this::addMethods);
+		getMethodMap(listener)
+				.forEach((clazz, methods) -> addAnnotatedListeners(clazz, listener, methods.toArray(new AnnotatedListenerMethod[] {})));
 	}
 	
 	@Override
@@ -272,7 +263,7 @@ public class UniversalEvents implements Events {
 		Objects.requireNonNull(event, "Event must not be null");
 		Objects.requireNonNull(listener, "Listener must not be null");
 		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
-		addSingleMethod(event, dynamicListener);
+		addDynamicListener(dynamicListener);
 		return dynamicListener;
 	}
 	
@@ -280,15 +271,9 @@ public class UniversalEvents implements Events {
 	public void unregisterListener(Listener listener) {
 		Objects.requireNonNull(listener, "Listener must not be null");
 		if (listener instanceof DynamicListener<?>) {
-			DynamicListener<?> dynamicListener = (DynamicListener<?>) listener;
-			removeSingleMethod(dynamicListener.clazz, dynamicListener);
+			removeDynamicListener((DynamicListener<?>) listener);
 		} else {
-			getEventClasses(listener).forEach((clazz) -> {
-				removeListenerMethodIf(clazz, (methodToCheck) -> {
-					return (methodToCheck instanceof AnnotatedListenerMethod
-							&& listener == ((AnnotatedListenerMethod) methodToCheck).listener);
-				});
-			});
+			getListenedEventClasses(listener).forEach((clazz) -> removeAnnotatedListenersFor(clazz, listener));
 		}
 	}
 	
