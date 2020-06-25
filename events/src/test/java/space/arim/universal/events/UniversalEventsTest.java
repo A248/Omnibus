@@ -21,14 +21,21 @@ package space.arim.universal.events;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class UniversalEventsTest {
 	
+	private Events events;
+	
+	@BeforeEach
+	public void setup() {
+		events = new UniversalEvents();
+	}
+	
 	@Test
 	public void shouldModifyEventValue() {
-		Events events = new UniversalEvents();
-		assertNotNull(events);
 		events.registerListener(new IntOperatorTestListener());
 
 		callTestEventAndCheck(events);
@@ -36,7 +43,6 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void shouldModifyEventValueDynamic() {
-		Events events = new UniversalEvents();
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
@@ -45,17 +51,20 @@ public class UniversalEventsTest {
 	}
 	
 	private void callTestEventAndCheck(Events events) {
-		int start = ThreadLocalRandom.current().nextInt();
-		TestEventWithInteger te = new TestEventWithInteger(start);
+		int beginValue = ThreadLocalRandom.current().nextInt();
+		callTestEventAndCheck(events, new TestEventWithInteger(beginValue));
+	}
+	
+	private void callTestEventAndCheck(Events events, TestEventWithInteger te) {
+		int beginValue = te.someValue;
 		events.fireEvent(te);
 		int result = te.someValue;
-		int expected = IntOperatorTestListener.OPERATOR.applyAsInt(start);
-		assertEquals(result, expected);
+		int expected = IntOperatorTestListener.OPERATOR.applyAsInt(beginValue);
+		assertEquals(expected, result);
 	}
 	
 	@Test
 	public void shouldMaintainProperOrder() {
-		Events events = new UniversalEvents();
 		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
 			te.someValue = te.someValue + 1;
 		});
@@ -70,7 +79,6 @@ public class UniversalEventsTest {
 	@Test
 	public void shouldProperlyUnregister() {
 		StringOperatorTestListener sotl = new StringOperatorTestListener();
-		Events events = new UniversalEvents();
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
 
@@ -87,7 +95,6 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void shouldProperlyUnregisterDynamic() {
-		Events events = new UniversalEvents();
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
 
@@ -102,6 +109,22 @@ public class UniversalEventsTest {
 		TestEventWithString tews2 = new TestEventWithString(initial);
 		events.fireEvent(tews2);
 		assertEquals(tews2.str, initial);
+	}
+	
+	@Test
+	public void shouldSupportSubclassedEvents() {
+		events.registerListener(new IntOperatorTestListener());
+
+		callTestEventAndCheck(events, new TestEventWithIntegerAndBoolean(ThreadLocalRandom.current().nextInt(), false));
+	}
+	
+	@Test
+	public void shouldSupportSubclassedEventsDynamic() {
+		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
+			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
+		});
+
+		callTestEventAndCheck(events, new TestEventWithIntegerAndBoolean(ThreadLocalRandom.current().nextInt(), false));
 	}
 	
 }
