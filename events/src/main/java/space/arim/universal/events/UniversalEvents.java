@@ -46,7 +46,7 @@ import space.arim.universal.util.ArraysUtil;
  */
 public class UniversalEvents implements Events {
 
-	private static final MethodHandles.Lookup LOOKUP = MethodHandles.publicLookup();
+	private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 	
 	/**
 	 * The listeners themselves, a map of event classes to listener methods
@@ -118,6 +118,10 @@ public class UniversalEvents implements Events {
 	}
 	
 	private void addMethods(Class<?> clazz, List<ListenerMethod> methodsToAdd) {
+		if (methodsToAdd.size() == 1) {
+			addSingleMethod(clazz, methodsToAdd.get(0));
+			return;
+		}
 		eventListeners.compute(clazz, (c, existingMethods) -> {
 			// No existing methods
 			if (existingMethods == null) {
@@ -131,16 +135,17 @@ public class UniversalEvents implements Events {
 					return existingMethods;
 				}
 			}
+			ListenerMethod[] toAdd = methodsToAdd.toArray(new ListenerMethod[] {});
 			// Add the methods and sort
 			int startLength = existingMethods.length;
-			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + methodsToAdd.size());
-			System.arraycopy(methodsToAdd, 0, updated, startLength, methodsToAdd.size());
+			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + toAdd.length);
+			System.arraycopy(toAdd, 0, updated, startLength, methodsToAdd.size());
 			Arrays.sort(updated);
 			return updated;
 		});
 	}
 	
-	private <E extends Event> void addSingleMethod(Class<E> clazz, ListenerMethod methodToAdd) {
+	private void addSingleMethod(Class<?> clazz, ListenerMethod methodToAdd) {
 		eventListeners.compute(clazz, (c, existingMethods) -> {
 			// No existing methods
 			if (existingMethods == null) {

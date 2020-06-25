@@ -41,13 +41,17 @@ class AnnotatedListenerMethod extends ListenerMethod {
 	void invoke(Object evt) throws Throwable {
 		handle.invoke(listener, evt);
 	}
+	
+	/*
+	 * We only use equals and hashCode to check for duplicate listeners
+	 */
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + listener.hashCode();
-		result = prime * result + handle.hashCode();
+		//result = prime * result + handle.hashCode();
 		return result;
 	}
 
@@ -60,7 +64,7 @@ class AnnotatedListenerMethod extends ListenerMethod {
 			return false;
 		}
 		AnnotatedListenerMethod other = (AnnotatedListenerMethod) object;
-		return listener == other.listener && handle.equals(other.handle);
+		return listener == other.listener;// && handle.equals(other.handle);
 	}
 	
 }
