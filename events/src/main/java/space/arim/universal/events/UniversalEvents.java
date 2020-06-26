@@ -185,8 +185,12 @@ public class UniversalEvents implements Events {
 	}
 	
 	private static Map<Class<?>, List<ListenerMethod>> getMethodMap(Listener listener) {
+		Class<?> listenerClass = listener.getClass();
+		if (!Modifier.isPublic(listenerClass.getModifiers())) {
+			throw new IllegalListenerException("Listeners must be public");
+		}
 		Map<Class<?>, List<ListenerMethod>> methodMap = new HashMap<>();
-		for (Method method : listener.getClass().getDeclaredMethods()) {
+		for (Method method : listenerClass.getDeclaredMethods()) {
 			Listen annote = method.getAnnotation(Listen.class);
 			if (annote == null) {
 				continue;
@@ -221,8 +225,12 @@ public class UniversalEvents implements Events {
 	}
 	
 	private static Set<Class<?>> getListenedEventClasses(Listener listener) {
-		Set<Class<?>> set = new HashSet<>();
-		for (Method method : listener.getClass().getDeclaredMethods()) {
+		Class<?> listenerClass = listener.getClass();
+		if (!Modifier.isPublic(listenerClass.getModifiers())) {
+			return Set.of();
+		}
+		Set<Class<?>> evtClasses = new HashSet<>();
+		for (Method method : listenerClass.getDeclaredMethods()) {
 			Listen annote = method.getAnnotation(Listen.class);
 			if (annote == null) {
 				continue;
@@ -242,9 +250,9 @@ public class UniversalEvents implements Events {
 			if (!Event.class.isAssignableFrom(evtClass)) {
 				continue;
 			}
-			set.add(evtClass);
+			evtClasses.add(evtClass);
 		}
-		return set;
+		return evtClasses;
 	}
 	
 	@Override
