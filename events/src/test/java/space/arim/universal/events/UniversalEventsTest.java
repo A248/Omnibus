@@ -66,18 +66,8 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testMaintainOrder() {
-		events.registerListener(new Listener() {
-			@Listen(priority = EventPriority.LOW)
-			public void listenTo(TestEventWithInteger te) {
-				te.someValue = te.someValue + 1;
-			}
-		});
-		events.registerListener(new Listener() {
-			@Listen(priority = EventPriority.HIGH)
-			public void listenTo(TestEventWithInteger te) {
-				te.someValue = te.someValue * 2;
-			}
-		});
+		events.registerListener(new IncrementingTestListener()); // NORMAL priority
+		events.registerListener(new DoublingIncrementingTestListener()); // HIGH priority
 		TestEventWithInteger te = new TestEventWithInteger(0);
 		events.fireEvent(te);
 		assertEquals(2, te.someValue); // (0 + 1) * 2 = 2
@@ -85,7 +75,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testMaintainOrderDynamic() {
-		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
+		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
 			te.someValue = te.someValue + 1;
 		});
 		events.registerListener(TestEventWithInteger.class, EventPriority.HIGH, (te) -> {
@@ -151,18 +141,8 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testIdenticalPriorities() {
-		events.registerListener(new Listener() {
-			@Listen(priority = EventPriority.NORMAL)
-			public void listenTo(TestEventWithInteger te) {
-				te.someValue = te.someValue + 1;
-			}
-		});
-		events.registerListener(new Listener() {
-			@Listen(priority = EventPriority.NORMAL)
-			public void listenTo(TestEventWithInteger te) {
-				te.someValue = te.someValue + 1;
-			}
-		});
+		events.registerListener(new IncrementingTestListener());
+		events.registerListener(new IncrementingTestListener());
 		TestEventWithInteger te = new TestEventWithInteger(1);
 		events.fireEvent(te);
 		assertEquals(3, te.someValue); // 1 + 1 + 1 = 3
@@ -229,7 +209,6 @@ public class UniversalEventsTest {
 	@Test
 	public void testNonInheritableAnnotatedListeners() {
 		events.registerListener(new SubclassedIntOperatorTestListener());
-		events.registerListener(new IntOperatorTestListener() {});
 		callTestEventAssumingNoListeners(events);
 	}
 	
