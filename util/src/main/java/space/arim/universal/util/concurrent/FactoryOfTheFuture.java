@@ -19,6 +19,7 @@
 package space.arim.universal.util.concurrent;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
@@ -148,6 +149,35 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param completableFuture the completable future
 	 * @return a centralised future completed in the same way as the original completable future
 	 */
+	// Must be default method for compatibility, but encouraged to be overriden
+	default <T> CentralisedFuture<T> copyFuture(CompletableFuture<T> completableFuture) {
+		return copyFutureTo(completableFuture);
+	}
+	
+	/**
+	 * Copies a {@code CompletionStage} to a {@code ReactionStage}. <br>
+	 * When the completable future completes, if it does so normally, the centralised future
+	 * is also completed normally with the same result. Else, if the former completes exceptionally,
+	 * the latter is also completed exceptionally with the same exception.
+	 * 
+	 * @param <T> the result type of the stage
+	 * @param completionStage the completion stage
+	 * @return a reaction stage completed in the same way as the original completion stage
+	 */
+	// Must be default method for compatibility, but encouraged to be overriden
+	default <T> ReactionStage<T> copyStage(CompletionStage<T> completionStage) {
+		return copyFuture(completionStage.toCompletableFuture());
+	}
+	
+	/**
+	 * Same as {@link #copyFutureTo(CompletableFuture)}. The other method should be preferred
+	 * as this method's name is somewhat misleading.
+	 * 
+	 * @param <T> the result type of the future
+	 * @param completableFuture the completable future
+	 * @return a centralised future completed in the same way as the original completable future
+	 */
+	@Deprecated
 	<T> CentralisedFuture<T> copyFutureTo(CompletableFuture<T> completableFuture);
 
 }

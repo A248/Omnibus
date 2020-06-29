@@ -20,6 +20,7 @@ package space.arim.universal.util.concurrent.impl;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
@@ -129,7 +130,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	}
 	
 	@Override
-	public <T> CentralisedFuture<T> copyFutureTo(CompletableFuture<T> completableFuture) {
+	public <T> CentralisedFuture<T> copyFuture(CompletableFuture<T> completableFuture) {
 		CentralisedFuture<T> result = newIncompleteFuture();
 		completableFuture.whenComplete((val, ex) -> {
 			if (ex == null) {
@@ -139,6 +140,26 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 			}
 		});
 		return result;
+	}
+	
+	@Override
+	public <T> ReactionStage<T> copyStage(CompletionStage<T> completionStage) {
+		CentralisedFuture<T> result = newIncompleteFuture();
+		completionStage.whenComplete((val, ex) -> {
+			if (ex == null) {
+				result.complete(val);
+			} else {
+				result.completeExceptionally(ex);
+			}
+		});
+		return new MinimalReactionStage<>(result);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Deprecated
+	@Override
+	public <T> CentralisedFuture<T> copyFutureTo(CompletableFuture<T> completableFuture) {
+		return copyFuture(completableFuture);
 	}
 
 }
