@@ -9,7 +9,7 @@
 		<version>0.13.1-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>universal-gpl</artifactId>
-	<name>UniversalGPL</name>
-	<description>Basic GPL license distributor to be utilised by other projects through shading.</description>
+	<artifactId>universal-agpl</artifactId>
+	<name>UniversalAGPL</name>
+	<description>Basic AGPL license distributor to be utilised by other projects through shading.</description>
 </project>

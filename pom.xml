@@ -106,6 +106,7 @@
 	
 	<modules>
 		<module>gpl</module>
+		<module>agpl</module>
 		<module>util</module>
 		<module>events</module>
 		<module>registry</module>
