@@ -39,10 +39,11 @@ public class ArraysUtilTest {
 	@Test
 	public void testExpandAndInsertSorted() {
 		Random r = ThreadLocalRandom.current();
-		Integer[] source = randomExponentialArray(3 + r.nextInt(8), 3 + r.nextInt(8));
+		Integer[] source = randomExponentialArray(3 + r.nextInt(6), 3 + r.nextInt(6));
 		Integer element = source[0] + 1;
 		int binarySearch = Arrays.binarySearch(source, element);
 		int insertionIndex = - (binarySearch + 1);
+		assertEquals(1, insertionIndex);
 		assertArrayIsSorted(ArraysUtil.expandAndInsert(source, element, insertionIndex));
 	}
 	
