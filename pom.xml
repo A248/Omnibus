@@ -110,6 +110,7 @@
 		<module>util</module>
 		<module>events</module>
 		<module>registry</module>
+		<module>all-shaded</module>
 	</modules>
 	
 	<distributionManagement>
@@ -125,6 +126,7 @@
 	
 	<dependencyManagement>
 		<dependencies>
+			<!-- Own Dependencies -->
 			<dependency>
 				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-util</artifactId>
@@ -133,6 +135,16 @@
 			<dependency>
 				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-events</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-registry</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-gpl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- Test Dependencies -->
