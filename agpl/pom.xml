@@ -10,6 +10,6 @@
 	</parent>
 
 	<artifactId>universal-agpl</artifactId>
-	<name>UniversalAGPL</name>
+	<name>Universal-AGPL</name>
 	<description>Basic AGPL license distributor to be utilised by other projects through shading.</description>
 </project>

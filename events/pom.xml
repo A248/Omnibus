@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-events</artifactId>
-	<name>UniversalEvents</name>
+	<name>Universal-Events</name>
 	<description>A common server event-handling API regardless of environmental specifics.</description>
 	
 	<dependencies>

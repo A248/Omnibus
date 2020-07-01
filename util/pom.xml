@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-util</artifactId>
-	<name>UniversalUtil</name>
+	<name>Universal-Util</name>
 	<description>Provides simple yet effective multithreaded utilities.</description>
 	
 	<dependencies>

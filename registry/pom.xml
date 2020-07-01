@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-registry</artifactId>
-	<name>UniversalRegistry</name>
+	<name>Universal-Registry</name>
 	<description>UniversalRegistry is a common registry for Bukkit/Spigot/BungeeCord plugin resources, much like Bukkit's service registration API.</description>
 	
 	<dependencies>

@@ -10,6 +10,6 @@
 	</parent>
 
 	<artifactId>universal-gpl</artifactId>
-	<name>UniversalGPL</name>
+	<name>Universal-GPL</name>
 	<description>Basic GPL license distributor to be utilised by other projects through shading.</description>
 </project>
