@@ -36,7 +36,14 @@ public class CompetitiveFuture<T> extends CompletableFuture<T> {
 
 	private final Executor defaultExecutor;
 	
-	private CompetitiveFuture(Executor defaultExecutor) {
+	/**
+	 * Creates an incomplete future from the default executor to use. <br>
+	 * <br>
+	 * If the executor is {@code null}, the common ForkJoinPool is used.
+	 * 
+	 * @param defaultExecutor the default executor for asynchronous operations
+	 */
+	public CompetitiveFuture(Executor defaultExecutor) {
 		this.defaultExecutor = (defaultExecutor != null) ? defaultExecutor : ForkJoinPool.commonPool();
 	}
 	
@@ -52,11 +59,11 @@ public class CompetitiveFuture<T> extends CompletableFuture<T> {
 	
 	/**
 	 * Runs an action asynchronously. See {@link CompletableFuture#runAsync(Runnable)}. <br>
-	 * If the specified default executor is null, <code>ForkJoinPool.commonPool()</code> is used.
+	 * If the specified default executor is null, the common ForkJoinPool is used.
 	 * 
 	 * @param command what to do
-	 * @param defaultExecutor the default executor, used for async methods not specifying an executor
-	 * @return a completable future corresponding to the progress of the action
+	 * @param defaultExecutor the default executor used for async methods not specifying an executor
+	 * @return a competitive future running the specified command
 	 */
 	public static CompetitiveFuture<Void> runAsync(Runnable command, Executor defaultExecutor) {
 		Objects.requireNonNull(command, "Runnable must not be null");
@@ -68,15 +75,43 @@ public class CompetitiveFuture<T> extends CompletableFuture<T> {
 	
 	/**
 	 * Supplies a value asynchronously. See {@link CompletableFuture#supplyAsync(Supplier)}. <br>
-	 * If the specified default executor is null, <code>ForkJoinPool.commonPool()</code> is used.
+	 * If the specified default executor is null, the common ForkJoinPool is used.
 	 * 
 	 * @param <T> the type of the future
 	 * @param supplier the supplier from which to get the value
-	 * @param defaultExecutor the default executor, used for async methods not specifying an executor
-	 * @return a completable future corresponding to the progress of the action
+	 * @param defaultExecutor the default executor used for async methods not specifying an executor
+	 * @return a competitive future supplying a value via the specified supplier
 	 */
 	public static <T> CompetitiveFuture<T> supplyAsync(Supplier<T> supplier, Executor defaultExecutor) {
 		return (CompetitiveFuture<T>) new CompetitiveFuture<T>(defaultExecutor).completeAsync(supplier);
+	}
+	
+	/**
+	 * Creates a precompleted future with the specified value.
+	 * 
+	 * @param <T> the type of the future
+	 * @param value the value with which to complete it
+	 * @param defaultExecutor the default executor used for async methods not specifying an executor
+	 * @return a competitive future completed with the specified value
+	 */
+	public static <T> CompetitiveFuture<T> completedFuture(T value, Executor defaultExecutor) {
+		CompetitiveFuture<T> result = new CompetitiveFuture<>(defaultExecutor);
+		result.complete(value);
+		return result;
+	}
+	
+	/**
+	 * Creates a future completed exceptionally with the specified exception.
+	 * 
+	 * @param <T> the type of the future
+	 * @param ex the exception with which to complete it
+	 * @param defaultExecutor the default executor, used for async methods not specifying an executor
+	 * @return a competitive future completed exceptionally with the specified exception
+	 */
+	public static <T> CompetitiveFuture<T> failedFuture(Throwable ex, Executor defaultExecutor) {
+		CompetitiveFuture<T> result = new CompetitiveFuture<>(defaultExecutor);
+		result.completeExceptionally(ex);
+		return result;
 	}
 	
 }
