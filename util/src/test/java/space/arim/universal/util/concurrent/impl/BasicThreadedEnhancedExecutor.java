@@ -18,10 +18,10 @@
  */
 package space.arim.universal.util.concurrent.impl;
 
-public class BasicThreadedEnhancedExecutor extends SelfSchedulingEnhancedExecutor {
+public class BasicThreadedEnhancedExecutor extends SimplifiedEnhancedExecutor {
 
 	BasicThreadedEnhancedExecutor() {
-		start();
+		
 	}
 	
 	@Override
