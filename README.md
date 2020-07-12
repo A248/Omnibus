@@ -9,7 +9,7 @@ Download the plugin.
 
 ## For Developers ##
 
-The group and artifact IDs are:
+The group and artifact IDs of the main components are:
 
 ```
 space.arim.universal:universal-registry
@@ -18,6 +18,8 @@ space.arim.universal:universal-util
 ```
 
 The repository URL is `https://www.arim.space/maven/`.
+
+For convenience, all of the components are additionally shaded in `universal-all-shaded`.
 
 ### Maven
 
