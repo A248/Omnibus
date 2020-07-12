@@ -18,38 +18,35 @@
  */
 package space.arim.universal.util.concurrent;
 
+import java.util.function.LongUnaryOperator;
+
 /**
- * Provides default implementations for {@link EnhancedExecutor}'s scheduling methods' delay functions. <br>
- * <br>
- * Recall that "Advanced" operators take into account execution time, while "Simple" operators do not. <br>
- * Also, note that delay functions are applied after each execution. The first delay is determined by the initial
- * delay passed as a parameter to the scheduling methods themselves. Therefore,
- * <code>executor.schedule(this::runSomeTask, 5, DelayFunctions.exponential(2), TimeUnit.SECONDS)</code>, where <code>executor</code>
- * is an instance of <code>EnhancedExecutor</code>, will schedule some task so that, after five seconds, it is executed,
- * then there is a 10 second delay before the next execution, then a 20 second delay, etc. <br>
+ * Provides default implementations for {@link DelayCalculator}, which determines delays for {@link EnhancedExecutor}'s
+ * repeated scheduling methods. <br>
  * <br>
  * Fixed delay: {@link #fixedDelay()} <br>
  * Fixed rate: {@link #fixedRate()} <br>
- * Variable rate: {@link #variableRate(SimpleDelayCalculator)} <br>
- * Linear delay: {@link #linear(long)} <br>
- * Exponential delay: {@link #exponential(long)} <br>
- * Logarithmic delay: {@link #logarithmic(long)}
+ * Variable rate: {@link #variableRate(LongUnaryOperator)}
  * 
  * @author A248
  *
  */
-public final class DelayFunctions {
+public final class DelayCalculators {
+	
+	private static final DelayCalculator FIXED_DELAY_CALCULATOR = (d, ignore) -> d;
 
+	private static final DelayCalculator FIXED_RATE_CALCULATOR = variableRate(LongUnaryOperator.identity());
+	
 	// Prevent instantiation
-	private DelayFunctions() {}
+	private DelayCalculators() {}
 	
 	/**
 	 * Schedules at a constant delay <i>between</i> executions.
 	 * 
 	 * @return a delay function which yields the same delay
 	 */
-	public static SimpleDelayCalculator fixedDelay() {
-		return (d) -> (d);
+	public static DelayCalculator fixedDelay() {
+		return FIXED_DELAY_CALCULATOR;
 	}
 	
 	/**
@@ -70,13 +67,13 @@ public final class DelayFunctions {
 	 * 
 	 * @return a delay function which yields the same rate of delay
 	 */
-	public static AdvancedDelayCalculator fixedRate() {
-		return variableRate(fixedDelay());
+	public static DelayCalculator fixedRate() {
+		return FIXED_RATE_CALCULATOR;
 	}
 	
 	/**
 	 * A more complicated version of {@link #fixedRate()}. Execution initiates at intervals
-	 * determined by the rate function. <br>
+	 * determined by the rate function, which acts on time units in nanoseconds. <br>
 	 * <br>
 	 * Attempts to compensate for execution time in calculating the next delay.
 	 * The goal is to achieve the rate of scheduling determined by the latest application of the rate function. <br>
@@ -86,54 +83,14 @@ public final class DelayFunctions {
 	 * 2. Temporarily accelerate future executions in order to "correct" any waverings from the rates desired.
 	 * Thus, if a single execution takes a long time, it will not permanently ruin the rate. <br>
 	 * <br>
-	 * The rate function takes the last rate and calculates the next rate. Thus, programmers
-	 * may combine other methods in this class to produce whatsoever rate they choose. <br>
-	 * For example, <code>DelayFunctions.variableRate(DelayFunctions.exponential(2))</code>
-	 * would produce a rate which doubles after each execution.
+	 * The rate function takes the last rate, in nanoseconds, and calculates the next rate, also in
+	 * nanoseconds.
 	 * 
 	 * @param rateFunction the rate determining function
 	 * @return a delay function which yields a rate of delay as specified by the rate function
 	 */
-	public static AdvancedDelayCalculator variableRate(SimpleDelayCalculator rateFunction) {
+	public static DelayCalculator variableRate(LongUnaryOperator rateFunction) {
 		return new VariableRateFunction(rateFunction);
-	}
-	
-	/**
-	 * A linearly increasing delay. <br>
-	 * The delay is incremented each invocation by the slope. <br>
-	 * The function may be made decreasing by specifying a negative slope; note
-	 * that a negative delay indicates that the task halt further scheduling entirely.
-	 * 
-	 * @param slope the amount to add each invocation
-	 * @return a linear delay function
-	 */
-	public static SimpleDelayCalculator linear(long slope) {
-		return (previousDelay) -> previousDelay + slope;
-	}
-	
-	/**
-	 * An exponentially increasing delay. <br>
-	 * <br>
-	 * The delay is multiplied each invocation by the base. <br>
-	 * The function may be made decreasing by specifying a base less than 1.
-	 * 
-	 * @param base the amount by which to multiply each invocation
-	 * @return an exponential delay function
-	 */
-	public static SimpleDelayCalculator exponential(long base) {
-		return (previousDelay) -> previousDelay*base;
-	}
-	
-	/**
-	 * A logarithmically increasing delay, computed as follows: <br>
-	 * Let <i>x</i> be the previous delay and <i>b</i> be the specified base.
-	 * The result is <code>ln(b^x+1)/lnb</code>. <br>
-	 * 
-	 * @param base the logarithmic base
-	 * @return a logarithmic delay function
-	 */
-	public static SimpleDelayCalculator logarithmic(long base) {
-		return (previousDelay) -> (long) (Math.log(base^previousDelay + 1)/Math.log(base));
 	}
 	
 }
@@ -146,13 +103,13 @@ public final class DelayFunctions {
  * @author A248
  *
  */
-class VariableRateFunction implements AdvancedDelayCalculator {
+class VariableRateFunction implements DelayCalculator {
 	
 	/**
 	 * The rate determining function
 	 * 
 	 */
-	private final SimpleDelayCalculator rateFunction;
+	private final LongUnaryOperator rateFunction;
 	
 	/**
 	 * The rate we want to schedule at, starts at {@literal -}1 to indicate unknown.
@@ -167,26 +124,21 @@ class VariableRateFunction implements AdvancedDelayCalculator {
 	 */
 	private volatile long offset = 0;
 	
-	VariableRateFunction(SimpleDelayCalculator rateFunction) {
+	VariableRateFunction(LongUnaryOperator rateFunction) {
 		this.rateFunction = rateFunction;
 	}
 	
 	@Override
-	public long calculateNext(long previousDelay, long executionTime) {
-		/*
-		 * If this is the first invocation, we have to determine the initial rate
-		 * otherwise, we'll use the rate function to calculate the next rate
-		 * 
-		 */
+	public long calculateNextDelay(long previousDelay, long executionTime) {
 		long rate = this.rate;
 		if (rate == -1L) {
+			// If this is the first invocation, determine the initial rate
 			rate = previousDelay;
-		} else {
-			rate = rateFunction.calculateNext(rate);
-			if (rate < 0) {
-				// rate-determining function decided to cancel
-				return -1L;
-			}
+		}
+		rate = rateFunction.applyAsLong(rate);
+		if (rate < 0) {
+			// rate-determining function decided to cancel
+			return -1L;
 		}
 		this.rate = rate;
 
