@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-platform-bungee</artifactId>
-	<name>Universal-platform-bungee</name>
+	<name>Universal-Platform-bungee</name>
 	<description>The BungeeCord adapter component.</description>
 	
 	<dependencies>

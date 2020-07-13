@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-platform-core</artifactId>
-	<name>Universal-platform-core</name>
+	<name>Universal-Platform-core</name>
 	<description>The adapter component interfaces.</description>
 	
 	<dependencies>

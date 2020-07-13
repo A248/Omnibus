@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-platform-bukkit</artifactId>
-	<name>Universal-platform-bukkit</name>
+	<name>Universal-Platform-bukkit</name>
 	<description>The Bukkit adapter component.</description>
 	
 	<dependencies>

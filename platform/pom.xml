@@ -11,7 +11,7 @@
 	
 	<artifactId>universal-platform</artifactId>
 	<packaging>pom</packaging>
-	<name>Universal-platform</name>
+	<name>Universal-Platform</name>
 	<description>The platform adapter parent component.</description>
 	
 	<properties>

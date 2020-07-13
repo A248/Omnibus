@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-platform-sponge</artifactId>
-	<name>Universal-platform-sponge</name>
+	<name>Universal-Platform-sponge</name>
 	<description>The Sponge adapter component.</description>
 	
 	<dependencies>

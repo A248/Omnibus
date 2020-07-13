@@ -10,7 +10,7 @@
 	</parent>
 	
 	<artifactId>universal-platform-velocity</artifactId>
-	<name>Universal-platform-velocity</name>
+	<name>Universal-Platform-velocity</name>
 	<description>The Velocity adapter component.</description>
 	
 	<dependencies>
