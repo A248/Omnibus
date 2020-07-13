@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>space.arim.universal</groupId>
+		<artifactId>universal-parent</artifactId>
+		<version>0.13.4-SNAPSHOT</version>
+	</parent>
+	
+	<artifactId>universal-platform</artifactId>
+	<packaging>pom</packaging>
+	<name>Universal-platform</name>
+	<description>The platform adapter parent component.</description>
+	
+	<properties>
+		<spigot.version>1.8.8-R0.1-SNAPSHOT</spigot.version>
+		<bungeecord.version>1.15-SNAPSHOT</bungeecord.version>
+		<sponge.version>7.2.0</sponge.version>
+		<velocity.version>1.1.0-SNAPSHOT</velocity.version>
+	</properties>
+	
+	<modules>
+		<module>core</module>
+		<module>bukkit</module>
+		<module>bungee</module>
+		<module>sponge</module>
+		<module>velocity</module>
+	</modules>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-platform-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>		
+			<dependency>
+				<groupId>org.spigotmc</groupId>
+				<artifactId>spigot-api</artifactId>
+				<version>${spigot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.md-5</groupId>
+				<artifactId>bungeecord-api</artifactId>
+				<version>${bungeecord.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.spongepowered</groupId>
+				<artifactId>spongeapi</artifactId>
+				<version>${sponge.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.velocitypowered</groupId>
+				<artifactId>velocity-api</artifactId>
+				<version>${velocity.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>

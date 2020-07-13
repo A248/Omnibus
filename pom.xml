@@ -120,6 +120,7 @@
 		<module>util</module>
 		<module>events</module>
 		<module>registry</module>
+		<module>platform</module>
 		<module>all-shaded</module>
 	</modules>
 	
@@ -155,6 +156,26 @@
 			<dependency>
 				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-gpl</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-platform-bukkit</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-platform-bungee</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-platform-sponge</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-platform-velocity</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- Test Dependencies -->
