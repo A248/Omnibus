@@ -18,6 +18,8 @@
  */
 package space.arim.universal.platform;
 
+import java.util.Objects;
+
 /**
  * Registration of platform-specific objects which is automatically created for
  * whichever caller defined the {@link space.arim.universal.registry.Registry
@@ -43,7 +45,7 @@ package space.arim.universal.platform;
  * @param <P> the type of the platform-specific plugin object
  * @param <S> the type of the platform-specific server object
  */
-public class PlatformRegistryDefiner<P, S> {
+public final class PlatformRegistryDefiner<P, S> {
 
 	private final P plugin;
 	private final S server;
@@ -51,12 +53,12 @@ public class PlatformRegistryDefiner<P, S> {
 	/**
 	 * Creates from a platform-specific plugin and server
 	 * 
-	 * @param plugin the platform-specific plugin
-	 * @param server the platform-specific server
+	 * @param plugin the platform-specific plugin, must not be null
+	 * @param server the platform-specific server, must not be null
 	 */
 	public PlatformRegistryDefiner(P plugin, S server) {
-		this.plugin = plugin;
-		this.server = server;
+		this.plugin = Objects.requireNonNull(plugin, "Plugin must not be null");
+		this.server = Objects.requireNonNull(server, "Server must not be null");
 	}
 	
 	/**
@@ -75,6 +77,32 @@ public class PlatformRegistryDefiner<P, S> {
 	 */
 	public S getServer() {
 		return server;
+	}
+
+	@Override
+	public String toString() {
+		return "PlatformRegistryDefiner [plugin=" + plugin + ", server=" + server + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + plugin.hashCode();
+		result = prime * result + server.hashCode();
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		}
+		if (!(object instanceof PlatformRegistryDefiner<?,?>)) {
+			return false;
+		}
+		PlatformRegistryDefiner<?,?> other = (PlatformRegistryDefiner<?,?>) object;
+		return plugin.equals(other.plugin) && server.equals(other.server);
 	}
 	
 }
