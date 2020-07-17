@@ -121,6 +121,7 @@
 		<module>events</module>
 		<module>registry</module>
 		<module>platform</module>
+		<module>all</module>
 		<module>all-shaded</module>
 	</modules>
 	
@@ -176,6 +177,11 @@
 			<dependency>
 				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-platform-velocity</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-all</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- Test Dependencies -->
