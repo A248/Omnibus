@@ -94,6 +94,9 @@ public class UniversalEvents implements Events {
 						try {
 							listener.invoke(cancellable);
 						} catch (Throwable ex) {
+							if (ex instanceof Error) {
+								throw (Error) ex;
+							}
 							ex.printStackTrace();
 						}
 					}
@@ -107,6 +110,9 @@ public class UniversalEvents implements Events {
 						try {
 							listener.invoke(event);
 						} catch (Throwable ex) {
+							if (ex instanceof Error) {
+								throw (Error) ex;
+							}
 							ex.printStackTrace();
 						}
 					}
