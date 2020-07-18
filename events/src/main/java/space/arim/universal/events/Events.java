@@ -21,12 +21,13 @@ package space.arim.universal.events;
 import java.util.function.Consumer;
 
 /**
- * A framework for firing events and listening to them. <b>For an implementation, use {@link UniversalEvents}</b> <br>
+ * A framework for firing events and listening to them. For an implementation, see {@link UniversalEvents} <br>
  * <br>
- * To listen to events, first create an object implementing {@link Listener} with listening methods. All listening methods
+ * To listen to events, use {@link #registerListener(Class, byte, Consumer)}. The returned {@code Listener}
+ * may be unregistered later. <br>
+ * <br>
+ * Alternatively, create an object implementing {@link Listener} with listening methods. All listening methods
  * must be annotated with {@link Listen}. Then, register the listener using {@link #registerListener(Listener)}. <br>
- * <br>
- * To listen to events dynamically, use {@link #registerListener(Class, byte, Consumer)}. <br>
  * <br>
  * To fire events, implement {@link Event} on the event object. Construct such an object and call {@link #fireEvent(Event)}.
  * 
