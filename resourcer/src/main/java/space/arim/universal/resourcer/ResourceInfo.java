@@ -25,7 +25,7 @@ import java.util.Objects;
  * 
  * @author A248
  *
- * @param <T>
+ * @param <T> the resource type
  */
 public final class ResourceInfo<T> {
 
