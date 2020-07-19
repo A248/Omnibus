@@ -24,6 +24,10 @@
 		</dependency>
 		<dependency>
 			<groupId>space.arim.universal</groupId>
+			<artifactId>universal-resourcer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>space.arim.universal</groupId>
 			<artifactId>universal-platform-bukkit</artifactId>
 		</dependency>
 		<dependency>

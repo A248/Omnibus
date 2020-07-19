@@ -120,6 +120,7 @@
 		<module>util</module>
 		<module>events</module>
 		<module>registry</module>
+		<module>resourcer</module>
 		<module>platform</module>
 		<module>all</module>
 		<module>all-shaded</module>
@@ -152,6 +153,11 @@
 			<dependency>
 				<groupId>space.arim.universal</groupId>
 				<artifactId>universal-registry</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>space.arim.universal</groupId>
+				<artifactId>universal-resourcer</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
