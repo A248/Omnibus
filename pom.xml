@@ -3,15 +3,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>space.arim.universal</groupId>
-	<artifactId>universal-parent</artifactId>
-	<!-- Remember to update  versions in all child modules -->
+	<groupId>space.arim.omnibus</groupId>
+	<artifactId>omnibus-parent</artifactId>
 	<version>0.14.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
-	<name>Universal</name>
-	<description>Parent module for UniversalRegistry</description>
-	<url>https://github.com/A248/UniversalRegistry</url>
+	<name>Omnibus</name>
+	<description>Parent module for Omnibus</description>
+	<url>https://github.com/A248/Omnibus</url>
 	<inceptionYear>2019</inceptionYear>
 	
 	<properties>
@@ -100,6 +99,7 @@
 					<version>3.0.0-M5</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
+						<argLine>-Xverify:none -XX:TieredStopAtLevel=1 -XX:-TieredCompilation</argLine>
 					</configuration>
 					<dependencies>
 						<dependency>
@@ -115,15 +115,14 @@
 	</build>
 	
 	<modules>
-		<module>gpl</module>
-		<module>agpl</module>
+		<module>licenses</module>
 		<module>util</module>
 		<module>events</module>
 		<module>registry</module>
 		<module>resourcer</module>
-		<module>platform</module>
+		<!--<module>core</module>
 		<module>all</module>
-		<module>all-shaded</module>
+		<module>all-shaded</module>-->
 	</modules>
 	
 	<distributionManagement>
@@ -141,53 +140,33 @@
 		<dependencies>
 			<!-- Own Dependencies -->
 			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-util</artifactId>
+				<groupId>space.arim.omnibus</groupId>
+				<artifactId>omnibus-util</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-events</artifactId>
+				<groupId>space.arim.omnibus</groupId>
+				<artifactId>omnibus-events</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-registry</artifactId>
+				<groupId>space.arim.omnibus</groupId>
+				<artifactId>omnibus-registry</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-resourcer</artifactId>
+				<groupId>space.arim.omnibus</groupId>
+				<artifactId>omnibus-resourcer</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-gpl</artifactId>
+				<groupId>space.arim.omnibus</groupId>
+				<artifactId>omnibus-gpl</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-platform-bukkit</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-platform-bungee</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-platform-sponge</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-platform-velocity</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim.universal</groupId>
-				<artifactId>universal-all</artifactId>
+				<groupId>space.arim.omnibus</groupId>
+				<artifactId>omnibus-all</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<!-- Test Dependencies -->
@@ -200,10 +179,10 @@
 		</dependencies>
 	</dependencyManagement>
 	
-	<repositories>
+	<!-- <repositories>
 		<repository>
 			<id>arim-repo</id>
 			<url>https://www.arim.space/maven/</url>
 		</repository>
-	</repositories>
+	</repositories>  -->
 </project>

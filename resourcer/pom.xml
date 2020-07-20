@@ -4,18 +4,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-		<groupId>space.arim.universal</groupId>
-		<artifactId>universal-parent</artifactId>
+		<groupId>space.arim.omnibus</groupId>
+		<artifactId>omnibus-parent</artifactId>
 		<version>0.14.3-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>universal-resourcer</artifactId>
-	<name>Universal-Resourcer</name>
+	<artifactId>omnibus-resourcer</artifactId>
+	<name>Omnibus-Resourcer</name>
+	<description>Resource marshaller designed to avoid duplication.</description>
 	
 	<dependencies>
 		<dependency>
-			<groupId>space.arim.universal</groupId>
-			<artifactId>universal-events</artifactId>
+			<groupId>space.arim.omnibus</groupId>
+			<artifactId>omnibus-events</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

@@ -4,19 +4,19 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
-		<groupId>space.arim.universal</groupId>
-		<artifactId>universal-parent</artifactId>
+		<groupId>space.arim.omnibus</groupId>
+		<artifactId>omnibus-parent</artifactId>
 		<version>0.14.3-SNAPSHOT</version>
 	</parent>
 	
 	<artifactId>universal-registry</artifactId>
-	<name>Universal-Registry</name>
-	<description>UniversalRegistry is a common registry for Bukkit/Spigot/BungeeCord plugin resources, much like Bukkit's service registration API.</description>
+	<name>Omnibus-Registry</name>
+	<description>Common services registry.</description>
 	
 	<dependencies>
 		<dependency>
-			<groupId>space.arim.universal</groupId>
-			<artifactId>universal-events</artifactId>
+			<groupId>space.arim.omnibus</groupId>
+			<artifactId>omnibus-events</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
