@@ -9,9 +9,12 @@
 		<version>0.14.3-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>omnibus-registry</artifactId>
-	<name>Omnibus-Registry</name>
-	<description>Common services registry.</description>
+	<artifactId>omnibus-core</artifactId>
+	<name>Omnibus-Core</name>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+	</build>
 	
 	<dependencies>
 		<dependency>
@@ -19,9 +22,12 @@
 			<artifactId>omnibus-events</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
+			<groupId>space.arim.omnibus</groupId>
+			<artifactId>omnibus-registry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>space.arim.omnibus</groupId>
+			<artifactId>omnibus-resourcer</artifactId>
 		</dependency>
 	</dependencies>
 </project>

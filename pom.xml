@@ -120,9 +120,9 @@
 		<module>events</module>
 		<module>registry</module>
 		<module>resourcer</module>
-		<!--<module>core</module>
+		<module>core</module>
 		<module>all</module>
-		<module>all-shaded</module>-->
+		<module>all-shaded</module>
 	</modules>
 	
 	<distributionManagement>
