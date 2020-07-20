@@ -1,5 +1,5 @@
 # Omnibus
-A powerful framework for events, resource registrations, and multi-threaded utilities.
+A multitude of critical frameworks and utilities.
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/A248/Omnibus.svg)](https://github.com/A248/Omnibus/commits/master)[![Issue Resolution Time](http://isitmaintained.com/badge/resolution/A248/Omnibus.svg)](http://isitmaintained.com/project/A248/Omnibus "Average time to resolve an issue")[![Open Issues](http://isitmaintained.com/badge/open/A248/Omnibus.svg)](http://isitmaintained.com/project/A248/Omnibus "Percentage of issues still open")[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0-standalone.html)
 
