@@ -32,7 +32,9 @@ package space.arim.universal.util;
  * <code>private static final Logger logger = LoggerFactory.getLogger(ThisClass.get());</code> <br>
  * <br>
  * The improved code uses <code>ThisClass.get()</code> instead of the class literal, and thus may be copied
- * and pasted at will with no fear of error.
+ * and pasted at will with no fear of error. <br>
+ * <br>
+ * Moreover, <code>ThisClass.get()</code> is more readable than the alternative <code>MethodHandles.lookup().lookupClass()</code>.
  * 
  * @author A248
  *
