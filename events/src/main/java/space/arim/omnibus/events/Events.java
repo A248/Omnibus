@@ -84,7 +84,7 @@ public interface Events {
 	 * @return a listener which may be unregistered when necessary
 	 * @throws NullPointerException if the event class or listener is null
 	 */
-	<E extends Event> Listener registerListener(Class<E> event, byte priority, Consumer<? super E> listener);
+	<E extends Event> Listener registerListener(Class<E> event, byte priority, EventConsumer<? super E> listener);
 	
 	/**
 	 * Unregister an object from any listening. <br>
