@@ -19,9 +19,9 @@
 package space.arim.omnibus.events;
 
 /**
- * Class containing priority constants for referential use
- * 
- * <br><br>See {@link Listen#priority()}
+ * Class containing priority constants for referential use. Use of these constants is optional. <br>
+ * <br>
+ * See {@link EventBus#registerListener(Class, byte, EventConsumer)} for information on priorities.
  * 
  * @author A248
  */

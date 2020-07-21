@@ -24,8 +24,14 @@ package space.arim.omnibus.events;
  * To listen to events, use {@link #registerListener(Class, byte, EventConsumer)}. The returned {@code Listener}
  * may be unregistered later. <br>
  * <br>
- * Alternatively, create an object implementing {@link RegisteredListener} with listening methods. All listening methods
- * must be annotated with {@link Listen}. Then, register the listener using {@link #registerListener(RegisteredListener)}. <br>
+ * The event bus has guarantees regarding inheritance of events. When an event is fired, every listener which
+ * specified an event type which is assignment compatible with the event object will be invoked. That is,
+ * the listener will be called if the event is an instance of the specified event type. <br>
+ * <br>
+ * Note well that, unlike some other event buses, implementations are required to provide consistent ordering
+ * of all listeners invoked by this method according to their priorities, as opposed to merely ordering within
+ * listeners specifying a certain event class. Thus, all applicable listeners to an event are <i>always</i>
+ * invoked in order of priority, no matter which event nor its inheritance heirarchy. <br>
  * <br>
  * To fire events, implement {@link Event} on the event object. Construct such an object and call {@link #fireEvent(Event)}.
  * 
@@ -38,18 +44,12 @@ public interface EventBus {
 	 * Fires an event, invoking all applicable listeners. <br>
 	 * <br>
 	 * For any listener, if the event fired is an instance of the listener's targeted event class,
-	 * as specified in either the parameter type of {@link Listen} or the event class
-	 * passed to {@link #registerListener(Class, byte, EventConsumer)}, the listener will be invoked. <br>
-	 * <br>
-	 * If the event is a {@link Cancellable} and was cancelled, this method will return <code>false</code>.
-	 * Otherwise, it will return <code>true</code>
+	 * as specified by the event class passed to {@link #registerListener(Class, byte, EventConsumer)},
+	 * the listener will be invoked.
 	 * 
 	 * @param <E> the event type
 	 * @param event the event itself
-	 * @return false if the event is a Cancellable and was cancelled, true otherwise
 	 * @throws NullPointerException if the event is null
-	 * 
-	 * @see Cancellable
 	 */
 	<E extends Event> void fireEvent(E event);
 	
@@ -58,11 +58,16 @@ public interface EventBus {
 	 * The returned listener may be unregistered when desired. <br>
 	 * <br>
 	 * The same {@link EventConsumer} may be used to create a registered listener via this method multiple times without issue.
-	 * It may even be used with the same priority for the same event.
+	 * It may even be used with the same priority for the same event. <br>
+	 * <br>
+	 * The priority determines the order in which listeners are called. Lower priorities are called first. See the class javadoc
+	 * for more information on priorities. <br>
+	 * <br>
+	 * The event class specifies all events the listener will listen to. See the class javadoc for more information.
 	 * 
 	 * @param <E> the event type
 	 * @param event the event class
-	 * @param priority the priority at which the listener listens, same as in {@link Listen}
+	 * @param priority the priority at which the listener listens
 	 * @param evtConsumer the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
 	 * @throws NullPointerException if the event class or listener is null
