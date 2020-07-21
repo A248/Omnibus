@@ -30,13 +30,13 @@ import space.arim.omnibus.defaultimpl.DefaultOmnibus;
  */
 public final class OmnibusProvider {
 
-	private static final Omnibus INSTANCE;
+	private static final OmnibusProviderSpi PROVIDER;
 	
 	private OmnibusProvider() {}
 	
 	static {
-		ServiceLoader<Omnibus> loader = ServiceLoader.load(Omnibus.class, OmnibusProvider.class.getClassLoader());
-		INSTANCE = loader.findFirst().orElseGet(DefaultOmnibus::new);
+		ServiceLoader<OmnibusProviderSpi> loader = ServiceLoader.load(OmnibusProviderSpi.class);
+		PROVIDER = loader.findFirst().orElseGet(DefaultOmnibusProvider::new);
 	}
 	
 	/**
@@ -44,8 +44,25 @@ public final class OmnibusProvider {
 	 * 
 	 * @return the {@code Omnibus} instance
 	 */
-	public static Omnibus getInstance() {
-		return INSTANCE;
+	public static Omnibus getOmnibus() {
+		Class<?> caller = (PROVIDER.requiresCallerClass()) ? WalkerHolder.WALKER.getCallerClass() : null;
+		return PROVIDER.getOmnibusSingleton(caller);
+	}
+	
+	private static class DefaultOmnibusProvider implements OmnibusProviderSpi {
+		private final Omnibus inst = new DefaultOmnibus();
+		@Override
+		public Omnibus getOmnibusSingleton(Class<?> callerClass) {
+			return inst;
+		}
+		@Override
+		public boolean requiresCallerClass() {
+			return false;
+		}
+	}
+	
+	private static class WalkerHolder {
+		static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 	}
 	
 }
