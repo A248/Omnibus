@@ -18,13 +18,13 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-import space.arim.omnibus.events.EventPriority;
+import space.arim.omnibus.events.ListenerPriorities;
 import space.arim.omnibus.events.Listen;
 import space.arim.omnibus.events.Listener;
 
 public class IncrementingTestListener implements Listener {
 
-	@Listen(priority = EventPriority.NORMAL)
+	@Listen(priority = ListenerPriorities.NORMAL)
 	public void listenTo(TestEventWithInteger te) {
 		te.someValue = te.someValue + 1;
 	}

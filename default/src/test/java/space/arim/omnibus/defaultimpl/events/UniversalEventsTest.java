@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import space.arim.omnibus.events.EventConsumer;
-import space.arim.omnibus.events.EventPriority;
+import space.arim.omnibus.events.ListenerPriorities;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.Listener;
 
@@ -48,7 +48,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testModifyEventValueDynamic() {
-		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
+		events.registerListener(TestEventWithInteger.class, ListenerPriorities.LOW, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
 
@@ -79,10 +79,10 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testMaintainOrderDynamic() {
-		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+		events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, (te) -> {
 			te.someValue = te.someValue + 1;
 		});
-		events.registerListener(TestEventWithInteger.class, EventPriority.HIGH, (te) -> {
+		events.registerListener(TestEventWithInteger.class, ListenerPriorities.HIGH, (te) -> {
 			te.someValue = te.someValue * 2;
 		});
 		TestEventWithInteger te = new TestEventWithInteger(0);
@@ -112,7 +112,7 @@ public class UniversalEventsTest {
 		String initial = "spacey spaces";
 		String result = StringOperatorTestListener.OPERATOR.apply(initial);
 
-		Listener listener = events.registerListener(TestEventWithString.class, EventPriority.HIGHEST, (evt) -> {
+		Listener listener = events.registerListener(TestEventWithString.class, ListenerPriorities.HIGHEST, (evt) -> {
 			evt.str = StringOperatorTestListener.OPERATOR.apply(evt.str);
 		});
 		TestEventWithString tews1 = new TestEventWithString(initial);
@@ -135,7 +135,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testSubclassedEventsDynamic() {
-		events.registerListener(TestEventWithInteger.class, EventPriority.LOW, (te) -> {
+		events.registerListener(TestEventWithInteger.class, ListenerPriorities.LOW, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
 
@@ -157,8 +157,8 @@ public class UniversalEventsTest {
 		EventConsumer<TestEventWithInteger> consumer = (te) -> {
 			te.someValue = te.someValue + 1;
 		};
-		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, consumer);
-		events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, consumer);
+		events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, consumer);
+		events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, consumer);
 		TestEventWithInteger te = new TestEventWithInteger(1);
 		events.fireEvent(te);
 		assertEquals(3, te.someValue); // 1 + 1 + 1 = 3
@@ -175,7 +175,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testDuplicateRegisterDynamic() {
-		Listener listener = events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+		Listener listener = events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
 		events.registerListener(listener); // should be no-op
@@ -202,7 +202,7 @@ public class UniversalEventsTest {
 	
 	@Test
 	public void testAlreadyUnregisterDynamic() {
-		Listener listener = events.registerListener(TestEventWithInteger.class, EventPriority.NORMAL, (te) -> {
+		Listener listener = events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, (te) -> {
 			te.someValue = IntOperatorTestListener.OPERATOR.applyAsInt(te.someValue);
 		});
 		events.unregisterListener(listener);

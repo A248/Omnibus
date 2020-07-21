@@ -18,13 +18,13 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-import space.arim.omnibus.events.EventPriority;
+import space.arim.omnibus.events.ListenerPriorities;
 import space.arim.omnibus.events.Listen;
 import space.arim.omnibus.events.Listener;
 
 public class DoublingIncrementingTestListener implements Listener {
 
-	@Listen(priority = EventPriority.HIGH)
+	@Listen(priority = ListenerPriorities.HIGH)
 	public void listenTo(TestEventWithInteger te) {
 		te.someValue = te.someValue * 2;
 	}

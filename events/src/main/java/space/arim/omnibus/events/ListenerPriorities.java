@@ -25,7 +25,7 @@ package space.arim.omnibus.events;
  * 
  * @author A248
  */
-public final class EventPriority {
+public final class ListenerPriorities {
 
 	public static final byte LOWEST = (byte) -96;
 	public static final byte LOWER = (byte) -64;
@@ -35,6 +35,6 @@ public final class EventPriority {
 	public static final byte HIGHER = (byte) 63;
 	public static final byte HIGHEST = (byte) 95;
 	
-	private EventPriority() {}
+	private ListenerPriorities() {}
 	
 }
