@@ -32,7 +32,7 @@ package space.arim.omnibus.events;
  * @author A248
  *
  */
-public interface Events {
+public interface EventBus {
 	
 	/**
 	 * Fires an event, invoking all applicable listeners. <br>

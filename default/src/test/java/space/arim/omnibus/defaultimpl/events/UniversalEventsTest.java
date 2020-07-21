@@ -27,12 +27,12 @@ import org.junit.jupiter.api.Test;
 
 import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.EventPriority;
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.Listener;
 
 public class UniversalEventsTest {
 	
-	private Events events;
+	private EventBus events;
 	
 	@BeforeEach
 	public void setup() {
@@ -55,12 +55,12 @@ public class UniversalEventsTest {
 		callTestEventAssuming1Listener(events);
 	}
 	
-	private static void callTestEventAssuming1Listener(Events events) {
+	private static void callTestEventAssuming1Listener(EventBus events) {
 		int beginValue = ThreadLocalRandom.current().nextInt();
 		callTestEventAssuming1Listener(events, new TestEventWithInteger(beginValue));
 	}
 	
-	private static void callTestEventAssuming1Listener(Events events, TestEventWithInteger te) {
+	private static void callTestEventAssuming1Listener(EventBus events, TestEventWithInteger te) {
 		int beginValue = te.someValue;
 		events.fireEvent(te);
 		int result = te.someValue;
@@ -183,7 +183,7 @@ public class UniversalEventsTest {
 		callTestEventAssuming1Listener(events);
 	}
 	
-	private static void callTestEventAssumingNoListeners(Events events) {
+	private static void callTestEventAssumingNoListeners(EventBus events) {
 		int startValue = ThreadLocalRandom.current().nextInt();
 		TestEventWithInteger te = new TestEventWithInteger(startValue);
 		events.fireEvent(te);

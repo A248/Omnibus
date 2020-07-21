@@ -36,19 +36,19 @@ import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.events.Cancellable;
 import space.arim.omnibus.events.Event;
 import space.arim.omnibus.events.EventConsumer;
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.IllegalListenerException;
 import space.arim.omnibus.events.Listen;
 import space.arim.omnibus.events.Listener;
 import space.arim.omnibus.util.ArraysUtil;
 
 /**
- * The default implementation of {@link Events}
+ * The default implementation of {@link EventBus}
  * 
  * @author A248
  *
  */
-public class DefaultEvents implements Events {
+public class DefaultEvents implements EventBus {
 
 	private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 	

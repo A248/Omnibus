@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 import space.arim.omnibus.Omnibus;
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.resourcer.ResourceHook;
 import space.arim.omnibus.resourcer.ResourceInfo;
 import space.arim.omnibus.resourcer.ResourceManager;
@@ -40,7 +40,7 @@ public class DefaultResourceManager implements ResourceManager {
 	 * The associated {@code Events} instance
 	 * 
 	 */
-	final Events events;
+	final EventBus events;
 	
 	private final ConcurrentMap<Class<?>, ResourceHolder<?>> resources = new ConcurrentHashMap<>();
 	
@@ -54,7 +54,7 @@ public class DefaultResourceManager implements ResourceManager {
 	}
 	
 	// Testing
-	DefaultResourceManager(Events events) {
+	DefaultResourceManager(EventBus events) {
 		this.events = events;
 	}
 	

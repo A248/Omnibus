@@ -26,7 +26,7 @@ package space.arim.omnibus.events;
  * of cancellation in {@link #isCancelled()}. To do this, either {@link AbstractCancellable}
  * or an own memory-concise implementation may be used. <br>
  * <br>
- * The method calls in implementations of this interface are trusted by {@link Events}
+ * The method calls in implementations of this interface are trusted by {@link EventBus}
  * implementations. They should never throw exceptions.
  * 
  * @author A248

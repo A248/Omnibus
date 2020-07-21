@@ -18,7 +18,7 @@
  */
 package space.arim.omnibus;
 
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.Registry;
 import space.arim.omnibus.resourcer.ResourceManager;
 
@@ -35,7 +35,7 @@ public interface Omnibus {
 	 * 
 	 * @return the event bus
 	 */
-	Events getEvents();
+	EventBus getEvents();
 	
 	/**
 	 * Gets the service registry used by this {@code Omnibus}

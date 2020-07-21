@@ -22,7 +22,7 @@ import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.defaultimpl.events.DefaultEvents;
 import space.arim.omnibus.defaultimpl.registry.DefaultRegistry;
 import space.arim.omnibus.defaultimpl.resourcer.DefaultResourceManager;
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.Registry;
 import space.arim.omnibus.resourcer.ResourceManager;
 
@@ -34,7 +34,7 @@ import space.arim.omnibus.resourcer.ResourceManager;
  */
 public class DefaultOmnibus implements Omnibus {
 
-	private final Events events;
+	private final EventBus events;
 	private final Registry registry;
 	private final ResourceManager resourcer;
 	
@@ -49,7 +49,7 @@ public class DefaultOmnibus implements Omnibus {
 	}
 	
 	@Override
-	public Events getEvents() {
+	public EventBus getEvents() {
 		return events;
 	}
 

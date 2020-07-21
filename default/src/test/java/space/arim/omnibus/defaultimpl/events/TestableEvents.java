@@ -19,11 +19,11 @@
 package space.arim.omnibus.defaultimpl.events;
 
 import space.arim.omnibus.Omnibus;
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 
 /**
  * {@link DefaultEvents} extension with no arg constructor, used for testing
- * where unit tests require an {@link Events} instance but not the full {@link Omnibus} interface
+ * where unit tests require an {@link EventBus} instance but not the full {@link Omnibus} interface
  * 
  * @author A248
  *

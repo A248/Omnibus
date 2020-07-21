@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import space.arim.omnibus.Omnibus;
-import space.arim.omnibus.events.Events;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.DuplicateRegistrationException;
 import space.arim.omnibus.registry.Registration;
 import space.arim.omnibus.registry.Registry;
@@ -47,10 +47,10 @@ public class DefaultRegistry implements Registry {
 	private final ConcurrentHashMap<Class<?>, Registration<?>[]> registry = new ConcurrentHashMap<>();
 	
 	/**
-	 * The corresponding {@link Events} instance
+	 * The corresponding {@link EventBus} instance
 	 * 
 	 */
-	private final Events events;
+	private final EventBus events;
 	
 	/**
 	 * A list of registration events we'll fire. <br>
@@ -70,7 +70,7 @@ public class DefaultRegistry implements Registry {
 	}
 	
 	// Testing
-	DefaultRegistry(Events events) {
+	DefaultRegistry(EventBus events) {
 		this.events = events;
 	}
 	

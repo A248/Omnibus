@@ -19,7 +19,7 @@
 package space.arim.omnibus.events;
 
 /**
- * Thrown by some {@link Events} implementations to indicate an illegal listener object. <br>
+ * Thrown by some {@link EventBus} implementations to indicate an illegal listener object. <br>
  * In other implementations, other unchecked exceptions may be thrown.
  * 
  * @author A248

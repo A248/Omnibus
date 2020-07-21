@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks methods for listening to events. Though this approach is less efficient and non standard compared to
- * {@link Events#registerListener(Class, byte, EventConsumer)}, it may be more convenient at times. <br>
+ * {@link EventBus#registerListener(Class, byte, EventConsumer)}, it may be more convenient at times. <br>
  * <br>
  * The method must be and public, non-static, and in a public class. The method must have {@code void} return type.
  * Also, it must have a single parameter which is assignment-compatible with <code>Event.class</code>. If any of
