@@ -18,28 +18,22 @@
  */
 package space.arim.omnibus.registry;
 
-import space.arim.omnibus.events.Event;
+import java.util.function.Supplier;
 
 /**
- * An event related to a registration or unregistration which happened in a {@link Registry}. <br>
- * <br>
- * Called to <i>indicate</i> some consequence, but not necessarily called <i>when</i> it happened. <br>
- * That is, <b>this event may or may not run in the same thread from which the happening itself was occurred.</b> <br>
- * <br>
- * It is guaranteed that {@code RegistryEvent}s relating to a certain service will happen in an order consistent with
- * the state of the service; i.e., that they will be fired sequentially, but not necessarily on the same thread. <br>
- * However, no such guarantee is made for events relating to different services.
+ * A {@link Supplier} which specifically returns the provider of a service in a {@link Registry}.
  * 
  * @author A248
  *
+ * @param <T> the service type
  */
-public interface RegistryEvent<T> extends Event {
+public interface ProviderSupplier<T> extends Supplier<T> {
 
 	/**
-	 * Gets the service involved in this event
+	 * Gets the current provider for the service
 	 * 
-	 * @return the service type
 	 */
-	Class<T> getService();
+	@Override
+	T get();
 	
 }
