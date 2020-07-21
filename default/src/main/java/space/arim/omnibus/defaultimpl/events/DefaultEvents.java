@@ -18,28 +18,17 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import space.arim.omnibus.Omnibus;
-import space.arim.omnibus.events.Cancellable;
 import space.arim.omnibus.events.Event;
 import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.EventBus;
-import space.arim.omnibus.events.IllegalListenerException;
-import space.arim.omnibus.events.Listen;
-import space.arim.omnibus.events.Listener;
+import space.arim.omnibus.events.RegisteredListener;
 import space.arim.omnibus.util.ArraysUtil;
 
 /**
@@ -50,13 +39,15 @@ import space.arim.omnibus.util.ArraysUtil;
  */
 public class DefaultEvents implements EventBus {
 
-	private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
-	
 	/**
 	 * The listeners themselves, a map of event classes to listener methods
 	 * 
 	 */
-	private final ConcurrentHashMap<Class<?>, ListenerMethod[]> eventListeners = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<Class<?>, ListenerImpl<?>[]> eventListeners = new ConcurrentHashMap<>();
+	
+	private static final int EXTRA_ARRAY_CAPACITY = 16;
+	
+	private static final Comparator<ListenerImpl<?>> LISTENER_COMPARATOR = Comparator.nullsLast(Comparator.naturalOrder());
 	
 	/**
 	 * Creates a {@code DefaultEvents}
@@ -72,215 +63,88 @@ public class DefaultEvents implements EventBus {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
+	private static <E extends Event> ListenerImpl<E>[] ensureCapacity(ListenerImpl<E>[] array, int requiredSize) {
+		if (array == null) {
+			return (ListenerImpl<E>[]) new ListenerImpl<?>[requiredSize + EXTRA_ARRAY_CAPACITY];
+		}
+		if (requiredSize <= array.length) {
+			return array;
+		}
+		return Arrays.copyOf(array, requiredSize + EXTRA_ARRAY_CAPACITY, ListenerImpl[].class);
+	}
+	
 	@Override
-	public <E extends Event> boolean fireEvent(E event) {
+	public <E extends Event> void fireEvent(E event) {
 		Objects.requireNonNull(event, "Event must not be null");
-		if (event instanceof Cancellable) {
-			Cancellable cancellable = (Cancellable) event;
-			eventListeners.forEach((clazz, listeners) -> {
-				if (clazz.isInstance(cancellable)) {
-					for (ListenerMethod listener : listeners) {
-						if (listener.ignoreCancelled && cancellable.isCancelled()) {
-							continue;
-						}
-						try {
-							listener.invoke(cancellable);
-						} catch (Throwable ex) {
-							if (ex instanceof Error) {
-								throw (Error) ex;
-							}
-							ex.printStackTrace();
-						}
-					}
+		int totalSize = 0;
+		ListenerImpl<E>[] toInvoke = null;
+		for (Map.Entry<Class<?>, ListenerImpl<?>[]> pair : eventListeners.entrySet()) {
+			if (pair.getKey().isInstance(event)) {
+
+				ListenerImpl<?>[] fromThisEvt = pair.getValue();
+				int updateSize = totalSize + fromThisEvt.length;
+
+				toInvoke = ensureCapacity(toInvoke, updateSize);
+				System.arraycopy(fromThisEvt, 0, toInvoke, totalSize, fromThisEvt.length);
+				totalSize = updateSize;
+			}
+		}
+		if (toInvoke != null) {
+			assert totalSize > 0 : totalSize;
+			Arrays.sort(toInvoke, LISTENER_COMPARATOR);
+			for (ListenerImpl<E> listener : toInvoke) {
+				if (listener == null) {
+					// End of array
+					break;
 				}
-			});
-			return !cancellable.isCancelled();
-		} else {
-			eventListeners.forEach((clazz, listeners) -> {
-				if (clazz.isInstance(event)) {
-					for (ListenerMethod listener : listeners) {
-						try {
-							listener.invoke(event);
-						} catch (Throwable ex) {
-							if (ex instanceof Error) {
-								throw (Error) ex;
-							}
-							ex.printStackTrace();
-						}
-					}
+				try {
+					listener.evtConsumer.accept(event);
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
-			});
-			return true;
+			}
 		}
 	}
 	
-	private void addAnnotatedListeners(Class<?> clazz, Listener listener, AnnotatedListenerMethod[] methodsToAdd) {
-		eventListeners.compute(clazz, (c, existingMethods) -> {
+	@Override
+	public <E extends Event> RegisteredListener registerListener(Class<E> event, byte priority, EventConsumer<? super E> evtConsumer) {
+		Objects.requireNonNull(event, "Event class must not be null");
+		Objects.requireNonNull(evtConsumer, "Event consumer must not be null");
+		ListenerImpl<E> listener = new ListenerImpl<E>(event, priority, evtConsumer);
+
+		eventListeners.compute(event, (c, existingListeners) -> {
 			// No existing methods
-			if (existingMethods == null) {
-				// Already sorted by us in #getMethodMap
-				return methodsToAdd;
-			}
-			// Check for duplicates based on listener object equality
-			for (ListenerMethod existing : existingMethods) {
-				if (existing instanceof AnnotatedListenerMethod
-						&& ((AnnotatedListenerMethod) existing).listener == listener) {
-					return existingMethods;
-				}
-			}
-			// Add the methods and sort
-			int startLength = existingMethods.length;
-			int addLength = methodsToAdd.length;
-			ListenerMethod[] updated = Arrays.copyOf(existingMethods, startLength + addLength);
-			System.arraycopy(methodsToAdd, 0, updated, startLength, addLength);
-			Arrays.sort(updated);
-			return updated;
-		});
-	}
-	
-	private void removeAnnotatedListenersFor(Class<?> clazz, Listener listener) {
-		eventListeners.computeIfPresent(clazz, (c, existingMethods) -> {
-			List<ListenerMethod> updated = new ArrayList<>(existingMethods.length);
-			boolean changed = false;
-			for (ListenerMethod method : existingMethods) {
-				if (method instanceof AnnotatedListenerMethod && ((AnnotatedListenerMethod) method).listener == listener) {
-					changed = true;
-				} else {
-					updated.add(method);
-				}
-			}
-			if (!changed) {
-				return existingMethods;
-			}
-			if (updated.isEmpty()) {
-				return null;
-			}
-			return updated.toArray(new ListenerMethod[] {});
-		});
-	}
-	
-	private void addDynamicListener(DynamicListener<?> methodToAdd) {
-		eventListeners.compute(methodToAdd.clazz, (c, existingMethods) -> {
-			// No existing methods
-			if (existingMethods == null) {
-				return new ListenerMethod[] {methodToAdd};
+			if (existingListeners == null) {
+				return new ListenerImpl<?>[] {listener};
 			}
 			// Add the method maintaining sorting
-			int insertionIndex = - (Arrays.binarySearch(existingMethods, methodToAdd) + 1);
-			return ArraysUtil.expandAndInsert(existingMethods, methodToAdd, insertionIndex);
+			int insertionIndex = - (Arrays.binarySearch(existingListeners, listener) + 1);
+			return ArraysUtil.expandAndInsert(existingListeners, listener, insertionIndex);
 		});
+
+		return listener;
 	}
 	
-	private void removeDynamicListener(DynamicListener<?> methodToRemove) {
-		eventListeners.computeIfPresent(methodToRemove.clazz, (c, existingMethods) -> {
-			int removalIndex = Arrays.binarySearch(existingMethods, methodToRemove);
+	@Override
+	public void unregisterListener(RegisteredListener listener) {
+		Objects.requireNonNull(listener, "RegisteredListener must not be null");
+		if (!(listener instanceof ListenerImpl<?>)) {
+			throw new IllegalArgumentException("Foreign implementation of RegisteredListener: " + listener);
+		}
+		eventListeners.computeIfPresent(((ListenerImpl<?>) listener).evtClass, (c, existingListeners) -> {
+			int removalIndex = Arrays.binarySearch(existingListeners, listener);
 			if (removalIndex < 0) {
 				// not present
-				return existingMethods;
+				return existingListeners;
 			}
-			return ArraysUtil.contractAndRemove(existingMethods, removalIndex);
+			ListenerImpl<?>[] updated = ArraysUtil.contractAndRemove(existingListeners, removalIndex);
+			if (updated.length == 0) {
+				// clean unused mappings
+				return null;
+			}
+			return updated;
 		});
-	}
-	
-	private static Map<Class<?>, List<ListenerMethod>> getMethodMap(Listener listener) {
-		Class<?> listenerClass = listener.getClass();
-		if (!Modifier.isPublic(listenerClass.getModifiers())) {
-			throw new IllegalListenerException("Listeners must be public");
-		}
-		Map<Class<?>, List<ListenerMethod>> methodMap = new HashMap<>();
-		for (Method method : listenerClass.getDeclaredMethods()) {
-			Listen annote = method.getAnnotation(Listen.class);
-			if (annote == null) {
-				continue;
-			}
-			int modifiers = method.getModifiers();
-			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
-				throw new IllegalListenerException("Listening methods must be public and non-static");
-			}
-			if (method.getReturnType() != void.class) {
-				throw new IllegalListenerException("Listening methods must have void return type");
-			}
-			Class<?>[] parameters = method.getParameterTypes();
-			if (parameters.length != 1) {
-				throw new IllegalListenerException("Listening methods must have 1 parameter");
-			}
-			Class<?> evtClass = parameters[0];
-			if (!Event.class.isAssignableFrom(evtClass)) {
-				throw new IllegalListenerException("Listening method parameter type must be assignment-compatible with Event");
-			}
-			MethodHandle handle;
-			try {
-				handle = LOOKUP.unreflect(method);
-			} catch (IllegalAccessException ex) {
-				throw new IllegalListenerException("Internal exception: Cannot generate accessors to event listener", ex);
-			}
-			List<ListenerMethod> list = methodMap.computeIfAbsent(evtClass, (c) -> new ArrayList<>());
-			list.add(new AnnotatedListenerMethod(listener, handle, annote.priority(), annote.ignoreCancelled()));
-			// Presorting now helps us later during possible contention
-			list.sort(null);
-		}
-		return methodMap;
-	}
-	
-	private static Set<Class<?>> getListenedEventClasses(Listener listener) {
-		Class<?> listenerClass = listener.getClass();
-		if (!Modifier.isPublic(listenerClass.getModifiers())) {
-			return Set.of();
-		}
-		Set<Class<?>> evtClasses = new HashSet<>();
-		for (Method method : listenerClass.getDeclaredMethods()) {
-			Listen annote = method.getAnnotation(Listen.class);
-			if (annote == null) {
-				continue;
-			}
-			int modifiers = method.getModifiers();
-			if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
-				continue;
-			}
-			if (method.getReturnType() != void.class) {
-				continue;
-			}
-			Class<?>[] parameters = method.getParameterTypes();
-			if (parameters.length != 1) {
-				continue;
-			}
-			Class<?> evtClass = parameters[0];
-			if (!Event.class.isAssignableFrom(evtClass)) {
-				continue;
-			}
-			evtClasses.add(evtClass);
-		}
-		return evtClasses;
-	}
-	
-	@Override
-	public void registerListener(Listener listener) {
-		Objects.requireNonNull(listener, "Listener must not be null");
-		if (listener instanceof DynamicListener<?>) {
-			// already registered
-			return;
-		}
-		getMethodMap(listener)
-				.forEach((clazz, methods) -> addAnnotatedListeners(clazz, listener, methods.toArray(new AnnotatedListenerMethod[] {})));
-	}
-	
-	@Override
-	public <E extends Event> Listener registerListener(Class<E> event, byte priority, EventConsumer<? super E> listener) {
-		Objects.requireNonNull(event, "Event must not be null");
-		Objects.requireNonNull(listener, "Listener must not be null");
-		DynamicListener<E> dynamicListener = new DynamicListener<E>(event, listener, priority);
-		addDynamicListener(dynamicListener);
-		return dynamicListener;
-	}
-	
-	@Override
-	public void unregisterListener(Listener listener) {
-		Objects.requireNonNull(listener, "Listener must not be null");
-		if (listener instanceof DynamicListener<?>) {
-			removeDynamicListener((DynamicListener<?>) listener);
-		} else {
-			getListenedEventClasses(listener).forEach((clazz) -> removeAnnotatedListenersFor(clazz, listener));
-		}
 	}
 	
 }

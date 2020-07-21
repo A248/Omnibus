@@ -36,4 +36,15 @@ public interface EventConsumer<E extends Event> extends Consumer<E> {
 	@Override
 	void accept(E event);
 	
+	/**
+	 * Turns a plain {@link Consumer} into an {@code EventConsumer}
+	 * 
+	 * @param <E> the event type
+	 * @param consumer the consumer
+	 * @return the consumer as an event consumer
+	 */
+	static <E extends Event> EventConsumer<E> decorate(Consumer<E> consumer) {
+		return consumer::accept;
+	}
+	
 }

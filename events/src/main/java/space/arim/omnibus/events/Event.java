@@ -21,7 +21,7 @@ package space.arim.omnibus.events;
 /**
  * Marker interface for an event which is fired and listened to using {@link EventBus}. <br>
  * <br>
- * If an event should be cancellable, it should implement {@link Cancellable}.
+ * If an event is cancellable, it should implement {@link Cancellable}.
  * 
  * @author A248
  *

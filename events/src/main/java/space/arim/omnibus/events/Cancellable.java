@@ -38,8 +38,7 @@ public interface Cancellable extends Event {
 	 * Marks an event as cancelled. The event may never be "uncancelled". <br>
 	 * <br>
 	 * The effect of cancellation is determined by the implementer of the event.
-	 * Event listeners are always invoked, regardless of cancellation, except in the case
-	 * {@link Listen#ignoreCancelled()} is true.
+	 * Event listeners are always invoked, regardless of cancellation.
 	 * 
 	 */
 	void cancel();

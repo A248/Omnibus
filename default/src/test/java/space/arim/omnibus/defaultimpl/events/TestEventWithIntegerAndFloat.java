@@ -18,42 +18,13 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-import space.arim.omnibus.events.Event;
-import space.arim.omnibus.events.EventConsumer;
-import space.arim.omnibus.events.Listener;
+public class TestEventWithIntegerAndFloat extends TestEventWithInteger {
 
-/**
- * Internal wrapper for dynamic listeners
- * 
- * @author A248
- *
- * @param <E> the type of the event
- */
-class DynamicListener<E extends Event> extends ListenerMethod implements Listener {
-
-	final Class<E> clazz;
-	private final EventConsumer<? super E> listener;
+	volatile float floatilla;
 	
-	DynamicListener(Class<E> clazz, EventConsumer<? super E> listener, byte priority) {
-		super(priority, false);
-		this.clazz = clazz;
-		this.listener = listener;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	void invoke(Object evt) {
-		listener.accept((E) evt);
+	TestEventWithIntegerAndFloat(int someValue, float floatilla) {
+		super(someValue);
+		this.floatilla = floatilla;
 	}
 
-	@Override
-	public int hashCode() {
-		return System.identityHashCode(this);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return this == object;
-	}
-	
 }

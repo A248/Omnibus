@@ -18,46 +18,30 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-/**
- * General internal listener
- * 
- * @author A248
- *
- */
-abstract class ListenerMethod implements Comparable<ListenerMethod> {
+import space.arim.omnibus.events.Event;
+import space.arim.omnibus.events.EventConsumer;
+import space.arim.omnibus.events.RegisteredListener;
 
+class ListenerImpl<E extends Event> implements RegisteredListener, Comparable<ListenerImpl<?>> {
+
+	final Class<E> evtClass;
 	final byte priority;
-	final boolean ignoreCancelled;
+	final EventConsumer<? super E> evtConsumer;
 	
-	ListenerMethod(byte priority, boolean ignoreCancelled) {
+	ListenerImpl(Class<E> evtClass, byte priority, EventConsumer<? super E> evtConsumer) {
+		this.evtClass = evtClass;
 		this.priority = priority;
-		this.ignoreCancelled = ignoreCancelled;
+		this.evtConsumer = evtConsumer;
 	}
-	
-	abstract void invoke(Object object) throws Throwable;
-	
-	/**
-	 * Compares 2 listener methods by priority
-	 * 
-	 */
+
 	@Override
-	public int compareTo(ListenerMethod o) {
+	public int compareTo(ListenerImpl<?> o) {
 		int priorityDiff = priority - o.priority;
 		if (priorityDiff == 0) {
+			// break ties with random hash code
 			return hashCode() - o.hashCode();
 		}
 		return priorityDiff;
 	}
-	
-	@Override
-	public abstract int hashCode();
-	
-	/**
-	 * Used to determine whether there are duplicate listeners.
-	 * This method may not necessarily evaluate strict equality.
-	 * 
-	 */
-	@Override
-	public abstract boolean equals(Object object);
 	
 }
