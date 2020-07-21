@@ -24,7 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks methods for listening to events. <br>
+ * Marks methods for listening to events. Though this approach is less efficient and non standard compared to
+ * {@link Events#registerListener(Class, byte, EventConsumer)}, it may be more convenient at times. <br>
  * <br>
  * The method must be and public, non-static, and in a public class. The method must have {@code void} return type.
  * Also, it must have a single parameter which is assignment-compatible with <code>Event.class</code>. If any of
@@ -36,8 +37,8 @@ import java.lang.annotation.Target;
  * supported. <br>
  * <br>
  * <b>Inheritance</b>
- * Listening methods, unlike normal methods, cannot be inherited. If inheritance is required, then it may be better
- * to switch to dynamic event listening via {@link Events#registerListener(Class, byte, java.util.function.Consumer)}.
+ * Listening methods, unlike normal methods, cannot be inherited. If inheritance is required, then it will be better
+ * to switch to normal event listening.
  * 
  * @author A248
  *

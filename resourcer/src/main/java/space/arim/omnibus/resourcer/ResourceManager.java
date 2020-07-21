@@ -20,8 +20,6 @@ package space.arim.omnibus.resourcer;
 
 import java.util.function.Supplier;
 
-import space.arim.omnibus.events.Events;
-
 /**
  * A manager responsible for marshalling shared resources, avoiding duplication of the same
  * resource interface. <br>
@@ -39,8 +37,8 @@ import space.arim.omnibus.events.Events;
  * <br>
  * When the resource hook is no longer required, it should be unhooked via {@link #unhookUsage(ResourceHook)}.
  * If such hook's resource provider was used, it will be shut down. First, {@link ShutdownHandler#preShutdownEvent()}
- * will be called. Next, a {@link ShutdownEvent} will be fired using the {@link Events} instance ({@link #getEvents()}).
- * Finally, {@link ShutdownHandler#postShutdownEvent()}. <br>
+ * will be called. Next, a {@link ShutdownEvent} will be fired. Finally, {@link ShutdownHandler#postShutdownEvent()}
+ * is called. <br>
  * <br>
  * Any remaining resource hooks may listen to the shutdown event and act accordingly. Some resources may require
  * some form of "migration". For example, presume a kind of scheduling service, which returns tasks which may be cancelled.

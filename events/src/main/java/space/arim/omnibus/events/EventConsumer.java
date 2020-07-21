@@ -21,11 +21,11 @@ package space.arim.omnibus.events;
 import java.util.function.Consumer;
 
 /**
- * Functional interface for event listeners, to be passed to {@link Events#registerListener(Class, byte, Consumer)}.
+ * Functional interface for event listeners, to be passed to {@link Events#registerListener(Class, byte, EventConsumer)}.
  * 
  * @author A248
  *
- * @param <E>
+ * @param <E> the event type
  */
 public interface EventConsumer<E extends Event> extends Consumer<E> {
 

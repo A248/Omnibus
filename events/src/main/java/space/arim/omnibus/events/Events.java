@@ -18,12 +18,10 @@
  */
 package space.arim.omnibus.events;
 
-import java.util.function.Consumer;
-
 /**
  * A framework for firing events and listening to them. <br>
  * <br>
- * To listen to events, use {@link #registerListener(Class, byte, Consumer)}. The returned {@code Listener}
+ * To listen to events, use {@link #registerListener(Class, byte, EventConsumer)}. The returned {@code Listener}
  * may be unregistered later. <br>
  * <br>
  * Alternatively, create an object implementing {@link Listener} with listening methods. All listening methods
@@ -41,7 +39,7 @@ public interface Events {
 	 * <br>
 	 * For any listener, if the event fired is an instance of the listener's targeted event class,
 	 * as specified in either the parameter type of {@link Listen} or the event class
-	 * passed to {@link #registerListener(Class, byte, Consumer)}, the listener will be invoked. <br>
+	 * passed to {@link #registerListener(Class, byte, EventConsumer)}, the listener will be invoked. <br>
 	 * <br>
 	 * If the event is a {@link Cancellable} and was cancelled, this method will return <code>false</code>.
 	 * Otherwise, it will return <code>true</code>
@@ -89,7 +87,7 @@ public interface Events {
 	/**
 	 * Unregister an object from any listening. <br>
 	 * <br>
-	 * This is the opposite of {@link #registerListener(Listener)} and {@link #registerListener(Class, byte, Consumer)}.
+	 * This is the opposite of {@link #registerListener(Listener)} and {@link #registerListener(Class, byte, EventConsumer)}.
 	 * Unregistering a listener which is not registered is a no-op.
 	 * 
 	 * @param listener the object to unregister
