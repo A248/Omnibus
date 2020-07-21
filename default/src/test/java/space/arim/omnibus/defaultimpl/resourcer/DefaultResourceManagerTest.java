@@ -31,7 +31,7 @@ import space.arim.omnibus.resourcer.ResourceInfo;
 import space.arim.omnibus.resourcer.ResourceManager;
 import space.arim.omnibus.resourcer.ShutdownHandler;
 
-public class UniversalResourceManagerTest {
+public class DefaultResourceManagerTest {
 
 	private ResourceManager resourcer;
 	

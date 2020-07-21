@@ -32,7 +32,7 @@ import space.arim.omnibus.registry.Registration;
 import space.arim.omnibus.registry.Registry;
 import space.arim.omnibus.registry.RegistryPriority;
 
-public class RegistryTest {
+public class DefaultRegistryTest {
 
 	private Registry registry;
 	private TestService provider;

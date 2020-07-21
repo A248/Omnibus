@@ -32,7 +32,7 @@ import space.arim.omnibus.events.ListenerPriorities;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.RegisteredListener;
 
-public class UniversalEventsTest {
+public class DefaultEventsTest {
 	
 	private EventBus events;
 	
