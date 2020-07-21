@@ -21,7 +21,7 @@ package space.arim.omnibus.events;
 import java.util.function.Consumer;
 
 /**
- * A framework for firing events and listening to them. For an implementation, see {@link UniversalEvents} <br>
+ * A framework for firing events and listening to them. <br>
  * <br>
  * To listen to events, use {@link #registerListener(Class, byte, Consumer)}. The returned {@code Listener}
  * may be unregistered later. <br>
@@ -58,11 +58,15 @@ public interface Events {
 	/**
 	 * Registers an object to listen to events. <br>
 	 * <br>
-	 * In the object registered, listening methods must have the {@link Listen} annotation. <br>
+	 * In the object registered, listening methods must have the {@link Listen} annotation, and
+	 * all such methods must conform to its requirements, else a {@code IllegalListenerException}
+	 * is thrown. <br>
+	 * <br>
 	 * Registering a listener already registered is a no-op.
 	 * 
 	 * @param listener the object to register
 	 * @throws NullPointerException if the listener is null
+	 * @throws IllegalListenerException if there are methods present with {@link Listen} which do not meet its requirements
 	 */
 	void registerListener(Listener listener);
 	
