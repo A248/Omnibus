@@ -15,11 +15,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-registry</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-resourcer</artifactId>
+			<artifactId>omnibus-core</artifactId>
 		</dependency>
 	</dependencies>
 </project>
