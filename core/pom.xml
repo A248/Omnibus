@@ -19,15 +19,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-events</artifactId>
+			<artifactId>omnibus-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-registry</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-resourcer</artifactId>
+			<artifactId>omnibus-default</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

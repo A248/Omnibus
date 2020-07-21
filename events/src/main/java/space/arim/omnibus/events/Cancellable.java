@@ -27,7 +27,7 @@ package space.arim.omnibus.events;
  * or an own memory-concise implementation may be used. <br>
  * <br>
  * The method calls in implementations of this interface are trusted by {@link Events}
- * implementations such as {@link UniversalEvents}. They should never throw exceptions.
+ * implementations. They should never throw exceptions.
  * 
  * @author A248
  *

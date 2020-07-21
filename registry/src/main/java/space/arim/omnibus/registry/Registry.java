@@ -20,8 +20,6 @@ package space.arim.omnibus.registry;
 
 import java.util.List;
 
-import space.arim.omnibus.events.Events;
-
 /**
  * A framework for registering and loading services. <br>
  * <br>
@@ -42,15 +40,6 @@ import space.arim.omnibus.events.Events;
  *
  */
 public interface Registry {
-
-	/**
-	 * Gets the {@link Events} instance corresponding to this registry. <br>
-	 * <br>
-	 * The returned Events instance is the same one on which {@link RegistryEvent}s are fired.
-	 * 
-	 * @return the accompanying events instance
-	 */
-	Events getEvents();
 	
 	/**
 	 * Registers a resource as a specific service and generates a {@link Registration}

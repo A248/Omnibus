@@ -9,14 +9,25 @@
 		<version>0.14.3-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>omnibus-resourcer</artifactId>
-	<name>Omnibus-Resourcer</name>
-	<description>Resource marshaller designed to avoid duplication.</description>
+	<artifactId>omnibus-api</artifactId>
+	<name>Omnibus-API</name>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+	</build>
 	
 	<dependencies>
 		<dependency>
 			<groupId>space.arim.omnibus</groupId>
 			<artifactId>omnibus-events</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>space.arim.omnibus</groupId>
+			<artifactId>omnibus-registry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>space.arim.omnibus</groupId>
+			<artifactId>omnibus-resourcer</artifactId>
 		</dependency>
 	</dependencies>
 </project>

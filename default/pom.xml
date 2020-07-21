@@ -9,14 +9,23 @@
 		<version>0.14.3-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>omnibus-resourcer</artifactId>
-	<name>Omnibus-Resourcer</name>
-	<description>Resource marshaller designed to avoid duplication.</description>
+	<artifactId>omnibus-default</artifactId>
+	<name>Omnibus-Default</name>
+	<description>Default implementation of Omnibus</description>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+	</build>
 	
 	<dependencies>
 		<dependency>
 			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-events</artifactId>
+			<artifactId>omnibus-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -51,14 +51,6 @@ import space.arim.omnibus.events.Events;
  *
  */
 public interface ResourceManager {
-
-	/**
-	 * Gets the {@link Events} instance associated with this {@code ResourceManager}, on which
-	 * {@link ShutdownEvent}s are fired
-	 * 
-	 * @return the events instance on which shutdown events are fired
-	 */
-	Events getEvents();
 	
 	/**
 	 * Hooks into the usage of a specific resource, with a function to instantiate the resource and its associated
