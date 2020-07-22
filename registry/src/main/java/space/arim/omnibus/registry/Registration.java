@@ -38,13 +38,13 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	 * Creates from a priority, provider, and display name.
 	 * 
 	 * @param priority the priority of the registration
-	 * @param provider the provider which implements the service
-	 * @param name the name, may be null or empty if none is desired
+	 * @param provider the provider which implements the service, must not be null
+	 * @param name the name, must not be null
 	 */
 	public Registration(byte priority, T provider, String name) {
 		this.priority = priority;
 		this.provider = Objects.requireNonNull(provider, "Provider must not be null");
-		this.name = name;
+		this.name = Objects.requireNonNull(name, "Name must not be null");
 	}
 
 	/**
@@ -60,17 +60,16 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	/**
 	 * Gets the provider, or the actual service
 	 * 
-	 * @return the service provider
+	 * @return the service provider, never {@code null}
 	 */
 	public T getProvider() {
 		return provider;
 	}
 	
 	/**
-	 * Gets a friendly display name for the service. <br>
-	 * May be null or empty
+	 * Gets a friendly display name for the service.
 	 * 
-	 * @return the name
+	 * @return the name, never {@code null}
 	 */
 	public String getName() {
 		return name;
@@ -95,7 +94,7 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + name.hashCode();
 		result = prime * result + priority;
 		result = prime * result + provider.hashCode();
 		return result;

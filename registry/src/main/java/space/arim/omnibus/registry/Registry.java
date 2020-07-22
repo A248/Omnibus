@@ -32,7 +32,7 @@ import java.util.List;
  * <br>
  * Providers may be registered with a priority and an optional user friendly name.
  * These details comprise a <i>registration</i> (which is really just a wrapper
- * class for the provider, priority, and optional name). See {@link Registration}. <br>
+ * class for the provider, priority, and name). See {@link Registration}. <br>
  * <br>
  * The service class is the class corresponding to the service type.
  * 
@@ -45,7 +45,7 @@ public interface Registry {
 	 * Registers a resource as a specific service and generates a {@link Registration}
 	 * to represent the registration which was just added. <br>
 	 * <br>
-	 * The provider must be nonnull. The name may be null or empty. <br>
+	 * The provider and name must be nonnull. <br>
 	 * Higher priority registrations will be preferred for {@link #getProvider(Class)}. <br>
 	 * <br>
 	 * Services may be registered under multiple intended service types.
@@ -53,8 +53,8 @@ public interface Registry {
 	 * @param <T> the service type
 	 * @param service the service class
 	 * @param priority the registration priority
-	 * @param provider the resource to register, cannot be null
-	 * @param name a user friendly name for the implementation
+	 * @param provider the resource to register, must not be null
+	 * @param name a user friendly name for the implementation, must not be null
 	 * @return the registration which was added to the registry, formed from the parameters
 	 * @throws DuplicateRegistrationException if the provider is already registered for the service type
 	 */
@@ -67,13 +67,13 @@ public interface Registry {
 	 * a {@link Registration} based on the resource registered, this returns the highest priority
 	 * registration <i>after</i> computations. <br>
 	 * <br>
-	 * The provider must be nonnull. The name may be null or empty.
+	 * The provider and name must be nonnull.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
 	 * @param priority the registration priority
-	 * @param provider the resource to register, cannot be null
-	 * @param name a user friendly name for the implementation
+	 * @param provider the resource to register, must not be null
+	 * @param name a user friendly name for the implementation, must not be null
 	 * @return the highest priority registration after the resource is registered
 	 * @throws DuplicateRegistrationException if the provider is already registered for the service type
 	 */
