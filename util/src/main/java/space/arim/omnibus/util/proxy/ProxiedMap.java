@@ -30,7 +30,7 @@ import java.util.function.Function;
  * Such "maps" do not hold any data themselves, but merely refer calls to their backing maps. <br>
  * <br>
  * However, the proxy map's additional call layer provides fine tuned control over reads and writes to the backing map. <br>
- * Programmers may extend this class to utilise this enhanced control. {@link DishonestMap} is a simple example. <br>
+ * Programmers may extend this class to utilise this enhanced control. <br>
  * <br>
  * Note that a reference is retained to the backing map. Changes to the backing map are reflected in proxied maps.
  * 
