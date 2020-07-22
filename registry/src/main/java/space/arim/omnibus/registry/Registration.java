@@ -80,7 +80,7 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 		int priorityDiff = priority - o.priority;
 		if (priorityDiff == 0) {
 			// Same priority, different registration
-			return provider.hashCode() - o.provider.hashCode();
+			return System.identityHashCode(provider) - System.identityHashCode(o.provider);
 		}
 		return priorityDiff;
 	}
@@ -94,9 +94,8 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + name.hashCode();
 		result = prime * result + priority;
-		result = prime * result + provider.hashCode();
+		result = prime * result + System.identityHashCode(provider);
 		return result;
 	}
 
