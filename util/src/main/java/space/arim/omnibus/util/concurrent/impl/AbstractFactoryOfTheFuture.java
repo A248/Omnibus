@@ -51,7 +51,8 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	 * @param <U> the result type of the future
 	 * @return a new incomplete future
 	 */
-	protected abstract <U> CentralisedFuture<U> newIncompleteFuture();
+	@Override
+	public abstract <U> CentralisedFuture<U> newIncompleteFuture();
 	
 	/**
 	 * Executes a Runnable. This implementation specifically uses
@@ -153,13 +154,6 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 			}
 		});
 		return new MinimalReactionStage<>(result);
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Deprecated
-	@Override
-	public <T> CentralisedFuture<T> copyFutureTo(CompletableFuture<T> completableFuture) {
-		return copyFuture(completableFuture);
 	}
 
 }

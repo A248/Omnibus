@@ -36,7 +36,7 @@ import space.arim.omnibus.util.concurrent.FactoryOfTheFuture;
 public class IndifferentFactoryOfTheFuture extends AbstractFactoryOfTheFuture {
 
 	@Override
-	protected <U> CentralisedFuture<U> newIncompleteFuture() {
+	public <U> CentralisedFuture<U> newIncompleteFuture() {
 		return new IndifferentCentralisedFuture<>();
 	}
 
