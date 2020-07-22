@@ -21,10 +21,10 @@ package space.arim.omnibus.resourcer;
 /**
  * A resource hook which retrieves the current implementation of a resource as it is needed. <br>
  * <br>
- * Instances of {@code ResourceHook} are obtainable from {@link ResourceManager} and correspond to the
+ * Instances of {@code ResourceHook} are obtainable from {@link Resourcer} and correspond to the
  * usage of a certain resource. <br>
  * <br>
- * <b>When no longer needed, {@code ResourceHook} MUST be unhooked via {@link ResourceManager#unhookUsage(ResourceHook)}. </b>
+ * <b>When no longer needed, {@code ResourceHook} MUST be unhooked via {@link Resourcer#unhookUsage(ResourceHook)}. </b>
  * 
  * @author A248
  *
@@ -35,7 +35,7 @@ public interface ResourceHook<T> {
 	/**
 	 * Gets the current resource provider's implementation. <br>
 	 * <br>
-	 * If the {@link ResourceManager} used for this hook uses lazy instantiation, the provider will be created
+	 * If the {@link Resourcer} used for this hook uses lazy instantiation, the provider will be created
 	 * as needed on invocation of this method. <br>
 	 * <br>
 	 * The return value of this method should not be cached in a field, because the current

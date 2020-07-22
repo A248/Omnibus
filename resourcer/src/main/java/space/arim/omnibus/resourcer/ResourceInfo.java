@@ -67,7 +67,7 @@ public final class ResourceInfo<T> {
 	
 	/**
 	 * Gets the {@link ShutdownHandler} this implementation uses. This method is
-	 * intended for use by implementations of {@link ResourceManager}.
+	 * intended for use by implementations of {@link Resourcer}.
 	 * 
 	 * @return the shutdown handler used by this implementation, never {@code null}
 	 */

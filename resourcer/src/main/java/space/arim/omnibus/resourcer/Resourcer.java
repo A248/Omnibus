@@ -48,7 +48,7 @@ import java.util.function.Supplier;
  * @author A248
  *
  */
-public interface ResourceManager {
+public interface Resourcer {
 	
 	/**
 	 * Hooks into the usage of a specific resource, with a function to instantiate the resource and its associated

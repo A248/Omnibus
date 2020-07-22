@@ -25,19 +25,19 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import space.arim.omnibus.defaultimpl.resourcer.DefaultResourceManager;
+import space.arim.omnibus.defaultimpl.resourcer.DefaultResourcer;
 import space.arim.omnibus.resourcer.ResourceHook;
 import space.arim.omnibus.resourcer.ResourceInfo;
-import space.arim.omnibus.resourcer.ResourceManager;
+import space.arim.omnibus.resourcer.Resourcer;
 import space.arim.omnibus.resourcer.ShutdownHandler;
 
-public class DefaultResourceManagerTest {
+public class DefaultResourcerTest {
 
-	private ResourceManager resourcer;
+	private Resourcer resourcer;
 	
 	@BeforeEach
 	public void setup() {
-		resourcer = new DefaultResourceManager(new space.arim.omnibus.defaultimpl.events.TestableEvents());
+		resourcer = new DefaultResourcer(new space.arim.omnibus.defaultimpl.events.TestableEvents());
 	}
 	
 	@Test

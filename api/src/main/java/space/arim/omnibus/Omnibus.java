@@ -20,7 +20,7 @@ package space.arim.omnibus;
 
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.Registry;
-import space.arim.omnibus.resourcer.ResourceManager;
+import space.arim.omnibus.resourcer.Resourcer;
 
 /**
  * Central provider of the event bus, service registry, and resource manager.
@@ -49,6 +49,6 @@ public interface Omnibus {
 	 * 
 	 * @return the resource manager
 	 */
-	ResourceManager getResourceManager();
+	Resourcer getResourcer();
 	
 }

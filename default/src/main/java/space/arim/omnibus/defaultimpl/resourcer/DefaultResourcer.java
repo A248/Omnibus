@@ -26,15 +26,15 @@ import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.resourcer.ResourceHook;
 import space.arim.omnibus.resourcer.ResourceInfo;
-import space.arim.omnibus.resourcer.ResourceManager;
+import space.arim.omnibus.resourcer.Resourcer;
 
 /**
- * The default implementation of {@link ResourceManager}
+ * The default implementation of {@link Resourcer}
  * 
  * @author A248
  *
  */
-public class DefaultResourceManager implements ResourceManager {
+public class DefaultResourcer implements Resourcer {
 
 	/**
 	 * The associated {@code Events} instance
@@ -49,12 +49,12 @@ public class DefaultResourceManager implements ResourceManager {
 	 * 
 	 * @param omnibus the omnibus instance
 	 */
-	public DefaultResourceManager(Omnibus omnibus) {
+	public DefaultResourcer(Omnibus omnibus) {
 		events = omnibus.getEvents();
 	}
 	
 	// Testing
-	DefaultResourceManager(EventBus events) {
+	DefaultResourcer(EventBus events) {
 		this.events = events;
 	}
 	

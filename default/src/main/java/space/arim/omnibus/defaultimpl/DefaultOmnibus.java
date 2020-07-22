@@ -21,10 +21,10 @@ package space.arim.omnibus.defaultimpl;
 import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.defaultimpl.events.DefaultEvents;
 import space.arim.omnibus.defaultimpl.registry.DefaultRegistry;
-import space.arim.omnibus.defaultimpl.resourcer.DefaultResourceManager;
+import space.arim.omnibus.defaultimpl.resourcer.DefaultResourcer;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.Registry;
-import space.arim.omnibus.resourcer.ResourceManager;
+import space.arim.omnibus.resourcer.Resourcer;
 
 /**
  * The default implementation of {@link Omnibus}
@@ -36,7 +36,7 @@ public class DefaultOmnibus implements Omnibus {
 
 	private final EventBus events;
 	private final Registry registry;
-	private final ResourceManager resourcer;
+	private final Resourcer resourcer;
 	
 	/**
 	 * Creates a {@code DefaultOmnibus}
@@ -45,7 +45,7 @@ public class DefaultOmnibus implements Omnibus {
 	public DefaultOmnibus() {
 		events = new DefaultEvents(this);
 		registry = new DefaultRegistry(this);
-		resourcer = new DefaultResourceManager(this);
+		resourcer = new DefaultResourcer(this);
 	}
 	
 	@Override
@@ -59,7 +59,7 @@ public class DefaultOmnibus implements Omnibus {
 	}
 
 	@Override
-	public ResourceManager getResourceManager() {
+	public Resourcer getResourcer() {
 		return resourcer;
 	}
 

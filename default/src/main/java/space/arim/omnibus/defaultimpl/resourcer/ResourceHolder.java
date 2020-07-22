@@ -25,12 +25,12 @@ import space.arim.omnibus.resourcer.ShutdownHandler;
 
 class ResourceHolder<T> {
 
-	private final DefaultResourceManager resourcer;
+	private final DefaultResourcer resourcer;
 	private final Class<T> clazz;
 
 	private ResourceProvider<T> provider;
 	
-	ResourceHolder(DefaultResourceManager resourcer, Class<T> clazz) {
+	ResourceHolder(DefaultResourcer resourcer, Class<T> clazz) {
 		this.resourcer = resourcer;
 		this.clazz = clazz;
 	}
