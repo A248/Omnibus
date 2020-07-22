@@ -26,7 +26,7 @@ package space.arim.omnibus.registry;
  * 
  * @author A248
  */
-public final class RegistryPriority {
+public final class RegistryPriorities {
 	
 	public static final byte LOWEST = (byte) -96;
 	public static final byte LOWER = (byte) -64;
@@ -36,6 +36,6 @@ public final class RegistryPriority {
 	public static final byte HIGHER = (byte) 63;
 	public static final byte HIGHEST = (byte) 95;
 	
-	private RegistryPriority() {}
+	private RegistryPriorities() {}
 	
 }

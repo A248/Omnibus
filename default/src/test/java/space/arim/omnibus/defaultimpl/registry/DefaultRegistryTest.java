@@ -30,7 +30,7 @@ import space.arim.omnibus.defaultimpl.registry.DefaultRegistry;
 import space.arim.omnibus.registry.DuplicateRegistrationException;
 import space.arim.omnibus.registry.Registration;
 import space.arim.omnibus.registry.Registry;
-import space.arim.omnibus.registry.RegistryPriority;
+import space.arim.omnibus.registry.RegistryPriorities;
 
 public class DefaultRegistryTest {
 
@@ -69,12 +69,12 @@ public class DefaultRegistryTest {
 	@Test
 	public void testMultipleRegistrations() {
 		TestService alt = new TestServiceImpl();
-		Registration<TestService> regis1 = registry.register(TestService.class, RegistryPriority.LOWER, provider, "low priority");
-		Registration<TestService> regis2 = registry.register(TestService.class, RegistryPriority.HIGHER, alt, "higher priority");
+		Registration<TestService> regis1 = registry.register(TestService.class, RegistryPriorities.LOWER, provider, "low priority");
+		Registration<TestService> regis2 = registry.register(TestService.class, RegistryPriorities.HIGHER, alt, "higher priority");
 		assertEquals(alt, regis2.getProvider());
 		assertEquals(alt, registry.getProvider(TestService.class));
 		TestService highest = new TestServiceImpl();
-		Registration<TestService> regis3 = registry.registerAndGet(TestService.class, RegistryPriority.HIGHEST, highest, "highest priority");
+		Registration<TestService> regis3 = registry.registerAndGet(TestService.class, RegistryPriorities.HIGHEST, highest, "highest priority");
 		assertEquals(highest, regis3.getProvider());
 		assertEquals(highest, registry.getProvider(TestService.class));
 		assertEquals(List.of(regis1, regis2, regis3), registry.getAllRegistrations(TestService.class));
