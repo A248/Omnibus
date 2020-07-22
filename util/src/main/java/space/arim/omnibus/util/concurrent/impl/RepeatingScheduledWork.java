@@ -19,6 +19,7 @@
 package space.arim.omnibus.util.concurrent.impl;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 import space.arim.omnibus.util.concurrent.DelayCalculator;
@@ -95,7 +96,7 @@ class RepeatingScheduledWork<T> extends RunnableScheduledWork<T> {
 		try {
 			currentFuture.complete(command.apply(this));
 		} catch (Throwable ex) {
-			currentFuture.completeExceptionally(ex);
+			currentFuture.completeExceptionally((ex instanceof CompletionException) ? ex : new CompletionException(ex));
 		} finally {
 			/*
 			 * Reschedule unless cancelled

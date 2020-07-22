@@ -19,6 +19,7 @@
 package space.arim.omnibus.util.concurrent.impl;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
@@ -56,7 +57,7 @@ class DelayedScheduledWork<T> extends RunnableScheduledWork<T> {
 			try {
 				future.complete(supplier.get());
 			} catch (Throwable ex) {
-				future.completeExceptionally(ex);
+				future.completeExceptionally((ex instanceof CompletionException) ? ex : new CompletionException(ex));
 			}
 		});
 	}
