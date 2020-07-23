@@ -31,16 +31,16 @@ public interface OmnibusProviderSpi {
 	 * Gets the central {@code Omnibus} instance. This is usually a singleton. <br>
 	 * Corresponds to {@code OmnibusProvider.getOmnibus()}. <br>
 	 * <br>
-	 * If the caller class is never used, then {@link #requiresCallerClass()}.
+	 * If the caller class is never used, then {@link #requiresCallerClass()} should return false.
 	 * 
-	 * @param callerClass the class which called {@code OmnibusProvider.getOmnibus()}
+	 * @param callerClass the class which called {@code OmnibusProvider.getOmnibus()}, or null if not required
 	 * @return the central omnibus instance the caller class should be using
 	 */
-	Omnibus getOmnibusSingleton(Class<?> callerClass);
+	Omnibus getOmnibus(Class<?> callerClass);
 	
 	/**
 	 * Whether this provider requires that the caller class be looked up. <br>
-	 * If the implementation of {@link #getOmnibusSingleton(Class)} ignores
+	 * If the implementation of {@link #getOmnibus(Class)} ignores
 	 * the {@code callerClass} parameter, this method should return {@code false}
 	 * 
 	 * @return true if the caller class lookup is required, false otherwise

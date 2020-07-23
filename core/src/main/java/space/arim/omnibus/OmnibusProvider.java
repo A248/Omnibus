@@ -46,13 +46,13 @@ public final class OmnibusProvider {
 	 */
 	public static Omnibus getOmnibus() {
 		Class<?> caller = (PROVIDER.requiresCallerClass()) ? WalkerHolder.WALKER.getCallerClass() : null;
-		return PROVIDER.getOmnibusSingleton(caller);
+		return PROVIDER.getOmnibus(caller);
 	}
 	
 	private static class DefaultOmnibusProvider implements OmnibusProviderSpi {
 		private final Omnibus inst = new DefaultOmnibus();
 		@Override
-		public Omnibus getOmnibusSingleton(Class<?> callerClass) {
+		public Omnibus getOmnibus(Class<?> callerClass) {
 			return inst;
 		}
 		@Override
