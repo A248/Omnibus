@@ -18,7 +18,9 @@
  */
 package space.arim.omnibus.defaultimpl.resourcer;
 
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
@@ -27,6 +29,7 @@ import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.resourcer.ResourceHook;
 import space.arim.omnibus.resourcer.ResourceInfo;
 import space.arim.omnibus.resourcer.Resourcer;
+import space.arim.omnibus.resourcer.ShutdownHandler;
 
 /**
  * The default implementation of {@link Resourcer}
@@ -36,16 +39,13 @@ import space.arim.omnibus.resourcer.Resourcer;
  */
 public class DefaultResourcer implements Resourcer {
 
-	/**
-	 * The associated {@code Events} instance
-	 * 
-	 */
-	final EventBus events;
+	private final EventBus events;
+	private final Queue<ShutdownEventImpl<?>> shutdownEventQueue = new ConcurrentLinkedQueue<>();
 	
-	private final ConcurrentMap<Class<?>, ResourceHolder<?>> resources = new ConcurrentHashMap<>();
+	private final ConcurrentMap<Class<?>, ResourceProvider<?>> resources = new ConcurrentHashMap<>();
 	
 	/**
-	 * Creates a {@code DefaultResourceManager}
+	 * Creates a {@code DefaultResourcer}
 	 * 
 	 * @param omnibus the omnibus instance
 	 */
@@ -58,20 +58,40 @@ public class DefaultResourcer implements Resourcer {
 		this.events = events;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private <T> ResourceHolder<T> getHolder(Class<T> clazz) {
-		return (ResourceHolder<T>) resources.computeIfAbsent(clazz, (c) -> new ResourceHolder<T>(this, (Class<T>) c));
-	}
-	
 	@Override
 	public <T> ResourceHook<T> hookUsage(Class<T> clazz, Supplier<ResourceInfo<T>> defaultImplProvider) {
-		return new ResourceHookImpl<T>(getHolder(clazz), defaultImplProvider);
+		return new ResourceHookImpl<>(this, clazz, defaultImplProvider);
 	}
-	
+
 	@Override
 	public <T> void unhookUsage(ResourceHook<T> hook) {
-		ResourceHookImpl<T> hookImpl = (ResourceHookImpl<T>) hook;
-		hookImpl.holder.removeHook(hookImpl);
+		ResourceHookImpl<T> hookImpl = ((ResourceHookImpl<T>) hook);
+		hookImpl.dirty = true;
+		resources.computeIfPresent(hookImpl.clazz, (c, provider) -> {
+			if (provider.owner == hookImpl) {
+				@SuppressWarnings("unchecked")
+				ShutdownEventImpl<T> shutdownEvent = new ShutdownEventImpl<T>(hookImpl.clazz, (ResourceInfo<T>) provider.info);
+				shutdownEventQueue.offer(shutdownEvent);
+				return null;
+			}
+			return provider;
+		});
+		ShutdownEventImpl<?> event;
+		while ((event = shutdownEventQueue.poll()) != null) {
+			ShutdownHandler handler = event.info.getShutdownHandler();
+			try {
+				handler.preShutdownEvent();
+			} finally {
+				events.fireEvent(event);
+			}
+			handler.postShutdownEvent();
+		}
 	}
-	
+
+	<T> T getResource(ResourceHookImpl<T> requester) {
+		@SuppressWarnings("unchecked")
+		ResourceProvider<T> provider = (ResourceProvider<T>) resources.computeIfAbsent(requester.clazz, requester::createProvider);
+		return provider.info.getImplementation();
+	}
+
 }

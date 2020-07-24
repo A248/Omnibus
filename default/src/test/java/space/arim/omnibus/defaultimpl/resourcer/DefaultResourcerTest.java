@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import space.arim.omnibus.defaultimpl.resourcer.DefaultResourcer;
 import space.arim.omnibus.resourcer.ResourceHook;
 import space.arim.omnibus.resourcer.ResourceInfo;
 import space.arim.omnibus.resourcer.Resourcer;
@@ -57,7 +56,7 @@ public class DefaultResourcerTest {
 		assertEquals(hook.getResource().getClass(), TestResourceMainImpl.class);
 
 		resourcer.unhookUsage(hook);
-		assertTrue(shutdown.isDone());
+		assertTrue(shutdown.isDone(), "ShutdownHandler should have been called");
 	}
 	
 	@Test
@@ -71,6 +70,17 @@ public class DefaultResourcerTest {
 		resourcer.unhookUsage(hookMain);
 		assertEquals(hookAlt.getResource().getClass(), TestResourceAltImpl.class);
 		resourcer.unhookUsage(hookAlt);
+	}
+	
+	@Test
+	public void testUnhook() {
+		ResourceHook<TestResource> hook = resourcer.hookUsage(TestResource.class,
+				() -> new ResourceInfo<>("", new TestResourceMainImpl(), ShutdownHandler.none()));
+		resourcer.unhookUsage(hook);
+		try {
+			hook.getResource();
+			fail("Retrieved resource via unhooked ResourceHook");
+		} catch (IllegalStateException expected) {}
 	}
 	
 }

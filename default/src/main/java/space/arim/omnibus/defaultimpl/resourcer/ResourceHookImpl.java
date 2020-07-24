@@ -25,12 +25,15 @@ import space.arim.omnibus.resourcer.ResourceInfo;
 
 class ResourceHookImpl<T> implements ResourceHook<T> {
 
-	final ResourceHolder<T> holder;
-	final Supplier<ResourceInfo<T>> defaultProvider;
+	private final DefaultResourcer resourcer;
+	final Class<T> clazz;
+	private final Supplier<ResourceInfo<T>> defaultProvider;
+	
 	volatile boolean dirty;
 	
-	ResourceHookImpl(ResourceHolder<T> holder, Supplier<ResourceInfo<T>> defaultProvider) {
-		this.holder = holder;
+	ResourceHookImpl(DefaultResourcer resourcer, Class<T> clazz, Supplier<ResourceInfo<T>> defaultProvider) {
+		this.resourcer = resourcer;
+		this.clazz = clazz;
 		this.defaultProvider = defaultProvider;
 	}
 	
@@ -39,7 +42,14 @@ class ResourceHookImpl<T> implements ResourceHook<T> {
 		if (dirty) {
 			throw new IllegalStateException("ResourceHook#getResource cannot be used once unhooked");
 		}
-		return holder.getResource(this);
+		return resourcer.getResource(this);
+	}
+	
+	ResourceProvider<T> createProvider(Class<?> resourceClass) {
+		assert clazz == resourceClass;
+		ResourceInfo<T> info = defaultProvider.get();
+		resourceClass.cast(info.getImplementation());
+		return new ResourceProvider<>(info, this);
 	}
 	
 }

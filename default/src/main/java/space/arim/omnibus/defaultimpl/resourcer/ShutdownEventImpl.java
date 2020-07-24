@@ -18,16 +18,17 @@
  */
 package space.arim.omnibus.defaultimpl.resourcer;
 
+import space.arim.omnibus.resourcer.ResourceInfo;
 import space.arim.omnibus.resourcer.ShutdownEvent;
 
 class ShutdownEventImpl<T> implements ShutdownEvent<T> {
 
 	private final Class<T> clazz;
-	private final T impl;
+	final ResourceInfo<T> info;
 	
-	ShutdownEventImpl(Class<T> clazz, T impl) {
+	ShutdownEventImpl(Class<T> clazz, ResourceInfo<T> info) {
 		this.clazz = clazz;
-		this.impl = impl;
+		this.info = info;
 	}
 	
 	@Override
@@ -37,7 +38,7 @@ class ShutdownEventImpl<T> implements ShutdownEvent<T> {
 
 	@Override
 	public T getShutImplementation() {
-		return impl;
+		return info.getImplementation();
 	}
 
 }
