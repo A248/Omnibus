@@ -25,6 +25,7 @@ package space.arim.omnibus.resourcer;
  * usage of a certain resource. <br>
  * <br>
  * <b>When no longer needed, {@code ResourceHook} MUST be unhooked via {@link Resourcer#unhookUsage(ResourceHook)}. </b>
+ * After being unhooked, it may no longer be used to retrieve the resource.
  * 
  * @author A248
  *
@@ -43,6 +44,7 @@ public interface ResourceHook<T> {
 	 * and this method should be called whenever the resource is needed.
 	 * 
 	 * @return the current resource provider's implementation
+	 * @throws IllegalStateException if this {@code ResourceHook} was unhooked
 	 */
 	T getResource();
 	
