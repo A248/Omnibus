@@ -43,8 +43,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>space.arim.omnibus</groupId>
-			<artifactId>omnibus-gpl</artifactId>
+			<groupId>space.arim.licenser</groupId>
+			<artifactId>licenser-gpl3</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -52,4 +53,11 @@
 			<artifactId>omnibus-all</artifactId>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>arim-repo</id>
+			<url>https://www.arim.space/maven/</url>
+		</repository>
+	</repositories>
 </project>

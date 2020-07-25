@@ -115,7 +115,6 @@
 	</build>
 	
 	<modules>
-		<module>licenses</module>
 		<module>util</module>
 		<module>events</module>
 		<module>registry</module>
@@ -178,11 +177,6 @@
 			</dependency>
 			<dependency>
 				<groupId>space.arim.omnibus</groupId>
-				<artifactId>omnibus-gpl</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>space.arim.omnibus</groupId>
 				<artifactId>omnibus-all</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -195,11 +189,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
-	<!-- <repositories>
-		<repository>
-			<id>arim-repo</id>
-			<url>https://www.arim.space/maven/</url>
-		</repository>
-	</repositories>  -->
 </project>
