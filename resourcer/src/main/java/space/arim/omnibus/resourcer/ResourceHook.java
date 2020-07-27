@@ -18,6 +18,8 @@
  */
 package space.arim.omnibus.resourcer;
 
+import java.util.function.Supplier;
+
 /**
  * A resource hook which retrieves the current implementation of a resource as it is needed. <br>
  * <br>
@@ -47,5 +49,15 @@ public interface ResourceHook<T> {
 	 * @throws IllegalStateException if this {@code ResourceHook} was unhooked
 	 */
 	T getResource();
+	
+	/**
+	 * Gets a {@link Supplier} whose {@code get} method returns the same result as
+	 * {@link #getResource()}.
+	 * 
+	 * @return a {@code Supplier} returning the value of {@code #getResource()}
+	 */
+	default Supplier<T> toSupplier() {
+		return this::getResource;
+	}
 	
 }

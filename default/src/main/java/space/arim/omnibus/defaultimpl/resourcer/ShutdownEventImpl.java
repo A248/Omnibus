@@ -42,3 +42,7 @@ class ShutdownEventImpl<T> implements ShutdownEvent<T> {
 	}
 
 }
+
+class EventContainer<T> {
+	ShutdownEventImpl<T> event;
+}

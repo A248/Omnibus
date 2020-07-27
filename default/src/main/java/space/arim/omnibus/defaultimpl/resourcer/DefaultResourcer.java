@@ -18,9 +18,7 @@
  */
 package space.arim.omnibus.defaultimpl.resourcer;
 
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
@@ -40,7 +38,6 @@ import space.arim.omnibus.resourcer.ShutdownHandler;
 public class DefaultResourcer implements Resourcer {
 
 	private final EventBus events;
-	private final Queue<ShutdownEventImpl<?>> shutdownEventQueue = new ConcurrentLinkedQueue<>();
 	
 	private final ConcurrentMap<Class<?>, ResourceProvider<?>> resources = new ConcurrentHashMap<>();
 	
@@ -67,17 +64,19 @@ public class DefaultResourcer implements Resourcer {
 	public <T> void unhookUsage(ResourceHook<T> hook) {
 		ResourceHookImpl<T> hookImpl = ((ResourceHookImpl<T>) hook);
 		hookImpl.dirty = true;
+
+		final var evtContainer = new EventContainer<T>();
 		resources.computeIfPresent(hookImpl.clazz, (c, provider) -> {
 			if (provider.owner == hookImpl) {
 				@SuppressWarnings("unchecked")
 				ShutdownEventImpl<T> shutdownEvent = new ShutdownEventImpl<T>(hookImpl.clazz, (ResourceInfo<T>) provider.info);
-				shutdownEventQueue.offer(shutdownEvent);
+				evtContainer.event = shutdownEvent;
 				return null;
 			}
 			return provider;
 		});
-		ShutdownEventImpl<?> event;
-		while ((event = shutdownEventQueue.poll()) != null) {
+		ShutdownEventImpl<?> event = evtContainer.event;
+		if (event != null) {
 			ShutdownHandler handler = event.info.getShutdownHandler();
 			try {
 				handler.preShutdownEvent();
@@ -92,6 +91,13 @@ public class DefaultResourcer implements Resourcer {
 		@SuppressWarnings("unchecked")
 		ResourceProvider<T> provider = (ResourceProvider<T>) resources.computeIfAbsent(requester.clazz, requester::createProvider);
 		return provider.info.getImplementation();
+	}
+
+	@Override
+	public <T> T getCurrentResource(Class<T> clazz) {
+		@SuppressWarnings("unchecked")
+		ResourceProvider<T> provider = (ResourceProvider<T>) resources.get(clazz);
+		return (provider == null) ? null : provider.info.getImplementation();
 	}
 
 }

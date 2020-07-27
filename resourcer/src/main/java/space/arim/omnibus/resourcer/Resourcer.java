@@ -81,4 +81,13 @@ public interface Resourcer {
 	 */
 	<T> void unhookUsage(ResourceHook<T> hook);
 	
+	/**
+	 * Gets the current provider of a resource if any exists, otherwise {@code null} if it does not
+	 * 
+	 * @param <T> the resource type
+	 * @param clazz the resource class
+	 * @return the current resource provider or {@code null} if there is none
+	 */
+	<T> T getCurrentResource(Class<T> clazz);
+	
 }
