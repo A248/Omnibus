@@ -62,6 +62,7 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	 * Creates using the specified thread factory to instantiate the scheduling thread
 	 * 
 	 * @param threadFactory the thread factory from which to derive the scheduling thread
+	 * @throws NullPointerException if {@code threadFactory} is null
 	 */
 	protected SimplifiedEnhancedExecutor(ThreadFactory threadFactory) {
 		scheduler = Executors.newScheduledThreadPool(1, threadFactory);
@@ -178,7 +179,9 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	
 	void scheduleAndLink(RunnableScheduledWork<?> publishableTask, long nanosDelay) {
 		if (nanosDelay == 0L) {
-			scheduler.execute(publishableTask);
+			// It does not matter which thread RunnableScheduledWork.run() is called from
+			// Either way, the RunnableScheduledWork.run() method delegates back to #execute
+			publishableTask.run();
 		} else {
 			ScheduledFuture<?> internalFuture = scheduler.schedule(publishableTask, nanosDelay, TimeUnit.NANOSECONDS);
 			publishableTask.whenComplete((val, ex) -> {
