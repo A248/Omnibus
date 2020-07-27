@@ -37,15 +37,26 @@ class ResourceHookImpl<T> implements ResourceHook<T> {
 		this.defaultProvider = defaultProvider;
 	}
 	
+	private static IllegalStateException unhookedException() {
+		return new IllegalStateException("ResourceHook#getResource cannot be used once unhooked");
+	}
+	
 	@Override
 	public T getResource() {
 		if (dirty) {
-			throw new IllegalStateException("ResourceHook#getResource cannot be used once unhooked");
+			throw unhookedException();
 		}
 		return resourcer.getResource(this);
 	}
 	
 	ResourceProvider<T> createProvider(Class<?> resourceClass) {
+		// https://github.com/A248/Omnibus/issues/2
+		// Recheck dirty status to prevent race condition resource leak
+		// This fix uses ConcurrentHashMap#computeIfAbsent's built-in synchronisation
+		if (dirty) {
+			throw unhookedException();
+		}
+
 		assert clazz == resourceClass;
 		ResourceInfo<T> info = defaultProvider.get();
 		resourceClass.cast(info.getImplementation());
