@@ -113,19 +113,19 @@ public class DefaultRegistry implements Registry {
 	
 	@Override
 	public <T> Registration<T> register(Class<T> service, byte priority, T provider, String name) {
+		service.cast(provider);
 		Registration<T> registration = new Registration<>(priority, provider, name); // constructor checks for null params
 
 		addRegistration(service, registration, provider);
-
 		return registration;
 	}
 	
 	@Override
 	public <T> Registration<T> registerAndGet(Class<T> service, byte priority, T provider, String name) {
+		service.cast(provider);
 		Registration<T> registration = new Registration<T>(priority, provider, name); // constructor checks for null params
 
 		Registration<T>[] updated = addRegistration(service, registration, provider);
-
 		return updated[updated.length - 1];
 	}
 	
