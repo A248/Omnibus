@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim.omnibus</groupId>
 	<artifactId>omnibus-parent</artifactId>
-	<version>0.15.2-SNAPSHOT</version>
+	<version>0.15.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<name>Omnibus</name>
