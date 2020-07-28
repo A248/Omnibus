@@ -19,6 +19,7 @@
 package space.arim.omnibus.util.concurrent.impl;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -34,6 +35,7 @@ import java.util.function.Supplier;
 import space.arim.omnibus.util.concurrent.DelayCalculator;
 import space.arim.omnibus.util.concurrent.EnhancedExecutor;
 import space.arim.omnibus.util.concurrent.ScheduledWork;
+import space.arim.omnibus.util.concurrent.StoppableExecutor;
 
 /**
  * Abstract implementation of {@link EnhancedExecutor} which handles its own scheduling and delegates
@@ -41,12 +43,14 @@ import space.arim.omnibus.util.concurrent.ScheduledWork;
  * <br>
  * An internal scheduling thread is maintained which is responsible for all scheduling of tasks. From
  * within this internal scheduler, execution of the work itself is delegated to the {@code execute} method.
- * The {@code Runnable} is then executed somewhere else, typically in a thread pool associated with the subclass.
+ * The {@code Runnable} is then executed somewhere else, typically in a thread pool associated with the subclass. <br>
+ * <br>
+ * When no longer needed, instances of this class should be shut down per {@link StoppableExecutor} methods.
  * 
  * @author A248
  *
  */
-public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
+public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor, StoppableExecutor {
 
 	private final ScheduledExecutorService scheduler;
 	
@@ -190,6 +194,31 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 				}
 			});
 		}
+	}
+
+	@Override
+	public void shutdown() {
+		scheduler.shutdown();
+	}
+
+	@Override
+	public List<Runnable> shutdownNow() {
+		return scheduler.shutdownNow();
+	}
+
+	@Override
+	public boolean isShutdown() {
+		return scheduler.isShutdown();
+	}
+
+	@Override
+	public boolean isTerminated() {
+		return scheduler.isTerminated();
+	}
+
+	@Override
+	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+		return scheduler.awaitTermination(timeout, unit);
 	}
 
 }
