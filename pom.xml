@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim.omnibus</groupId>
 	<artifactId>omnibus-parent</artifactId>
-	<version>0.15.3-SNAPSHOT</version>
+	<version>0.15.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<name>Omnibus</name>
@@ -128,12 +128,12 @@
 	
 	<distributionManagement>
 		<repository>
-			<id>arim-repo</id>
-			<url>https://maven.cloudsmith.io/anand-beh/arim-repo/</url>
+			<id>cloudsmith-deploy</id>
+			<url>https://maven.cloudsmith.io/anand-beh/gpl3/</url>
 		</repository>
 		<snapshotRepository>
-			<id>arim-repo</id>
-			<url>https://maven.cloudsmith.io/anand-beh/arim-repo/</url>
+			<id>cloudsmith-deploy</id>
+			<url>https://maven.cloudsmith.io/anand-beh/gpl3/</url>
 		</snapshotRepository>
 	</distributionManagement>
 	
