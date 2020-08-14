@@ -100,7 +100,7 @@ public class DefaultEvents implements EventBus {
 				}
 				try {
 					listener.evtConsumer.accept(event);
-				} catch (Exception ex) {
+				} catch (RuntimeException ex) {
 					ex.printStackTrace();
 				}
 			}
