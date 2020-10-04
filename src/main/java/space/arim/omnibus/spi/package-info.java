@@ -1,5 +1,5 @@
 /**
- * Defines a service provider framework allowing management of instances returned by {@link OmnibusProvider#getOmnibus}. <br>
+ * Defines a service provider framework allowing management of instances returned by {@link OmnibusProvider#getOmnibus()}. <br>
  * <br>
  * The interfaces in this package must be implemented by service providers. An example of replacing the global {@link Omnibus}
  * instance is provided: <br>
@@ -18,7 +18,7 @@
  * 
  * 	private final Omnibus instance = new CustomOmnibusImplementation();
  * 
- * 	public Omnibus getOmnibus(Class<?> callerClass) {
+ * 	public Omnibus getOmnibus(Class{@literal <?>} callerClass) {
  * 		return instance;
  * 	}
  * 
@@ -33,3 +33,4 @@
 package space.arim.omnibus.spi;
 
 import space.arim.omnibus.Omnibus;
+import space.arim.omnibus.OmnibusProvider;
