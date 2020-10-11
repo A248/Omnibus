@@ -73,7 +73,6 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	@Override
 	public ScheduledWork<Void> scheduleOnce(Runnable command, Duration delay) {
 		Objects.requireNonNull(command, "command");
-		Objects.requireNonNull(delay, "delay");
 
 		return scheduleOnce0(() -> {
 			command.run();
@@ -84,12 +83,13 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	@Override
 	public <T> ScheduledWork<T> scheduleOnce(Supplier<T> supplier, Duration delay) {
 		Objects.requireNonNull(supplier, "supplier");
-		Objects.requireNonNull(delay, "delay");
 
 		return scheduleOnce0(supplier, delay);
 	}
 
 	private <T> ScheduledWork<T> scheduleOnce0(Supplier<T> supplier, Duration delay) {
+		Objects.requireNonNull(delay, "delay");
+
 		long nanosDelay = delay.toNanos();
 		if (nanosDelay < 0) {
 			return new AlreadyCancelledWork<>(false, nanosDelay);
@@ -103,8 +103,6 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	public ScheduledWork<?> scheduleRepeating(Runnable command, Duration initialDelay,
 			DelayCalculator delayCalculator) {
 		Objects.requireNonNull(command, "command");
-		Objects.requireNonNull(initialDelay, "initialDelay");
-		Objects.requireNonNull(delayCalculator, "delayCalculator");
 
 		return scheduleRepeating0((task) -> {
 			command.run();
@@ -116,8 +114,6 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	public <T> ScheduledWork<T> scheduleRepeating(Supplier<T> supplier, Duration initialDelay,
 			DelayCalculator delayCalculator) {
 		Objects.requireNonNull(supplier, "supplier");
-		Objects.requireNonNull(initialDelay, "initialDelay");
-		Objects.requireNonNull(delayCalculator, "delayCalculator");
 
 		return scheduleRepeating0((task) -> supplier.get(), initialDelay, delayCalculator);
 	}
@@ -126,8 +122,6 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	public ScheduledWork<?> scheduleRepeating(Consumer<? super ScheduledWork<?>> command, Duration initialDelay,
 			DelayCalculator delayCalculator) {
 		Objects.requireNonNull(command, "command");
-		Objects.requireNonNull(initialDelay, "initialDelay");
-		Objects.requireNonNull(delayCalculator, "delayCalculator");
 
 		return scheduleRepeating0((task) -> {
 			command.accept(task);
@@ -139,14 +133,15 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	public <T> ScheduledWork<T> scheduleRepeating(Function<? super ScheduledWork<T>, T> supplier, Duration initialDelay,
 			DelayCalculator delayCalculator) {
 		Objects.requireNonNull(supplier, "supplier");
-		Objects.requireNonNull(initialDelay, "initialDelay");
-		Objects.requireNonNull(delayCalculator, "delayCalculator");
 
 		return scheduleRepeating0(supplier, initialDelay, delayCalculator);
 	}
 
 	private <T> ScheduledWork<T> scheduleRepeating0(Function<? super ScheduledWork<T>, T> supplier, Duration initialDelay,
 			DelayCalculator delayCalculator) {
+		Objects.requireNonNull(initialDelay, "initialDelay");
+		Objects.requireNonNull(delayCalculator, "delayCalculator");
+
 		long nanosDelay = initialDelay.toNanos();
 		if (nanosDelay < 0) {
 			return new AlreadyCancelledWork<>(true, nanosDelay);

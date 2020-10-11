@@ -101,6 +101,7 @@ public interface EnhancedExecutor extends Executor {
 	 * 
 	 * @param command the {@link Runnable} to run
 	 * @return a completable future of the executed runnable
+	 * @throws NullPointerException if {@code command} is null
 	 */
 	CompletableFuture<?> submit(Runnable command);
 	
@@ -110,6 +111,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param <T> the type of the supplier
 	 * @param supplier the supplier
 	 * @return a future which upon completion of the supplier yields the supplied value
+	 * @throws NullPointerException if {@code supplier} is null
 	 */
 	<T> CompletableFuture<T> supply(Supplier<T> supplier);
 	
@@ -125,6 +127,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param command the runnable to run
 	 * @param delay the delay duration
 	 * @return a scheduled task representing the delayed work, which may be cancelled before execution begins
+	 * @throws NullPointerException if {@code command} or {@code delay} is null
 	 */
 	ScheduledWork<?> scheduleOnce(Runnable command, Duration delay);
 	
@@ -135,6 +138,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param supplier the supplier to run
 	 * @param delay the delay duration
 	 * @return a scheduled task representing the delayed work, which may be cancelled before execution begins
+	 * @throws NullPointerException if {@code supplier} or {@code delay} is null
 	 */
 	<T> ScheduledWork<T> scheduleOnce(Supplier<T> supplier, Duration delay);
 	
@@ -151,6 +155,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param initialDelay the initial delay before the first execution begins
 	 * @param delayCalculator the delay calculator to calculate repeated delays
 	 * @return a scheduled task representing the repeating work, which may be cancelled
+	 * @throws NullPointerException if any parameter is null
 	 */
 	ScheduledWork<?> scheduleRepeating(Runnable command, Duration initialDelay, DelayCalculator delayCalculator);
 	
@@ -162,6 +167,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param initialDelay the initial delay before the first execution begins
 	 * @param delayCalculator the delay calculator to calculate repeated delays
 	 * @return a scheduled task representing the repeating work, which may be cancelled
+	 * @throws NullPointerException if any parameter is null
 	 */
 	<T> ScheduledWork<T> scheduleRepeating(Supplier<T> supplier, Duration initialDelay, DelayCalculator delayCalculator);
 	
@@ -172,6 +178,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param initialDelay the initial delay before the first execution begins
 	 * @param delayCalculator the delay calculator to calculate repeated delays
 	 * @return a scheduled task representing the repeating work, which may be cancelled
+	 * @throws NullPointerException if any parameter is null
 	 */
 	ScheduledWork<?> scheduleRepeating(Consumer<? super ScheduledWork<?>> command, Duration initialDelay, DelayCalculator delayCalculator);
 	
@@ -183,6 +190,7 @@ public interface EnhancedExecutor extends Executor {
 	 * @param initialDelay the initial delay before the first execution begins
 	 * @param delayCalculator the delay calculator to calculate repeated delays
 	 * @return a scheduled task representing the repeating work, which may be cancelled
+	 * @throws NullPointerException if any parameter is null
 	 */
 	<T> ScheduledWork<T> scheduleRepeating(Function<? super ScheduledWork<T>, T> supplier, Duration initialDelay, DelayCalculator delayCalculator);
 	

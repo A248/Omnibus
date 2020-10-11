@@ -18,6 +18,7 @@
  */
 package space.arim.omnibus.util.concurrent.impl;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -149,6 +150,16 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 			}
 		});
 		return new MinimalReactionStage<>(result);
+	}
+	
+	@Override
+	public CentralisedFuture<?> allOf(CentralisedFuture<?>...futures) {
+		return copyFuture(CompletableFuture.allOf(futures));
+	}
+	
+	@Override
+	public CentralisedFuture<?> allOf(Collection<CentralisedFuture<?>> futures) {
+		return allOf(futures.toArray(CentralisedFuture[]::new));
 	}
 
 }

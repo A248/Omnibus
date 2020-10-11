@@ -18,6 +18,7 @@
  */
 package space.arim.omnibus.util.concurrent;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
@@ -52,6 +53,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * 
 	 * @param command the runnable to run
 	 * @return a centralised future representing the runnable's progress
+	 * @throws NullPointerException if {@code command} is null
 	 */
 	CentralisedFuture<?> runAsync(Runnable command);
 	
@@ -62,6 +64,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param command the runnable to run
 	 * @param executor the executor on which to run the runnable
 	 * @return a centralised future representing the runnable's progress
+	 * @throws NullPointerException if {@code command} or {@code executor} is null
 	 */
 	CentralisedFuture<?> runAsync(Runnable command, Executor executor);
 	
@@ -71,6 +74,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * 
 	 * @param command the runnable to run
 	 * @return a centralised future representing the runnable's progress
+	 * @throws NullPointerException if {@code command} is null
 	 */
 	CentralisedFuture<?> runSync(Runnable command);
 	
@@ -80,6 +84,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param <T> the return type of the supplier
 	 * @param supplier the supplier to run
 	 * @return a centralised future representing the supplier's progress
+	 * @throws NullPointerException if {@code supplier} is null
 	 */
 	<T> CentralisedFuture<T> supplyAsync(Supplier<T> supplier);
 	
@@ -91,6 +96,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param supplier the supplier to run
 	 * @param executor the executor on which to run the supplier
 	 * @return a centralised future representing the supplier's progress
+	 * @throws NullPointerException if {@code supplier} or {@code executor} is null
 	 */
 	<T> CentralisedFuture<T> supplyAsync(Supplier<T> supplier, Executor executor);
 	
@@ -101,6 +107,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param <T> the return type of the supplier
 	 * @param supplier the supplier to run
 	 * @return a centralised future representing the supplier's progress
+	 * @throws NullPointerException if {@code supplier} is null
 	 */
 	<T> CentralisedFuture<T> supplySync(Supplier<T> supplier);
 	
@@ -171,5 +178,33 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @return a reaction stage completed in the same way as the original completion stage
 	 */
 	<T> ReactionStage<T> copyStage(CompletionStage<T> completionStage);
+	
+	/**
+	 * Creates a future which completes when all of the specified futures complete. If all do so normally,
+	 * the combined future completes normally, else exceptionally with the exception. <br>
+	 * <br>
+	 * If no futures are provided, returns an already completed future. <br>
+	 * <br>
+	 * Note that the completed value of the combined future, if it completes normally, is not meaningful.
+	 * 
+	 * @param futures the futures to combine
+	 * @return a future completed combining the specified futures
+	 * @throws NullPointerException if {@code futures} or an element in it is null
+	 */
+	CentralisedFuture<?> allOf(CentralisedFuture<?>...futures);
+	
+	/**
+	 * Creates a future which completes when all of the specified futures complete. If all do so normally,
+	 * the combined future completes normally, else exceptionally with the exception. <br>
+	 * <br>
+	 * If no futures are provided, returns an already completed future. <br>
+	 * <br>
+	 * Note that the completed value of the combined future, if it completes normally, is not meaningful.
+	 * 
+	 * @param futures the futures to combine
+	 * @return a future completed combining the specified futures
+	 * @throws NullPointerException if {@code futures} or an element in it is null
+	 */
+	CentralisedFuture<?> allOf(Collection<CentralisedFuture<?>> futures);
 
 }

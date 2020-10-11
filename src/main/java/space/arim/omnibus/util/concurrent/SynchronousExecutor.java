@@ -20,7 +20,6 @@ package space.arim.omnibus.util.concurrent;
 
 import java.util.concurrent.Executor;
 
-// TODO: Auto-generated Javadoc
 /**
  * Similar to {@link Executor}, in that it accepts and runs {@link Runnable}s. However,
  * instead of executing in an arbitrary thread, the {@code Runnable} must run on the
@@ -44,6 +43,7 @@ public interface SynchronousExecutor {
 	 * <code>ForkJoinPool.commonPool()</code>
 	 * 
 	 * @param command the runnable to run synchronously with the main thread
+	 * @throws NullPointerException if {@code command} is null
 	 */
 	void executeSync(Runnable command);
 	
