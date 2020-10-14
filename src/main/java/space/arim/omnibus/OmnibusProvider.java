@@ -45,8 +45,8 @@ public final class OmnibusProvider {
 	}
 	
 	private static OmnibusDefiner getDefiner() {
-		ModuleLayer layer = OmnibusProvider.class.getModule().getLayer();
-		ServiceLoader<OmnibusProviderSpi> loader = ServiceLoader.load(layer, OmnibusProviderSpi.class);
+		ClassLoader classLoader = OmnibusProvider.class.getClassLoader();
+		ServiceLoader<OmnibusProviderSpi> loader = ServiceLoader.load(OmnibusProviderSpi.class, classLoader);
 		Iterator<OmnibusProviderSpi> it = loader.iterator();
 		if (!it.hasNext()) {
 			return new DefaultOmnibusDefiner();
