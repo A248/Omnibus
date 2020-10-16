@@ -43,7 +43,7 @@ class MinimalReactionStage<T> implements ReactionStage<T> {
 
 	@Override
 	public CentralisedFuture<T> toCompletableFuture() {
-		return centralisedFuture;
+		return centralisedFuture.copy();
 	}
 
 	private <U> ReactionStage<U> wrap(CentralisedFuture<U> centralisedFuture) {

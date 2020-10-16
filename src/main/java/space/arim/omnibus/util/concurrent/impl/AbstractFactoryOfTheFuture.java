@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 
 import space.arim.omnibus.util.concurrent.CentralisedFuture;
@@ -34,9 +33,9 @@ import space.arim.omnibus.util.concurrent.ReactionStage;
  * Abstract base class for {@link FactoryOfTheFuture} using protected method
  * {@link #newIncompleteFuture()} to generate futures as determined by subclasses. <br>
  * <br>
- * Requirements to be implemented by subclasses: <br>
- * {@link #newIncompleteFuture()} <br>
- * {@link #executeSync(Runnable)} <br>
+ * Requirements to be implemented by subclasses are {@link #newIncompleteFuture()} and
+ * {@link #executeSync(Runnable)}. <br>
+ * <br>
  * {@link #execute(Runnable)} may be optionally overridden to change the default executor for
  * asynchronous work.
  * 
@@ -44,6 +43,8 @@ import space.arim.omnibus.util.concurrent.ReactionStage;
  *
  */
 public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
+
+	private static final Executor DEFAULT_EXECUTOR = new CompletableFuture<>().defaultExecutor();
 
 	/**
 	 * Creates a new, incomplete future. The result of this method
@@ -57,7 +58,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 
 	@Override
 	public void execute(Runnable command) {
-		ForkJoinPool.commonPool().execute(command);
+		DEFAULT_EXECUTOR.execute(command);
 	}
 	
 	@Override
@@ -125,31 +126,27 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	public <T> ReactionStage<T> failedStage(Throwable ex) {
 		return new MinimalReactionStage<>(failedFuture(ex));
 	}
+	
+	private <T> CentralisedFuture<T> copyStage0(CompletionStage<T> completionStage) {
+		CentralisedFuture<T> copy = newIncompleteFuture();
+		completionStage.whenComplete((val, ex) -> {
+			if (ex == null) {
+				copy.complete(val);
+			} else {
+				copy.completeExceptionally(ex);
+			}
+		});
+		return copy;
+	}
 
 	@Override
 	public <T> CentralisedFuture<T> copyFuture(CompletableFuture<T> completableFuture) {
-		CentralisedFuture<T> result = newIncompleteFuture();
-		completableFuture.whenComplete((val, ex) -> {
-			if (ex == null) {
-				result.complete(val);
-			} else {
-				result.completeExceptionally(ex);
-			}
-		});
-		return result;
+		return copyStage0(completableFuture);
 	}
 
 	@Override
 	public <T> ReactionStage<T> copyStage(CompletionStage<T> completionStage) {
-		CentralisedFuture<T> result = newIncompleteFuture();
-		completionStage.whenComplete((val, ex) -> {
-			if (ex == null) {
-				result.complete(val);
-			} else {
-				result.completeExceptionally(ex);
-			}
-		});
-		return new MinimalReactionStage<>(result);
+		return copyStage0(completionStage).minimalCompletionStage();
 	}
 	
 	@Override
