@@ -24,18 +24,14 @@ class AlreadyCancelledWork<T> extends AbstractScheduledWork<T> {
 
 	private final boolean repeating;
 	private final long runTime;
-	
-	private static final CompletableFuture<?> CANCELLED_FUTURE;
-	
-	static {
-		CompletableFuture<?> cancelledFuture = new CompletableFuture<>();
-		cancelledFuture.cancel(false);
-		CANCELLED_FUTURE = cancelledFuture;
-	}
+	private final CompletableFuture<T> cancelledFuture;
 	
 	AlreadyCancelledWork(boolean repeating, long nanosDelay) {
 		this.repeating = repeating;
 		runTime = System.nanoTime() + nanosDelay;
+		CompletableFuture<T> cancelledFuture = new CompletableFuture<>();
+		cancelledFuture.cancel(false);
+		this.cancelledFuture = cancelledFuture;
 	}
 
 	@Override
@@ -63,11 +59,9 @@ class AlreadyCancelledWork<T> extends AbstractScheduledWork<T> {
 		return runTime;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	CompletableFuture<T> getCompletableFuture() {
-		// Safe cast because the result will never exist
-		return (CompletableFuture<T>) CANCELLED_FUTURE;
+		return cancelledFuture;
 	}
 	
 }
