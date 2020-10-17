@@ -169,7 +169,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	
 	/**
 	 * Copies a {@code CompletionStage} to a {@code ReactionStage}. <br>
-	 * When the completable future completes, if it does so normally, the centralised future
+	 * When the completable future completes, if it does so normally, the reaction stage
 	 * is also completed normally with the same result. Else, if the former completes exceptionally,
 	 * the latter is also completed exceptionally with the same exception.
 	 * 
