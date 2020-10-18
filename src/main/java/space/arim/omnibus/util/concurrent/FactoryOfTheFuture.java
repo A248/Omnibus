@@ -164,6 +164,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param <T> the result type of the future
 	 * @param completableFuture the completable future
 	 * @return a centralised future completed in the same way as the original completable future
+	 * @throws NullPointerException if {@code completableFuture} is null
 	 */
 	<T> CentralisedFuture<T> copyFuture(CompletableFuture<T> completableFuture);
 	
@@ -176,6 +177,7 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * @param <T> the result type of the stage
 	 * @param completionStage the completion stage
 	 * @return a reaction stage completed in the same way as the original completion stage
+	 * @throws NullPointerException if {@code completionStage} is null
 	 */
 	<T> ReactionStage<T> copyStage(CompletionStage<T> completionStage);
 	
