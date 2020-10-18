@@ -203,10 +203,11 @@ public interface FactoryOfTheFuture extends Executor, SynchronousExecutor {
 	 * <br>
 	 * Note that the completed value of the combined future, if it completes normally, is not meaningful.
 	 * 
+	 * @param <T> the type of object yielded by the futures
 	 * @param futures the futures to combine
 	 * @return a future completed combining the specified futures
 	 * @throws NullPointerException if {@code futures} or an element in it is null
 	 */
-	CentralisedFuture<?> allOf(Collection<CentralisedFuture<?>> futures);
+	<T> CentralisedFuture<?> allOf(Collection<? extends CentralisedFuture<T>> futures);
 
 }

@@ -129,6 +129,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	
 	private <T> CentralisedFuture<T> copyStage0(CompletionStage<T> completionStage) {
 		CentralisedFuture<T> copy = newIncompleteFuture();
+		// Implicit null check
 		completionStage.whenComplete((val, ex) -> {
 			if (ex == null) {
 				copy.complete(val);
@@ -151,11 +152,19 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	
 	@Override
 	public CentralisedFuture<?> allOf(CentralisedFuture<?>...futures) {
+		switch (futures.length) { // Null check
+		case 0:
+			return completedFuture(null);
+		case 1:
+			return Objects.requireNonNull(futures[0], "futures element");
+		default:
+			break;
+		}
 		return copyFuture(CompletableFuture.allOf(futures));
 	}
 	
 	@Override
-	public CentralisedFuture<?> allOf(Collection<CentralisedFuture<?>> futures) {
+	public <T> CentralisedFuture<?> allOf(Collection<? extends CentralisedFuture<T>> futures) {
 		return allOf(futures.toArray(CentralisedFuture[]::new));
 	}
 
