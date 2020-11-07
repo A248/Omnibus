@@ -20,7 +20,11 @@ package space.arim.omnibus.defaultimpl.events;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.IntUnaryOperator;
 import java.util.function.UnaryOperator;
 
@@ -29,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.ListenerPriorities;
+import space.arim.omnibus.events.Event;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.RegisteredListener;
 
@@ -45,6 +50,12 @@ public class DefaultEventsTest {
 		events = new DefaultEvents();
 	}
 	
+	private <E extends Event> void fireSyncEvent(E event) {
+		CompletableFuture<?> future = events.fireEvent(event);
+		assertTrue(future.isDone());
+		assertEquals(event, future.join());
+	}
+	
 	@Test
 	public void testModifyEventValue() {
 		events.registerListener(TestEventWithInteger.class, ListenerPriorities.LOW,
@@ -56,7 +67,7 @@ public class DefaultEventsTest {
 	
 	private void callTestEventAssuming1Listener(TestEventWithInteger te) {
 		int beginValue = te.someValue;
-		events.fireEvent(te);
+		fireSyncEvent(te);
 		int result = te.someValue;
 		int expected = PLUS_15_OPERATOR.applyAsInt(beginValue);
 		assertEquals(expected, result);
@@ -69,7 +80,7 @@ public class DefaultEventsTest {
 		events.registerListener(TestEventWithInteger.class, ListenerPriorities.HIGH,
 				(te) -> te.someValue = te.someValue * 2);
 		TestEventWithInteger te = new TestEventWithInteger(0);
-		events.fireEvent(te);
+		fireSyncEvent(te);
 		assertEquals(2, te.someValue); // (0 + 1) * 2 = 2
 	}
 	
@@ -81,12 +92,12 @@ public class DefaultEventsTest {
 		RegisteredListener registeredListener = events.registerListener(TestEventWithString.class,
 				ListenerPriorities.HIGHEST, (evt) -> evt.str = UNSPACING_OPERATOR.apply(evt.str));
 		TestEventWithString tews1 = new TestEventWithString(initial);
-		events.fireEvent(tews1);
+		fireSyncEvent(tews1);
 		assertEquals(result, tews1.str);
 
 		events.unregisterListener(registeredListener);
 		TestEventWithString tews2 = new TestEventWithString(initial);
-		events.fireEvent(tews2);
+		fireSyncEvent(tews2);
 		assertEquals(initial, tews2.str);
 	}
 	
@@ -96,8 +107,8 @@ public class DefaultEventsTest {
 			te.someValue = PLUS_15_OPERATOR.applyAsInt(te.someValue);
 		});
 
-		ThreadLocalRandom r = ThreadLocalRandom.current();
-		callTestEventAssuming1Listener(new TestEventWithIntegerAndBoolean(r.nextInt(), r.nextBoolean()));
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		callTestEventAssuming1Listener(new TestEventWithIntegerAndBoolean(random.nextInt(), random.nextBoolean()));
 	}
 	
 	@Test
@@ -108,7 +119,7 @@ public class DefaultEventsTest {
 		events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, consumer);
 		events.registerListener(TestEventWithInteger.class, ListenerPriorities.NORMAL, consumer);
 		TestEventWithInteger te = new TestEventWithInteger(1);
-		events.fireEvent(te);
+		fireSyncEvent(te);
 		assertEquals(3, te.someValue); // 1 + 1 + 1 = 3
 	}
 	
@@ -122,7 +133,7 @@ public class DefaultEventsTest {
 
 		int startValue = ThreadLocalRandom.current().nextInt();
 		TestEventWithInteger te = new TestEventWithInteger(startValue);
-		events.fireEvent(te);
+		fireSyncEvent(te);
 		assertEquals(startValue, te.someValue); // no change
 	}
 	
@@ -145,8 +156,38 @@ public class DefaultEventsTest {
 		});
 		int startValue = ThreadLocalRandom.current().nextInt();
 		TestEventWithInteger te = new TestEventWithIntegerAndBoolean(startValue, false);
-		events.fireEvent(te);
+		fireSyncEvent(te);
 		assertEquals((((startValue + 1) * 10) - 3 + 15) * 2, te.someValue);
+	}
+	
+	@Test
+	public void testAsynchronousResumption() {
+		ExecutorService executor = Executors.newFixedThreadPool(1);
+		events.registerListener(TestEventWithIntegerAndBoolean.class, (byte) -10, (te) -> {
+			te.someValue = te.someValue + 1;
+		});
+		events.registerListener(TestEventWithInteger.class, (byte) -5, (te, controller) -> {
+			executor.execute(() -> {
+				te.someValue = te.someValue * 10;
+				controller.continueFire();
+			});
+		});
+		events.registerListener(TestEventWithInteger.class, (byte) 0, (te, controller) -> {
+			executor.execute(() -> {
+				te.someValue = te.someValue - 3;
+				controller.continueFire();
+			});
+		});
+		events.registerListener(TestEventWithIntegerAndBoolean.class, (byte) 5, (te) -> {
+			te.someValue = te.someValue + 15;
+		});
+		int startValue = ThreadLocalRandom.current().nextInt();
+		TestEventWithInteger te = new TestEventWithIntegerAndBoolean(startValue, false);
+		events.fireEvent(te).thenRun(() -> {
+			assertEquals(((startValue + 1) * 10) - 3 + 15, te.someValue);
+		}).orTimeout(2L, TimeUnit.SECONDS).join();
+
+		executor.shutdown();
 	}
 	
 }

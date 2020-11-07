@@ -18,30 +18,22 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
+import java.util.Objects;
+
+import space.arim.omnibus.events.AsynchronousEventConsumer;
 import space.arim.omnibus.events.Event;
-import space.arim.omnibus.events.EventConsumer;
-import space.arim.omnibus.events.RegisteredListener;
 
-class ListenerImpl<E extends Event> implements RegisteredListener, Comparable<ListenerImpl<?>> {
+final class AsynchronousListener<E extends Event> extends Listener<E> {
 
-	final Class<E> evtClass;
-	final byte priority;
-	final EventConsumer<? super E> evtConsumer;
+	private final AsynchronousEventConsumer<? super E> asyncEventConsumer;
 
-	ListenerImpl(Class<E> evtClass, byte priority, EventConsumer<? super E> evtConsumer) {
-		this.evtClass = evtClass;
-		this.priority = priority;
-		this.evtConsumer = evtConsumer;
+	AsynchronousListener(Class<E> eventClass, byte priority, AsynchronousEventConsumer<? super E> asyncEventConsumer) {
+		super(eventClass, priority);
+		this.asyncEventConsumer = Objects.requireNonNull(asyncEventConsumer, "asyncEventConsumer");
 	}
-
-	@Override
-	public int compareTo(ListenerImpl<?> o) {
-		int priorityDiff = priority - o.priority;
-		if (priorityDiff == 0) {
-			// break ties with random hash code
-			return hashCode() - o.hashCode();
-		}
-		return priorityDiff;
+	
+	AsynchronousEventConsumer<? super E> getAsyncEventConsumer() {
+		return asyncEventConsumer;
 	}
 
 }

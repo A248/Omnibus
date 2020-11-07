@@ -16,22 +16,24 @@
  * along with Omnibus. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package space.arim.omnibus.events;
+package space.arim.omnibus.defaultimpl.events;
 
-/**
- * A listener to an event
- * 
- * @author A248
- *
- * @param <E> the event type
- */
-public interface EventConsumer<E extends Event> {
+import java.util.Objects;
 
-	/**
-	 * Acts on the event listened to
-	 *
-	 * @param event the event
-	 */
-	void accept(E event);
+import space.arim.omnibus.events.Event;
+import space.arim.omnibus.events.EventConsumer;
+
+final class SynchronousListener<E extends Event> extends Listener<E> {
+
+	private final EventConsumer<? super E> eventConsumer;
+	
+	SynchronousListener(Class<E> eventClass, byte priority, EventConsumer<? super E> eventConsumer) {
+		super(eventClass, priority);
+		this.eventConsumer = Objects.requireNonNull(eventConsumer, "eventConsumer");
+	}
+
+	EventConsumer<? super E> getEventConsumer() {
+		return eventConsumer;
+	}
 	
 }

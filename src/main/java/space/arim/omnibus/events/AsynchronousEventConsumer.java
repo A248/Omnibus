@@ -19,19 +19,37 @@
 package space.arim.omnibus.events;
 
 /**
- * A listener to an event
+ * An asynchronous event consumer, which is responsible for continuing execution of the event
  * 
  * @author A248
  *
  * @param <E> the event type
  */
-public interface EventConsumer<E extends Event> {
+public interface AsynchronousEventConsumer<E extends Event> {
 
 	/**
-	 * Acts on the event listened to
-	 *
+	 * Acts on the event listened to, and resumes firing of event handlers in whichever context desired
+	 * 
 	 * @param event the event
+	 * @param controller the controller to use to resume firing of the event
 	 */
-	void accept(E event);
+	void acceptAndContinue(E event, EventFireController controller);
+	
+	/**
+	 * A controller used to resume firing of an event
+	 * 
+	 * @author A248
+	 *
+	 */
+	interface EventFireController {
+		
+		/**
+		 * Continues execution of the event fire. Should only be called once
+		 * 
+		 * @throws IllegalStateException if called more than once
+		 */
+		void continueFire();
+		
+	}
 	
 }

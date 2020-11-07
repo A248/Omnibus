@@ -18,6 +18,8 @@
  */
 package space.arim.omnibus.events;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * A framework for firing events and listening to them. <br>
  * <br>
@@ -46,32 +48,72 @@ public interface EventBus {
 	/**
 	 * Fires an event, invoking all applicable listeners. <br>
 	 * <br>
-	 * A listener will be considered applicable if the event fired is an instance of the listener's targeted event class.
+	 * A listener will be considered applicable if the event fired is an instance of
+	 * the listener's targeted event class. <br>
+	 * <br>
+	 * For dealing with asynchronous listeners, this method returns a future. The
+	 * future will never be complete exceptionally, but if an asynchronous listener
+	 * somehow fails its responsibility to continue the event execution, the future
+	 * may stall. Therefore callers should choose an appropriate timeout using
+	 * {@link CompletableFuture#orTimeout(long, java.util.concurrent.TimeUnit)}
 	 * 
-	 * @param <E> the event type
+	 * @param <E>   the event type
 	 * @param event the event itself
+	 * @return a future completed once all listeners have completed firing. The
+	 *         future yields the event, for convenience.
 	 */
-	<E extends Event> void fireEvent(E event);
+	<E extends Event> CompletableFuture<E> fireEvent(E event);
 	
 	/**
 	 * Creates and registers a listener, returning the created listener. <br>
 	 * The returned listener may be unregistered when desired. <br>
 	 * <br>
-	 * The same {@link EventConsumer} may be used to create a registered listener via this method multiple times without issue.
-	 * It may even be used with the same priority for the same event. <br>
+	 * The same {@link EventConsumer} may be used to create a registered listener
+	 * via this method multiple times without issue. It may even be used with the
+	 * same priority for the same event. <br>
 	 * <br>
-	 * The priority determines the order in which listeners are called. Lower priorities are called first. See the class javadoc
-	 * for more information on priorities. <br>
+	 * The priority determines the order in which listeners are called. Lower
+	 * priorities are called first. See the class javadoc for more information on
+	 * priorities. <br>
 	 * <br>
-	 * The event class specifies all events the listener will listen to. See the class javadoc for more information.
+	 * The event class specifies all events the listener will listen to. See the
+	 * class javadoc for more information.
 	 * 
-	 * @param <E> the event type
-	 * @param event the event class
-	 * @param priority the priority at which the listener listens
-	 * @param evtConsumer the logic to run when the event fires
+	 * @param <E>           the event type
+	 * @param eventClass    the event class. All instances of this class, including
+	 *                      subclasses, will be listened to
+	 * @param priority      the priority at which the listener is placed
+	 * @param eventConsumer the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
 	 */
-	<E extends Event> RegisteredListener registerListener(Class<E> event, byte priority, EventConsumer<? super E> evtConsumer);
+	<E extends Event> RegisteredListener registerListener(Class<E> eventClass, byte priority,
+			EventConsumer<? super E> eventConsumer);
+	
+	/**
+	 * Creates and registers an asynchronous listener, returning the created
+	 * listener. <br>
+	 * The returned listener may be unregistered when desired. <br>
+	 * <br>
+	 * The same {@link AsynchronousEventConsumer} may be used to create a registered
+	 * listener via this method multiple times without issue. It may even be used
+	 * with the same priority for the same event. <br>
+	 * <br>
+	 * The priority determines the order in which listeners are called. Lower
+	 * priorities are called first. See the class javadoc for more information on
+	 * priorities. <br>
+	 * <br>
+	 * The event class specifies all events the listener will listen to. See the
+	 * class javadoc for more information.
+	 * 
+	 * @param <E>                the event type
+	 * @param eventClass         the event class. All instances of this class,
+	 *                           including subclasses, will be listened to
+	 * @param priority           the priority at which the listener is placed
+	 * @param asyncEventConsumer the logic to run when the event fires
+	 * @return a listener which may be unregistered when necessary
+	 */
+	<E extends Event> RegisteredListener registerListener(Class<E> eventClass, byte priority,
+			AsynchronousEventConsumer<? super E> asyncEventConsumer);
 	
 	/**
 	 * Unregister a listener. <br>
