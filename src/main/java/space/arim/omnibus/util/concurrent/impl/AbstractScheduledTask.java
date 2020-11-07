@@ -18,8 +18,36 @@
  */
 package space.arim.omnibus.util.concurrent.impl;
 
-abstract class RunnableScheduledWork<T> extends AbstractScheduledWork<T> implements Runnable {
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
 
+import space.arim.omnibus.util.concurrent.ScheduledTask;
 
+abstract class AbstractScheduledTask implements ScheduledTask {
 
+	abstract long getRunTime();
+
+	private long getNanosDelay() {
+		return getRunTime() - System.nanoTime();
+	}
+	
+	@Override
+	public long getDelay(TimeUnit unit) {
+		return unit.convert(getNanosDelay(), TimeUnit.NANOSECONDS);
+	}
+
+	@Override
+	public int compareTo(Delayed o) {
+		if (o == this) {
+			return 0;
+		}
+		if (o instanceof AbstractScheduledTask) {
+			AbstractScheduledTask other = (AbstractScheduledTask) o;
+			long diff = getRunTime() - other.getRunTime();
+			return Long.signum(diff);
+		}
+		long diff = getNanosDelay() - o.getDelay(TimeUnit.NANOSECONDS);
+		return Long.signum(diff);
+	}
+	
 }

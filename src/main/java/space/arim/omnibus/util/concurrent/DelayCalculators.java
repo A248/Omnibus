@@ -33,10 +33,6 @@ import java.util.function.LongUnaryOperator;
  */
 public final class DelayCalculators {
 	
-	private static final DelayCalculator FIXED_DELAY_CALCULATOR = (d, ignore) -> d;
-
-	private static final DelayCalculator FIXED_RATE_CALCULATOR = variableRate(LongUnaryOperator.identity());
-	
 	// Prevent instantiation
 	private DelayCalculators() {}
 	
@@ -46,7 +42,7 @@ public final class DelayCalculators {
 	 * @return a delay function which yields the same delay
 	 */
 	public static DelayCalculator fixedDelay() {
-		return FIXED_DELAY_CALCULATOR;
+		return (d, ignore) -> d;
 	}
 	
 	/**
@@ -68,7 +64,7 @@ public final class DelayCalculators {
 	 * @return a delay function which yields the same rate of delay
 	 */
 	public static DelayCalculator fixedRate() {
-		return FIXED_RATE_CALCULATOR;
+		return variableRate(LongUnaryOperator.identity());
 	}
 	
 	/**
@@ -93,65 +89,70 @@ public final class DelayCalculators {
 		return new VariableRateFunction(rateFunction);
 	}
 	
-}
+	/**
+	 * Implementation of a variable rate delay function,
+	 * which compensates for execution time in determing the next delay
+	 * and attempts to "catch up" if it falls behind.
+	 * 
+	 * @author A248
+	 *
+	 */
+	private static class VariableRateFunction implements DelayCalculator {
+		
+		/**
+		 * The rate determining function
+		 * 
+		 */
+		private final LongUnaryOperator rateFunction;
+		
+		/**
+		 * The rate we want to schedule at, starts at {@literal -}1 to indicate unknown.
+		 * 
+		 */
+		private volatile long rate = -1L;
+		
+		/**
+		 * If we're behind, by how much are we late?
+		 * Always a positive number
+		 * 
+		 */
+		private volatile long offset = 0;
+		
+		VariableRateFunction(LongUnaryOperator rateFunction) {
+			this.rateFunction = rateFunction;
+		}
+		
+		@Override
+		public long calculateNextDelay(long previousDelayNanos, long executionTimeNanos) {
+			long rate = this.rate;
+			if (rate == -1L) {
+				// If this is the first invocation, determine the initial rate
+				rate = previousDelayNanos;
+			}
+			rate = rateFunction.applyAsLong(rate);
+			if (rate < 0) {
+				// rate-determining function decided to cancel
+				return -1L;
+			}
+			this.rate = rate;
 
-/**
- * Implementation of a variable rate delay function,
- * which compensates for execution time in determing the next delay
- * and attempts to "catch up" if it falls behind.
- * 
- * @author A248
- *
- */
-class VariableRateFunction implements DelayCalculator {
-	
-	/**
-	 * The rate determining function
-	 * 
-	 */
-	private final LongUnaryOperator rateFunction;
-	
-	/**
-	 * The rate we want to schedule at, starts at {@literal -}1 to indicate unknown.
-	 * 
-	 */
-	private volatile long rate = -1L;
-	
-	/**
-	 * If we're behind, by how much are we late?
-	 * Always a positive number
-	 * 
-	 */
-	private volatile long offset = 0;
-	
-	VariableRateFunction(LongUnaryOperator rateFunction) {
-		this.rateFunction = rateFunction;
+			long offset = this.offset;
+			long delay = rate - executionTimeNanos - offset;
+			if (delay >= 0L) {
+				offset = 0L;
+			} else {
+				offset = -delay;
+				delay = 0L;
+			}
+			this.offset = offset;
+			return delay;
+		}
+		
+		@Override
+		public boolean requiresExecutionTime() {
+			return true;
+		}
+
 	}
 	
-	@Override
-	public long calculateNextDelay(long previousDelay, long executionTime) {
-		long rate = this.rate;
-		if (rate == -1L) {
-			// If this is the first invocation, determine the initial rate
-			rate = previousDelay;
-		}
-		rate = rateFunction.applyAsLong(rate);
-		if (rate < 0) {
-			// rate-determining function decided to cancel
-			return -1L;
-		}
-		this.rate = rate;
-
-		long offset = this.offset;
-		long delay = rate - executionTime - offset;
-		if (delay >= 0L) {
-			offset = 0L;
-		} else {
-			offset = -delay;
-			delay = 0L;
-		}
-		this.offset = offset;
-		return delay;
-	}
-
 }

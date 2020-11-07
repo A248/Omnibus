@@ -19,6 +19,9 @@
 package space.arim.omnibus.util.concurrent.impl;
 
 import java.time.Duration;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import space.arim.omnibus.util.concurrent.DelayCalculator;
 import space.arim.omnibus.util.concurrent.DelayCalculators;
 import space.arim.omnibus.util.concurrent.EnhancedExecutor;
-import space.arim.omnibus.util.concurrent.ScheduledWork;
+import space.arim.omnibus.util.concurrent.ScheduledTask;
 
 public class SimplifiedEnhancedExecutorTest {
 	
@@ -45,6 +48,7 @@ public class SimplifiedEnhancedExecutorTest {
 		
 		@Override
 		public void execute(Runnable command) {
+			Objects.requireNonNull(command, "command");
 			new Thread(command).start();
 		}
 
@@ -53,26 +57,45 @@ public class SimplifiedEnhancedExecutorTest {
 	@Test
 	public void testNegativeDelaysNeverRun() {
 		Runnable failureRunnable = () -> fail("This runnable should not execute");
-		assertTrue(executor.scheduleOnce(failureRunnable, Duration.ofSeconds(-1L)).isCancelled(),
-				"A task with a negative initial delay should already be cancelled");
-		assertTrue(executor.scheduleRepeating(failureRunnable, Duration.ofSeconds(-1L), DelayCalculators.fixedDelay()).isCancelled(),
-				"A task with a negative initial delay should already be cancelled");
+
+		ScheduledTask delayedTask = executor.scheduleOnce(failureRunnable, Duration.ofSeconds(-1L));
+		assertFalse(delayedTask.isRepeating(), "Not a repeating task");
+		assertTrue(delayedTask.isCancelled(),
+				"A delayed task with a negative initial delay should already be cancelled");
+
+		ScheduledTask repeatingTask = executor.scheduleRepeating(failureRunnable, Duration.ofSeconds(-1L),
+				DelayCalculators.fixedDelay());
+		assertTrue(repeatingTask.isRepeating(), "Is a repeating task");
+		assertTrue(repeatingTask.isCancelled(),
+				"A repeating task with a negative initial delay should already be cancelled");
 	}
 	
 	@Test
 	public void testDelayedExecution() {
-		Object value = new Object();
-		final ScheduledWork<Object> task = executor.scheduleOnce(() -> value, Duration.ofSeconds(1L));
+		CompletableFuture<Boolean> future = new CompletableFuture<>();
+		Boolean value = Boolean.TRUE;
+		ScheduledTask task = executor.scheduleOnce(() -> future.complete(value), Duration.ofMillis(100L));
+
 		assertFalse(task.isCancelled(), "Task should not already be cancelled");
-		Object result = task.toCompletableFuture().orTimeout(4L, TimeUnit.SECONDS).join();
-		assertEquals(value, result);
+		assertFalse(task.isRepeating(), "Not a repeating task");
+		assertEquals(value, future.orTimeout(1L, TimeUnit.SECONDS).join());
 	}
 	
 	@Test
 	public void testRepeatedExecution() {
+		try {
+			testRepeatedExecution1();
+			testRepeatedExecution2();
+		} catch (CompletionException ex) {
+			fail(ex);
+		}
+	}
+	
+	private void testRepeatedExecution1() {
 		AtomicInteger counter = new AtomicInteger();
+		Awaiter awaiter = new Awaiter();
 
-		executor.scheduleRepeating(() -> {
+		ScheduledTask repeatingTask = executor.scheduleRepeating(() -> {
 			counter.incrementAndGet();
 		}, Duration.ofMillis(100L), new DelayCalculator() {
 
@@ -82,6 +105,7 @@ public class SimplifiedEnhancedExecutorTest {
 			public long calculateNextDelay(long previousDelay, long ignoredExecutionTime) {
 				amount++;
 				if (amount == 5) {
+					awaiter.complete();
 					return -1;
 				}
 				if (amount > 5) {
@@ -90,20 +114,19 @@ public class SimplifiedEnhancedExecutorTest {
 				return previousDelay;
 			}
 		});
-		Integer result = executor.scheduleOnce(() -> counter.get(), Duration.ofMillis(1500L)).toCompletableFuture()
-				.orTimeout(8L, TimeUnit.SECONDS).join();
-		assertEquals(5, result, "Counter must have been incremented five times by now");
+		assertRepeatingTask(counter, awaiter, repeatingTask);
 	}
 	
 	// Slightly modified version using similar functionality
-	@Test
-	public void testRepeatedExecution2() {
+	private void testRepeatedExecution2() {
 		AtomicInteger counter = new AtomicInteger();
+		Awaiter awaiter = new Awaiter();
 
-		executor.scheduleRepeating((task) -> {
+		ScheduledTask repeatingTask = executor.scheduleRepeating((task) -> {
 			int count = counter.incrementAndGet();
 			if (count == 5) {
 				task.cancel();
+				awaiter.complete();
 				return;
 			}
 			if (count > 5) {
@@ -111,9 +134,18 @@ public class SimplifiedEnhancedExecutorTest {
 			}
 		}, Duration.ofMillis(100L), DelayCalculators.fixedDelay());
 
-		Integer result = executor.scheduleOnce(() -> counter.get(), Duration.ofMillis(1500L)).toCompletableFuture()
-				.orTimeout(8L, TimeUnit.SECONDS).join();
-		assertEquals(5, result, "Counter must have been incremented five times by now");
+		assertRepeatingTask(counter, awaiter, repeatingTask);
+	}
+	
+	private static void assertRepeatingTask(AtomicInteger counter, Awaiter awaiter, ScheduledTask repeatingTask) {
+		assertTrue(repeatingTask.isRepeating(), "Is a repeating task");
+		assertFalse(repeatingTask.isCancelled(), "Cannot be cancelled yet. Was just scheduled");
+		assertFalse(repeatingTask.isDone(), "Only way for repeating task to be done is to be cancelled");
+		awaiter.await(Duration.ofSeconds(1L));
+
+		assertTrue(repeatingTask.isCancelled(), "Must be cancelled by now");
+		assertTrue(repeatingTask.isDone(), "Cancelled is the same as done");
+		assertEquals(5, counter.get(), "Counter must have been incremented five times by now");
 	}
 	
 }

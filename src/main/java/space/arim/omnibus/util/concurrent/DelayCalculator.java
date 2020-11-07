@@ -19,9 +19,8 @@
 package space.arim.omnibus.util.concurrent;
 
 /**
- * A delay calculator which calculates the next delay of a task based on both the previous delay and the execution time. <br>
- * <br>
- * Implementations should <i>never</i> throw exceptions.
+ * A delay calculator which calculates the next delay of a task based on both
+ * the previous delay and the execution time.
  * 
  * @author A248
  *
@@ -30,18 +29,33 @@ package space.arim.omnibus.util.concurrent;
 public interface DelayCalculator {
 
 	/**
-	 * Calculates the next delay, based on the previous delay and execution time. <b>Must not throw exceptions.</b> <br>
+	 * Calculates the next delay, based on the previous delay and execution time.
 	 * <br>
-	 * If the returned duration is negative, the task will be cancelled. If zero, it will run immediately. <br>
 	 * <br>
-	 * The execution time is defined as the duration, in nanoseconds, between the time at which the task was scheduled
-	 * and that at which it was completed. Therefore, it may take into the overhead of executing a task in an
-	 * {@code Executor}.
+	 * If the returned duration is negative, the task will be cancelled. If zero, it
+	 * will run immediately. <br>
+	 * <br>
+	 * The execution time is not computed by default. If the execution time is used
+	 * by this calculator, {@link #requiresExecutionTime()} should return
+	 * {@code true}
 	 * 
-	 * @param previousDelay the previous delay, in nanoseconds
-	 * @param executionTime how long it took the task to previously execute, in nanoseconds
-	 * @return the next delay, negative to cancel the task, zero to run immediately
+	 * @param previousDelayNanos the previous delay, in nanoseconds
+	 * @param executionTimeNanos how long it took the task to previously execute, in
+	 *                           nanoseconds. If {@code requiresExecutionTime} is
+	 *                           false, this will be {@literal 0}
+	 * @return the next delay in nanoseconds, negative to cancel the task, zero to
+	 *         run immediately
 	 */
-	long calculateNextDelay(long previousDelay, long executionTime);
-	
+	long calculateNextDelay(long previousDelayNanos, long executionTimeNanos);
+
+	/**
+	 * Whether the execution time passed to {@link #calculateNextDelay(long, long)}
+	 * is used.
+	 * 
+	 * @return true if the execution time is used, false otherwise
+	 */
+	default boolean requiresExecutionTime() {
+		return false;
+	}
+
 }

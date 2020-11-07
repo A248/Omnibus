@@ -18,24 +18,14 @@
  */
 package space.arim.omnibus.util.concurrent.impl;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.function.Supplier;
-
-class DelayedScheduledWork<T> extends RunnableScheduledWork<T> {
+class DelayedScheduledTaskImpl extends RunnableScheduledTask {
 
 	private final long runTime;
-	private final Supplier<T> supplier;
-	private final CompletableFuture<T> future = new CompletableFuture<>();
+	private final Runnable command;
 
-	DelayedScheduledWork(long delay, Supplier<T> supplier) {
+	DelayedScheduledTaskImpl(long delay, Runnable command) {
 		runTime = System.nanoTime() + delay;
-		this.supplier = supplier;
-	}
-	
-	@Override
-	CompletableFuture<T> getCompletableFuture() {
-		return future;
+		this.command = command;
 	}
 
 	@Override
@@ -45,29 +35,14 @@ class DelayedScheduledWork<T> extends RunnableScheduledWork<T> {
 
 	@Override
 	public void run() {
-		if (isCancelled()) {
-			return;
+		if (start()) {
+			try {
+				command.run();
+			} finally {
+				finish();
+			}
 		}
-		try {
-			future.complete(supplier.get());
-		} catch (Throwable ex) {
-			future.completeExceptionally((ex instanceof CompletionException) ? ex : new CompletionException(ex));
-		}
-	}
-	
-	@Override
-	public boolean isCancelled() {
-		return getCompletableFuture().isCancelled();
-	}
 
-	@Override
-	public boolean cancel(boolean mayInterruptIfRunning) {
-		return getCompletableFuture().cancel(mayInterruptIfRunning);
-	}
-
-	@Override
-	public boolean isDone() {
-		return getCompletableFuture().isDone();
 	}
 
 	@Override

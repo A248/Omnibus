@@ -24,12 +24,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import space.arim.omnibus.util.concurrent.DelayCalculator;
 import space.arim.omnibus.util.concurrent.EnhancedExecutor;
-import space.arim.omnibus.util.concurrent.ScheduledWork;
+import space.arim.omnibus.util.concurrent.ScheduledTask;
 
 /**
  * Abstract implementation of {@link EnhancedExecutor} which handles its own scheduling and delegates
@@ -71,89 +70,50 @@ public abstract class SimplifiedEnhancedExecutor implements EnhancedExecutor {
 	}
 
 	@Override
-	public ScheduledWork<Void> scheduleOnce(Runnable command, Duration delay) {
+	public ScheduledTask scheduleOnce(Runnable command, Duration delay) {
 		Objects.requireNonNull(command, "command");
 
-		return scheduleOnce0(() -> {
-			command.run();
-			return null;
-		}, delay);
-	}
-
-	@Override
-	public <T> ScheduledWork<T> scheduleOnce(Supplier<T> supplier, Duration delay) {
-		Objects.requireNonNull(supplier, "supplier");
-
-		return scheduleOnce0(supplier, delay);
-	}
-
-	private <T> ScheduledWork<T> scheduleOnce0(Supplier<T> supplier, Duration delay) {
-		Objects.requireNonNull(delay, "delay");
-
-		long nanosDelay = delay.toNanos();
+		long nanosDelay = delay.toNanos(); // implicit null check
 		if (nanosDelay < 0) {
-			return new AlreadyCancelledWork<>(false, nanosDelay);
+			return new AlreadyCancelledTask(nanosDelay, false);
 		}
-		DelayedScheduledWork<T> result = new DelayedScheduledWork<>(nanosDelay, supplier);
+		DelayedScheduledTaskImpl result = new DelayedScheduledTaskImpl(nanosDelay, command);
 		publishTask(result, nanosDelay);
 		return result;
 	}
 
 	@Override
-	public ScheduledWork<?> scheduleRepeating(Runnable command, Duration initialDelay,
+	public ScheduledTask scheduleRepeating(Runnable command, Duration initialDelay,
 			DelayCalculator delayCalculator) {
 		Objects.requireNonNull(command, "command");
 
-		return scheduleRepeating0((task) -> {
-			command.run();
-			return null;
-		}, initialDelay, delayCalculator);
+		return scheduleRepeating0((task) -> command.run(), initialDelay, delayCalculator);
 	}
 
 	@Override
-	public <T> ScheduledWork<T> scheduleRepeating(Supplier<T> supplier, Duration initialDelay,
-			DelayCalculator delayCalculator) {
-		Objects.requireNonNull(supplier, "supplier");
-
-		return scheduleRepeating0((task) -> supplier.get(), initialDelay, delayCalculator);
-	}
-
-	@Override
-	public ScheduledWork<?> scheduleRepeating(Consumer<? super ScheduledWork<?>> command, Duration initialDelay,
+	public ScheduledTask scheduleRepeating(Consumer<? super ScheduledTask> command, Duration initialDelay,
 			DelayCalculator delayCalculator) {
 		Objects.requireNonNull(command, "command");
 
-		return scheduleRepeating0((task) -> {
-			command.accept(task);
-			return null;
-		}, initialDelay, delayCalculator);
+		return scheduleRepeating0(command, initialDelay, delayCalculator);
 	}
 
-	@Override
-	public <T> ScheduledWork<T> scheduleRepeating(Function<? super ScheduledWork<T>, T> supplier, Duration initialDelay,
-			DelayCalculator delayCalculator) {
-		Objects.requireNonNull(supplier, "supplier");
-
-		return scheduleRepeating0(supplier, initialDelay, delayCalculator);
-	}
-
-	private <T> ScheduledWork<T> scheduleRepeating0(Function<? super ScheduledWork<T>, T> supplier, Duration initialDelay,
-			DelayCalculator delayCalculator) {
-		Objects.requireNonNull(initialDelay, "initialDelay");
+	private ScheduledTask scheduleRepeating0(Consumer<? super ScheduledTask> command,
+			Duration initialDelay, DelayCalculator delayCalculator) {
 		Objects.requireNonNull(delayCalculator, "delayCalculator");
 
-		long nanosDelay = initialDelay.toNanos();
+		long nanosDelay = initialDelay.toNanos(); // implicit null check
 		if (nanosDelay < 0) {
-			return new AlreadyCancelledWork<>(true, nanosDelay);
+			return new AlreadyCancelledTask(nanosDelay, true);
 		}
-		RepeatingScheduledWork<T> result = new RepeatingScheduledWork<>(this, supplier, delayCalculator);
+		RepeatingScheduledTaskImpl result = new RepeatingScheduledTaskImpl(this, command, delayCalculator);
 		result.update(nanosDelay, System.nanoTime());
 
 		publishTask(result, nanosDelay);
 		return result;
 	}
 
-	void publishTask(RunnableScheduledWork<?> publishableTask, long nanosDelay) {
+	void publishTask(RunnableScheduledTask publishableTask, long nanosDelay) {
 		if (nanosDelay == 0L) {
 			execute(publishableTask);
 		} else {

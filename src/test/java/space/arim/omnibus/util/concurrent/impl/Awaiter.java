@@ -18,50 +18,20 @@
  */
 package space.arim.omnibus.util.concurrent.impl;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
-class AlreadyCancelledWork<T> extends AbstractScheduledWork<T> {
+public class Awaiter {
 
-	private final boolean repeating;
-	private final long runTime;
-	private final CompletableFuture<T> cancelledFuture;
+	private final CompletableFuture<?> future = new CompletableFuture<>();
 	
-	AlreadyCancelledWork(boolean repeating, long nanosDelay) {
-		this.repeating = repeating;
-		runTime = System.nanoTime() + nanosDelay;
-		CompletableFuture<T> cancelledFuture = new CompletableFuture<>();
-		cancelledFuture.cancel(false);
-		this.cancelledFuture = cancelledFuture;
+	void complete() {
+		future.complete(null);
 	}
-
-	@Override
-	public boolean cancel(boolean ignoreParameter) {
-		return true;
-	}
-
-	@Override
-	public boolean isCancelled() {
-		return true;
-	}
-
-	@Override
-	public boolean isRepeating() {
-		return repeating;
-	}
-
-	@Override
-	public boolean isDone() {
-		return true;
-	}
-
-	@Override
-	long getRunTime() {
-		return runTime;
-	}
-
-	@Override
-	CompletableFuture<T> getCompletableFuture() {
-		return cancelledFuture;
+	
+	void await(Duration duration) {
+		future.orTimeout(duration.toNanos(), TimeUnit.NANOSECONDS).join();
 	}
 	
 }
