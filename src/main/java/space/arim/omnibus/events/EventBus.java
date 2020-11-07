@@ -33,7 +33,10 @@ package space.arim.omnibus.events;
  * listeners specifying a certain event class. Thus, all applicable listeners to an event are <i>always</i>
  * invoked in order of priority, no matter which event nor its inheritance heirarchy. <br>
  * <br>
- * To fire events, implement {@link Event} on the event object. Construct such an object and call {@link #fireEvent(Event)}.
+ * To fire events, implement {@link Event} on the event object. Construct such an object and call one of the
+ * {@code fire} methods. <br>
+ * <br>
+ * Null parameters are not permitted on any method. {@code NullPointerException} is thrown otherwise
  * 
  * @author A248
  *
@@ -43,13 +46,10 @@ public interface EventBus {
 	/**
 	 * Fires an event, invoking all applicable listeners. <br>
 	 * <br>
-	 * For any listener, if the event fired is an instance of the listener's targeted event class,
-	 * as specified by the event class passed to {@link #registerListener(Class, byte, EventConsumer)},
-	 * the listener will be invoked.
+	 * A listener will be considered applicable if the event fired is an instance of the listener's targeted event class.
 	 * 
 	 * @param <E> the event type
 	 * @param event the event itself
-	 * @throws NullPointerException if {@code event} is null
 	 */
 	<E extends Event> void fireEvent(E event);
 	
@@ -70,7 +70,6 @@ public interface EventBus {
 	 * @param priority the priority at which the listener listens
 	 * @param evtConsumer the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
-	 * @throws NullPointerException if the event class or listener is null
 	 */
 	<E extends Event> RegisteredListener registerListener(Class<E> event, byte priority, EventConsumer<? super E> evtConsumer);
 	
@@ -78,11 +77,9 @@ public interface EventBus {
 	 * Unregister a listener. <br>
 	 * <br>
 	 * This is the opposite of {@link #registerListener(Class, byte, EventConsumer)}.
-	 * Unregistering a listener which is already unregistered is a no-op.
+	 * Unregistering a listener which is not registered is a no-op.
 	 * 
 	 * @param listener the object to unregister
-	 * @throws NullPointerException if the listener is null
-	 * @throws IllegalArgumentException if the {@code RegisteredListener} is a foreign implementation
 	 */
 	void unregisterListener(RegisteredListener listener);
 	
