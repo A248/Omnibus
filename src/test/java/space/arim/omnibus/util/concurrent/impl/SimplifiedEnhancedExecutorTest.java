@@ -105,7 +105,8 @@ public class SimplifiedEnhancedExecutorTest {
 			public long calculateNextDelay(long previousDelay, long ignoredExecutionTime) {
 				amount++;
 				if (amount == 5) {
-					awaiter.complete();
+					// This DelayCalculator must return -1 before completing the Awaiter
+					CompletableFuture.delayedExecutor(100L, TimeUnit.MILLISECONDS).execute(awaiter::complete);
 					return -1;
 				}
 				if (amount > 5) {
