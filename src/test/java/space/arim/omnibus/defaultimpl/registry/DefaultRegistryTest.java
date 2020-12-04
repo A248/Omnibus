@@ -18,7 +18,9 @@
  */
 package space.arim.omnibus.defaultimpl.registry;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,48 +38,64 @@ public class DefaultRegistryTest {
 
 	private Registry registry;
 	private TestService provider;
-	
+
 	@BeforeEach
 	public void setup() {
 		registry = new DefaultRegistry(new DefaultEvents());
 		provider = new TestServiceImpl();
 	}
-	
+
 	private static byte randomPriority() {
-		return (byte) (ThreadLocalRandom.current().nextInt(-2*Byte.MIN_VALUE) + Byte.MIN_VALUE);
+		return (byte) (ThreadLocalRandom.current().nextInt(-2 * Byte.MIN_VALUE) + Byte.MIN_VALUE);
 	}
-	
+
 	@Test
 	public void testBasicRegister() {
-		Registration<TestService> registration = registry.register(TestService.class, randomPriority(), provider, "impl");
+		Registration<TestService> registration = registry.register(TestService.class, randomPriority(), provider,
+				"impl");
 		assertEquals(provider, registration.getProvider());
-		TestService highestPriorityProvider = registry.getProvider(TestService.class);
-		assertTrue(provider == highestPriorityProvider);
+
+		assertEquals(registration, registry.getRegistration(TestService.class));
+		assertTrue(provider == registry.getProvider(TestService.class));
 	}
-	
+
+	@Test
+	public void testRegisterAndGet() {
+		Registration<TestService> highestPriorityRegistration = registry.registerAndGet(TestService.class, randomPriority(), provider,
+				"impl");
+		assertTrue(provider == highestPriorityRegistration.getProvider());
+
+		assertEquals(highestPriorityRegistration, registry.getRegistration(TestService.class));
+		assertTrue(provider == registry.getProvider(TestService.class));
+	}
+
 	@Test
 	public void testDuplicateRegister() {
 		registry.register(TestService.class, randomPriority(), provider, "original");
-		try {
+		assertThrows(DuplicateRegistrationException.class, () -> {
 			registry.register(TestService.class, randomPriority(), provider, "duplicate");
-			fail("Registered duplicate registration without exception");
-		} catch (DuplicateRegistrationException expected) {
-			
-		}
+		});
 	}
-	
+
 	@Test
 	public void testMultipleRegistrations() {
 		TestService alt = new TestServiceImpl();
-		Registration<TestService> regis1 = registry.register(TestService.class, RegistryPriorities.LOWER, provider, "low priority");
-		Registration<TestService> regis2 = registry.register(TestService.class, RegistryPriorities.HIGHER, alt, "higher priority");
+		Registration<TestService> regis1 = registry.register(TestService.class, RegistryPriorities.LOWER, provider,
+				"low priority");
+		Registration<TestService> regis2 = registry.register(TestService.class, RegistryPriorities.HIGHER, alt,
+				"higher priority");
+
 		assertEquals(alt, regis2.getProvider());
 		assertEquals(alt, registry.getProvider(TestService.class));
+		assertEquals(List.of(regis1, regis2), registry.getAllRegistrations(TestService.class));
+
 		TestService highest = new TestServiceImpl();
-		Registration<TestService> regis3 = registry.registerAndGet(TestService.class, RegistryPriorities.HIGHEST, highest, "highest priority");
+		Registration<TestService> regis3 = registry.registerAndGet(TestService.class, RegistryPriorities.HIGHEST,
+				highest, "highest priority");
+
 		assertEquals(highest, regis3.getProvider());
 		assertEquals(highest, registry.getProvider(TestService.class));
 		assertEquals(List.of(regis1, regis2, regis3), registry.getAllRegistrations(TestService.class));
 	}
-	
+
 }

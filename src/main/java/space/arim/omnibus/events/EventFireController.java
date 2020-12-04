@@ -16,35 +16,21 @@
  * along with Omnibus. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package space.arim.omnibus.defaultimpl.events;
+package space.arim.omnibus.events;
 
-import java.util.Objects;
-
-import space.arim.omnibus.events.Event;
-import space.arim.omnibus.events.RegisteredListener;
-
-abstract class Listener<E extends Event> implements RegisteredListener, Comparable<Listener<?>> {
-
-	private final Class<E> eventClass;
-	private final byte priority;
+/**
+ * A controller used to resume firing of an event
+ * 
+ * @author A248
+ *
+ */
+public interface EventFireController {
 	
-	Listener(Class<E> eventClass, byte priority) {
-		this.eventClass = Objects.requireNonNull(eventClass, "eventClass");
-		this.priority = priority;
-	}
-
-	Class<E> getEventClass() {
-		return eventClass;
-	}
-
-	@Override
-	public int compareTo(Listener<?> o) {
-		int priorityDiff = priority - o.priority;
-		if (priorityDiff == 0) {
-			// break ties with random hash code
-			return hashCode() - o.hashCode();
-		}
-		return priorityDiff;
-	}
-
+	/**
+	 * Continues execution of the event fire. Should only be called once
+	 * 
+	 * @throws IllegalStateException if called more than once
+	 */
+	void continueFire();
+	
 }

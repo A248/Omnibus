@@ -18,7 +18,7 @@
  */
 package space.arim.omnibus.registry;
 
-import space.arim.omnibus.events.Event;
+import space.arim.omnibus.events.AsyncEvent;
 
 /**
  * An event related to a registration or unregistration which happened in a {@link Registry}. <br>
@@ -33,7 +33,7 @@ import space.arim.omnibus.events.Event;
  * @author A248
  * @param <T> the generic type
  */
-public interface RegistryEvent<T> extends Event {
+public interface RegistryEvent<T> extends AsyncEvent {
 
 	/**
 	 * Gets the service involved in this event.

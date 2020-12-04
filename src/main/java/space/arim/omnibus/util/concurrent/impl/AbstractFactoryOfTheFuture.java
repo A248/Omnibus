@@ -63,7 +63,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	
 	@Override
 	public CentralisedFuture<?> runAsync(Runnable command) {
-		Objects.requireNonNull(command, "Runnable must not be null");
+		Objects.requireNonNull(command, "command");
 		return supplyAsync(() -> {
 			command.run();
 			return null;
@@ -72,7 +72,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 
 	@Override
 	public CentralisedFuture<?> runAsync(Runnable command, Executor executor) {
-		Objects.requireNonNull(command, "Runnable must not be null");
+		Objects.requireNonNull(command, "command");
 		return supplyAsync(() -> {
 			command.run();
 			return null;
@@ -81,7 +81,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 
 	@Override
 	public CentralisedFuture<?> runSync(Runnable command) {
-		Objects.requireNonNull(command, "Runnable must not be null");
+		Objects.requireNonNull(command, "command");
 		return supplySync(() -> {
 			command.run();
 			return null;

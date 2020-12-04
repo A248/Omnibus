@@ -18,13 +18,28 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-public class TestEventWithIntegerAndFloat extends TestEventWithInteger {
+import java.util.concurrent.TimeUnit;
 
-	volatile float floatilla;
+import org.junit.jupiter.api.BeforeEach;
+
+import space.arim.omnibus.events.AsyncEvent;
+import space.arim.omnibus.events.EventBus;
+
+public class DefaultEventsTestingBase {
+
+	private EventBus events;
 	
-	TestEventWithIntegerAndFloat(int someValue, float floatilla) {
-		super(someValue);
-		this.floatilla = floatilla;
+	@BeforeEach
+	public void setup() {
+		events = new DefaultEvents();
 	}
-
+	
+	EventBus events() {
+		return events;
+	}
+	
+	<E extends AsyncEvent> void fireAndWait(E event) {
+		events.fireAsyncEvent(event).orTimeout(2L, TimeUnit.SECONDS).join();
+	}
+	
 }

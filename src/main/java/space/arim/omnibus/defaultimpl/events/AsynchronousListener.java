@@ -20,10 +20,10 @@ package space.arim.omnibus.defaultimpl.events;
 
 import java.util.Objects;
 
+import space.arim.omnibus.events.AsyncEvent;
 import space.arim.omnibus.events.AsynchronousEventConsumer;
-import space.arim.omnibus.events.Event;
 
-final class AsynchronousListener<E extends Event> extends Listener<E> {
+final class AsynchronousListener<E extends AsyncEvent> extends Listener<E> {
 
 	private final AsynchronousEventConsumer<? super E> asyncEventConsumer;
 

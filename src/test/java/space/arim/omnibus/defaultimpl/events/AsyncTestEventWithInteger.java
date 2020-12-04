@@ -18,33 +18,14 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-import java.util.Objects;
+import space.arim.omnibus.events.AsyncEvent;
 
-import space.arim.omnibus.events.Event;
-import space.arim.omnibus.events.RegisteredListener;
+class AsyncTestEventWithInteger implements AsyncEvent {
 
-abstract class Listener<E extends Event> implements RegisteredListener, Comparable<Listener<?>> {
-
-	private final Class<E> eventClass;
-	private final byte priority;
+	volatile int someValue;
 	
-	Listener(Class<E> eventClass, byte priority) {
-		this.eventClass = Objects.requireNonNull(eventClass, "eventClass");
-		this.priority = priority;
+	AsyncTestEventWithInteger(int someValue) {
+		this.someValue = someValue;
 	}
-
-	Class<E> getEventClass() {
-		return eventClass;
-	}
-
-	@Override
-	public int compareTo(Listener<?> o) {
-		int priorityDiff = priority - o.priority;
-		if (priorityDiff == 0) {
-			// break ties with random hash code
-			return hashCode() - o.hashCode();
-		}
-		return priorityDiff;
-	}
-
+	
 }

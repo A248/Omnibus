@@ -18,33 +18,29 @@
  */
 package space.arim.omnibus.defaultimpl.events;
 
-import java.util.Objects;
+import java.lang.invoke.MethodHandle;
 
 import space.arim.omnibus.events.Event;
-import space.arim.omnibus.events.RegisteredListener;
+import space.arim.omnibus.events.EventConsumer;
 
-abstract class Listener<E extends Event> implements RegisteredListener, Comparable<Listener<?>> {
+class InvokingEventConsumer<E extends Event> implements EventConsumer<E> {
 
-	private final Class<E> eventClass;
-	private final byte priority;
-	
-	Listener(Class<E> eventClass, byte priority) {
-		this.eventClass = Objects.requireNonNull(eventClass, "eventClass");
-		this.priority = priority;
-	}
+	private final MethodHandle methodHandle;
 
-	Class<E> getEventClass() {
-		return eventClass;
+	InvokingEventConsumer(Object listener, MethodHandle methodHandle) {
+		this.methodHandle = methodHandle.bindTo(listener);
 	}
 
 	@Override
-	public int compareTo(Listener<?> o) {
-		int priorityDiff = priority - o.priority;
-		if (priorityDiff == 0) {
-			// break ties with random hash code
-			return hashCode() - o.hashCode();
+	public void accept(E event) {
+		try {
+			methodHandle.invoke(event);
+
+		} catch (Error | RuntimeException ex) {
+			throw ex;
+		} catch (Throwable ex) {
+			throw new RuntimeException(ex);
 		}
-		return priorityDiff;
 	}
 
 }

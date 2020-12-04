@@ -72,14 +72,14 @@ public class DefaultRegistry implements Registry {
 		synchronized (eventQueue) {
 			RegistryEvent<?> event;
 			while ((event = eventQueue.poll()) != null) {
-				eventBus.fireEvent(event);
+				eventBus.fireAsyncEventWithoutFuture(event);
 			}
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	private <T> Registration<T>[] addRegistration(Class<T> service, Registration<T> registration, T provider) {
-		eventBus.fireEvent(new RegistrationAddEventImpl<>(service, registration));
+		eventBus.fireAsyncEventWithoutFuture(new RegistrationAddEventImpl<>(service, registration));
 
 		Registration<?>[] result = registry.compute(service, (s, registers) -> {
 			if (registers == null) {

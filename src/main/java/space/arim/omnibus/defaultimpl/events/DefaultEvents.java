@@ -20,15 +20,17 @@ package space.arim.omnibus.defaultimpl.events;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import space.arim.omnibus.events.AsyncEvent;
 import space.arim.omnibus.events.AsynchronousEventConsumer;
-import space.arim.omnibus.events.AsynchronousEventConsumer.EventFireController;
+import space.arim.omnibus.events.EventFireController;
 import space.arim.omnibus.events.Event;
 import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.EventBus;
@@ -42,17 +44,23 @@ import space.arim.omnibus.util.ArraysUtil;
  */
 public class DefaultEvents implements EventBus {
 
-	/** The listeners themselves, a map of event classes to listener methods. */
-	private final ConcurrentHashMap<Class<?>, Listener<?>[]> eventListeners = new ConcurrentHashMap<>();
-	
-	/** The baked listeners, a map of runtime implementation classes to listener groups */
-	private final ConcurrentHashMap<Class<?>, BakedListenerGroup> bakedListeners = new ConcurrentHashMap<>();
-	
+	/**
+	 * The listeners themselves, a map of usually abstract event classes to event
+	 * listeners
+	 */
+	private final ConcurrentMap<Class<?>, Listener<?>[]> eventListeners = new ConcurrentHashMap<>();
+
+	/**
+	 * The baked listeners, a map of concrete event classes to baked groups of
+	 * listeners
+	 */
+	private final ConcurrentMap<Class<?>, BakedListenerGroup> bakedListeners = new ConcurrentHashMap<>();
+
 	private static class BakedListenerGroup {
-		
+
 		final Set<Class<?>> eventClasses;
 		final Listener<?>[] listeners;
-		
+
 		BakedListenerGroup(Set<Class<?>> eventClasses, Listener<?>[] listeners) {
 			this.eventClasses = Set.copyOf(eventClasses);
 			this.listeners = listeners;
@@ -62,8 +70,9 @@ public class DefaultEvents implements EventBus {
 	/**
 	 * Creates an instance.
 	 */
-	public DefaultEvents() {}
-	
+	public DefaultEvents() {
+	}
+
 	@SuppressWarnings("unchecked")
 	private static <E extends Event> Listener<E>[] createGenericArray(int size) {
 		return (Listener<E>[]) new Listener<?>[size];
@@ -86,7 +95,7 @@ public class DefaultEvents implements EventBus {
 		Listener<E>[] listeners = createGenericArray(0);
 		Set<Class<?>> eventClasses = new HashSet<>();
 
-		for (Map.Entry<Class<?>, Listener<?>[]> entry : eventListeners.entrySet()) {
+		for (Entry<Class<?>, Listener<?>[]> entry : eventListeners.entrySet()) {
 
 			Class<?> thisEventClass = entry.getKey();
 			if (!thisEventClass.isAssignableFrom(eventClass)) {
@@ -98,7 +107,6 @@ public class DefaultEvents implements EventBus {
 			Listener<E>[] fromThisEvt = (Listener<E>[]) entry.getValue();
 			listeners = combineListeners(listeners, fromThisEvt);
 		}
-		// If listeners is in the eventListeners map (no other matching classes), this is a no-op
 		Arrays.sort(listeners);
 		return new BakedListenerGroup(eventClasses, listeners);
 	}
@@ -106,21 +114,32 @@ public class DefaultEvents implements EventBus {
 	private void uncacheBaked(Class<?> eventClass) {
 		bakedListeners.values().removeIf((listenerGroup) -> listenerGroup.eventClasses.contains(eventClass));
 	}
-	
-	private <E extends Event> void invokeListeners(Listener<E>[] toInvoke, int invokeIndex, E event,
-			CompletableFuture<E> future) {
+
+	private <E extends Event> void callSyncListener(SynchronousListener<E> invoke, E event) {
+		EventConsumer<? super E> eventConsumer = invoke.getEventConsumer();
+		try {
+			eventConsumer.accept(event);
+		} catch (RuntimeException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private <E extends Event> void callSyncListeners(Listener<E>[] toInvoke, E event) {
+		for (Listener<E> listener : toInvoke) {
+			callSyncListener((SynchronousListener<E>) listener, event);
+		}
+	}
+
+	private <E extends AsyncEvent> void callAsyncListeners(Listener<E>[] toInvoke, int invokeIndex, E event,
+			final CompletableFuture<E> future) {
 		for (int n = invokeIndex; n < toInvoke.length; n++) {
 			Listener<E> listener = toInvoke[n];
 			if (listener instanceof SynchronousListener) {
-				EventConsumer<? super E> eventConsumer = ((SynchronousListener<E>) listener).getEventConsumer();
-				try {
-					eventConsumer.accept(event);
-				} catch (RuntimeException ex) {
-					ex.printStackTrace();
-				}
+				callSyncListener((SynchronousListener<E>) listener, event);
+
 			} else {
 				int nextIndex = n + 1;
-				AsynchronousListener<E> asyncListener = (AsynchronousListener<E>) listener;
+				AsynchronousListener<? super E> asyncListener = (AsynchronousListener<E>) listener;
 				AsynchronousEventConsumer<? super E> asyncEventConsumer = asyncListener.getAsyncEventConsumer();
 				EventFireController controller = new EventFireController() {
 
@@ -131,7 +150,7 @@ public class DefaultEvents implements EventBus {
 						if (!fired.compareAndSet(false, true)) {
 							throw new IllegalStateException("Already fired");
 						}
-						invokeListeners(toInvoke, nextIndex, event, future);
+						callAsyncListeners(toInvoke, nextIndex, event, future);
 					}
 				};
 				try {
@@ -142,20 +161,47 @@ public class DefaultEvents implements EventBus {
 				}
 			}
 		}
-		future.complete(event);
+		if (future != null) {
+			future.complete(event);
+		}
 	}
 
-	@Override
-	public <E extends Event> CompletableFuture<E> fireEvent(E event) {
-		Objects.requireNonNull(event, "event");
-
+	private <E extends Event> Listener<E>[] getListenersTo(E event) {
 		BakedListenerGroup listenerGroup = bakedListeners.computeIfAbsent(event.getClass(), this::computeListenersFor);
 		@SuppressWarnings("unchecked")
 		Listener<E>[] toInvoke = (Listener<E>[]) listenerGroup.listeners;
+		return toInvoke;
+	}
+
+	@Override
+	public <E extends Event> void fireEvent(E event) {
+		Objects.requireNonNull(event, "event");
+		if (event instanceof AsyncEvent) {
+			throw new IllegalArgumentException("Cannot use EventBus#fireEvent with asynchronous capable events");
+		}
+
+		callSyncListeners(getListenersTo(event), event);
+	}
+
+	private <E extends AsyncEvent> void fireAsyncEventCommon(E event, CompletableFuture<E> future) {
+		Listener<E>[] toInvoke = getListenersTo(event);
+		callAsyncListeners(toInvoke, 0, event, future);
+	}
+
+	@Override
+	public <E extends AsyncEvent> CompletableFuture<E> fireAsyncEvent(E event) {
+		Objects.requireNonNull(event, "event");
 
 		CompletableFuture<E> future = new CompletableFuture<>();
-		invokeListeners(toInvoke, 0, event, future);
+		fireAsyncEventCommon(event, future);
 		return future;
+	}
+
+	@Override
+	public <E extends AsyncEvent> void fireAsyncEventWithoutFuture(E event) {
+		Objects.requireNonNull(event, "event");
+
+		fireAsyncEventCommon(event, null);
 	}
 
 	@Override
@@ -165,24 +211,24 @@ public class DefaultEvents implements EventBus {
 		registerListener0(listener);
 		return listener;
 	}
-	
+
 	@Override
-	public <E extends Event> RegisteredListener registerListener(Class<E> eventClass, byte priority,
+	public <E extends AsyncEvent> RegisteredListener registerListener(Class<E> eventClass, byte priority,
 			AsynchronousEventConsumer<? super E> asyncEventConsumer) {
 		Listener<E> listener = new AsynchronousListener<>(eventClass, priority, asyncEventConsumer);
 		registerListener0(listener);
 		return listener;
 	}
-	
+
 	private <E extends Event> void registerListener0(Listener<E> listener) {
 		Class<E> eventClass = listener.getEventClass();
 		eventListeners.compute(eventClass, (c, existingListeners) -> {
 			// No existing listeners
 			if (existingListeners == null) {
-				return new Listener<?>[] {listener};
+				return new Listener<?>[] { listener };
 			}
 			// Add the listener maintaining sorting
-			int insertionIndex = - (Arrays.binarySearch(existingListeners, listener) + 1);
+			int insertionIndex = -(Arrays.binarySearch(existingListeners, listener) + 1);
 			return ArraysUtil.expandAndInsert(existingListeners, listener, insertionIndex);
 		});
 		uncacheBaked(eventClass);
@@ -194,21 +240,69 @@ public class DefaultEvents implements EventBus {
 		if (!(listener instanceof Listener<?>)) {
 			return;
 		}
-		Class<?> eventClass = ((Listener<?>) listener).getEventClass();
+		unregisterListener0((Listener<?>) listener);
+	}
+
+	private void unregisterListener0(Listener<?> listener) {
+		Class<?> eventClass = listener.getEventClass();
 		eventListeners.computeIfPresent(eventClass, (c, existingListeners) -> {
 			int removalIndex = Arrays.binarySearch(existingListeners, listener);
 			if (removalIndex < 0) {
-				// not present
+				// Not present
 				return existingListeners;
 			}
 			Listener<?>[] updated = ArraysUtil.contractAndRemove(existingListeners, removalIndex);
 			if (updated.length == 0) {
-				// clean unused mappings
+				// Clean unused mappings
 				return null;
 			}
 			return updated;
 		});
 		uncacheBaked(eventClass);
 	}
-	
+
+	/*
+	 * 
+	 * Annotated listeners
+	 * 
+	 */
+
+	/**
+	 * Map of annotated listener objects to listener methods transformed into event
+	 * consumers
+	 */
+	private final ConcurrentMap<IdentityListenerWrapper, Set<Listener<?>>> annotatedListenerObjects = new ConcurrentHashMap<>();
+
+	@Override
+	public void registerListeningMethods(Object annotatedListener) {
+		Objects.requireNonNull(annotatedListener, "annotatedListener");
+		Set<Listener<?>> transformedListeners = new ListeningMethodScanner(annotatedListener).scanAndTransformAnnotatedMethods();
+		if (transformedListeners.isEmpty()) {
+			// No-op
+			return;
+		}
+		var wrapper = new IdentityListenerWrapper(annotatedListener);
+		annotatedListenerObjects.compute(wrapper, (w, previousListeners) -> {
+			if (previousListeners != null) {
+				throw new IllegalStateException("Listener " + wrapper + " is already registered");
+			}
+			for (Listener<?> transformedListener : transformedListeners) {
+				registerListener0(transformedListener);
+			}
+			return transformedListeners;
+		});
+	}
+
+	@Override
+	public void unregisterListeningMethods(Object annotatedListener) {
+		Objects.requireNonNull(annotatedListener, "annotatedListener");
+		var wrapper = new IdentityListenerWrapper(annotatedListener);
+		annotatedListenerObjects.computeIfPresent(wrapper, (w, transformedListeners) -> {
+			for (Listener<?> transformedListener : transformedListeners) {
+				unregisterListener0(transformedListener);
+			}
+			return null;
+		});
+	}
+
 }
