@@ -24,9 +24,6 @@ package space.arim.omnibus.events;
  * This is an interface, and not an abstract class, so that users may
  * define their own object hierarchies. Nevertheless, users should ensure the visibility
  * of cancellation in {@link #isCancelled()}.
- * <br>
- * The method calls in implementations of this interface are trusted by {@link EventBus}
- * implementations. They should never throw exceptions.
  * 
  * @author A248
  *
