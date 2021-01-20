@@ -31,8 +31,9 @@ final class AsynchronousListener<E extends AsyncEvent> extends Listener<E> {
 		super(eventClass, priority);
 		this.asyncEventConsumer = Objects.requireNonNull(asyncEventConsumer, "asyncEventConsumer");
 	}
-	
-	AsynchronousEventConsumer<? super E> getAsyncEventConsumer() {
+
+	@Override
+	AsynchronousEventConsumer<? super E> getEventConsumer() {
 		return asyncEventConsumer;
 	}
 

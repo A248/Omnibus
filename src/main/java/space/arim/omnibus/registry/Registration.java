@@ -29,7 +29,7 @@ import java.util.Objects;
  * @param <T> the service type
  */
 public final class Registration<T> implements Comparable<Registration<T>> {
-	
+
 	private final byte priority;
 	private final T provider;
 	private transient final String name;
@@ -77,11 +77,21 @@ public final class Registration<T> implements Comparable<Registration<T>> {
 	}
 	
 	@Override
-	public int compareTo(Registration<T> o) {
-		int priorityDiff = priority - o.priority;
+	public int compareTo(Registration<T> other) {
+		if (other == this) {
+			return 0;
+		}
+		int priorityDiff = priority - other.priority;
 		if (priorityDiff == 0) {
+			if (provider == other.provider) {
+				return 0;
+			}
 			// Same priority, different registration
-			return System.identityHashCode(provider) - System.identityHashCode(o.provider);
+			int hashDiff = System.identityHashCode(provider) - System.identityHashCode(other.provider);
+			if (hashDiff == 0) { // Very unlikely
+				return System.identityHashCode(this) - System.identityHashCode(other);
+			}
+			return hashDiff;
 		}
 		return priorityDiff;
 	}

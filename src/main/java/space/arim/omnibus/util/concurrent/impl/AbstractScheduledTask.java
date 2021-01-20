@@ -20,10 +20,15 @@ package space.arim.omnibus.util.concurrent.impl;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import space.arim.omnibus.util.concurrent.ScheduledTask;
 
 abstract class AbstractScheduledTask implements ScheduledTask {
+
+	// Sequence number used by compareTo
+	private static final AtomicLong SEQUENCER = new AtomicLong();
+	private final long sequence = SEQUENCER.getAndIncrement();
 
 	abstract long getRunTime();
 
@@ -37,16 +42,28 @@ abstract class AbstractScheduledTask implements ScheduledTask {
 	}
 
 	@Override
-	public int compareTo(Delayed o) {
-		if (o == this) {
+	public int compareTo(Delayed other) {
+		if (other == this) {
 			return 0;
 		}
-		if (o instanceof AbstractScheduledTask) {
-			AbstractScheduledTask other = (AbstractScheduledTask) o;
-			long diff = getRunTime() - other.getRunTime();
+		if (other instanceof AbstractScheduledTask) {
+			AbstractScheduledTask otherTask = (AbstractScheduledTask) other;
+			long diff = getRunTime() - otherTask.getRunTime();
+			if (diff == 0L) {
+				// Use sequence number to break ties
+				return Long.signum(sequence - otherTask.sequence);
+			}
 			return Long.signum(diff);
 		}
-		long diff = getNanosDelay() - o.getDelay(TimeUnit.NANOSECONDS);
+		long diff = getNanosDelay() - other.getDelay(TimeUnit.NANOSECONDS);
+		if (diff == 0L) {
+			// Same delay, different object. Use hashCode() to break ties
+			int hashDiff = hashCode() - other.hashCode();
+			if (hashDiff == 0) { // Extremely unlikely
+				return getClass().hashCode() - other.getClass().hashCode();
+			}
+			return hashDiff;
+		}
 		return Long.signum(diff);
 	}
 	

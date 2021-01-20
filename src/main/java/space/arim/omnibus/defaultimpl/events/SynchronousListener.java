@@ -32,6 +32,7 @@ final class SynchronousListener<E extends Event> extends Listener<E> {
 		this.eventConsumer = Objects.requireNonNull(eventConsumer, "eventConsumer");
 	}
 
+	@Override
 	EventConsumer<? super E> getEventConsumer() {
 		return eventConsumer;
 	}

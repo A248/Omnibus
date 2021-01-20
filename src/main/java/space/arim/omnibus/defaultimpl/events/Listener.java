@@ -37,12 +37,21 @@ abstract class Listener<E extends Event> implements RegisteredListener, Comparab
 		return eventClass;
 	}
 
+	abstract Object getEventConsumer();
+
 	@Override
-	public int compareTo(Listener<?> o) {
-		int priorityDiff = priority - o.priority;
+	public int compareTo(Listener<?> other) {
+		if (other == this) {
+			return 0;
+		}
+		int priorityDiff = priority - other.priority;
 		if (priorityDiff == 0) {
-			// break ties with random hash code
-			return hashCode() - o.hashCode();
+			// Break ties with random hash codes. Best effort
+			int hashDiff = hashCode() - other.hashCode();
+			if (hashDiff == 0) {
+				return System.identityHashCode(getEventConsumer()) - System.identityHashCode(other.getEventConsumer());
+			}
+			return hashDiff;
 		}
 		return priorityDiff;
 	}
