@@ -16,22 +16,30 @@
  * along with Omnibus. If not, see <https://www.gnu.org/licenses/>
  * and navigate to version 3 of the GNU Lesser General Public License.
  */
-package space.arim.omnibus.defaultimpl;
+package space.arim.omnibus;
 
-import space.arim.omnibus.Omnibus;
 import space.arim.omnibus.defaultimpl.events.DefaultEvents;
 import space.arim.omnibus.defaultimpl.registry.DefaultRegistry;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.Registry;
 
-class DefaultOmnibus implements Omnibus {
+/**
+ * The default implementation of {@link Omnibus}.
+ *
+ */
+public final class DefaultOmnibus implements Omnibus {
 
 	private final EventBus eventBus;
 	private final Registry registry;
-	
-	DefaultOmnibus() {
-		eventBus = new DefaultEvents();
+
+	/**
+	 * Creates an instance
+	 *
+	 */
+	public DefaultOmnibus() {
+		EventBus eventBus = new DefaultEvents();
 		registry = new DefaultRegistry(eventBus);
+		this.eventBus = eventBus;
 	}
 
 	@Override

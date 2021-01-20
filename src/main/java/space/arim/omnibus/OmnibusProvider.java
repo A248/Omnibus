@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import space.arim.omnibus.defaultimpl.DefaultOmnibusDefiner;
 import space.arim.omnibus.spi.OmnibusDefiner;
 import space.arim.omnibus.spi.OmnibusProviderSpi;
 
@@ -77,6 +76,22 @@ public final class OmnibusProvider {
 
 	private static class WalkerHolder {
 		static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+	}
+
+	private static class DefaultOmnibusDefiner implements OmnibusDefiner {
+
+		private final Omnibus instance = new DefaultOmnibus();
+
+		@Override
+		public Omnibus getOmnibus(Class<?> callerClass) {
+			return instance;
+		}
+
+		@Override
+		public boolean requiresCallerClass() {
+			return false;
+		}
+
 	}
 	
 }
