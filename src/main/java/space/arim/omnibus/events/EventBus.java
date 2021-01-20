@@ -83,7 +83,7 @@ public interface EventBus {
 	 * <br>
 	 * This is equivalent to {@link #fireAsyncEvent(AsyncEvent)} except that any
 	 * resulting future is discarded (creation of the future may be altogether
-	 * avoided). This should be used when the caller wishes to proceed regardlessof
+	 * avoided). This should be used when the caller wishes to proceed regardless of
 	 * any listener modifications to the event.
 	 * 
 	 * @param <E>   the event type
@@ -172,7 +172,7 @@ public interface EventBus {
 	 * Unregisters any methods on the target listener object which are annotated
 	 * with {@link ListeningMethod} and were previously registered. <br>
 	 * <br>
-	 * If the listener object was never registered,
+	 * If the listener object was never registered, this is a no-op.
 	 * 
 	 * @param annotatedListener the listener whose annotated methods to unregister
 	 */
