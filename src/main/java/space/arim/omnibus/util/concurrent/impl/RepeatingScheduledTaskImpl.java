@@ -73,10 +73,9 @@ class RepeatingScheduledTaskImpl extends RunnableScheduledTask {
 			/*
 			 * Reschedule unless cancelled
 			 */
-			if (isCancelled()) {
-				return;
+			if (!isCancelled()) {
+				reschedule(startTime);
 			}
-			reschedule(startTime);
 		}
 	}
 
