@@ -21,6 +21,8 @@ package space.arim.omnibus.defaultimpl.registry;
 import space.arim.omnibus.registry.Registration;
 import space.arim.omnibus.registry.ServiceChangeEvent;
 
+import java.util.Optional;
+
 class ServiceChangeEventImpl<T> implements ServiceChangeEvent<T> {
 
 	private final Class<T> service;
@@ -40,13 +42,13 @@ class ServiceChangeEventImpl<T> implements ServiceChangeEvent<T> {
 	}
 
 	@Override
-	public Registration<T> getPrevious() {
-		return previous;
+	public Optional<Registration<T>> getPrevious() {
+		return Optional.ofNullable(previous);
 	}
 
 	@Override
-	public Registration<T> getUpdated() {
-		return updated;
+	public Optional<Registration<T>> getUpdated() {
+		return Optional.ofNullable(updated);
 	}
 
 }

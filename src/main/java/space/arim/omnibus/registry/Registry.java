@@ -19,6 +19,7 @@
 package space.arim.omnibus.registry;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A framework for registering and loading services. <br>
@@ -91,7 +92,7 @@ public interface Registry {
 	 * @param service the service class
 	 * @return the highest priority provider or <code>null</code> if not found
 	 */
-	<T> T getProvider(Class<T> service);
+	<T> Optional<T> getProvider(Class<T> service);
 	
 	/**
 	 * Retrieves the highest priority registration for a service. <br>
@@ -102,7 +103,7 @@ public interface Registry {
 	 * @param service the service class
 	 * @return the highest priority registration
 	 */
-	<T> Registration<T> getRegistration(Class<T> service);
+	<T> Optional<Registration<T>> getRegistration(Class<T> service);
 	
 	/**
 	 * Gets all registrations for a specific service, as an immutable copy. <br>

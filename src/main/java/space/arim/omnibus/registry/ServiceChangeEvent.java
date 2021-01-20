@@ -18,6 +18,8 @@
  */
 package space.arim.omnibus.registry;
 
+import java.util.Optional;
+
 /**
  * Indicates the prioritised provider for a specific service changed. This happens
  * whenever a new registration is added with a higher priority than the existing
@@ -38,21 +40,20 @@ public interface ServiceChangeEvent<T> extends RegistryEvent<T> {
 
 	/**
 	 * Gets the previous highest priority registration. <br>
-	 * If there was no previous registration when the updated registration
-	 * was registered, this will be {@code null}.
+	 * If there was no previous registration when the updated registration was registered,
+	 * the optional will be empty.
 	 * 
-	 * @return the previous registration, or {@code null} if there was none
+	 * @return the previous registration, or an empty optional if there was none
 	 */
-	Registration<T> getPrevious();
+	Optional<Registration<T>> getPrevious();
 	
 	/**
 	 * Gets the updated highest priority registration. <br>
-	 * If the current highest priority registration was unregistered
-	 * and there is no other registration for the same service, this
-	 * will be {@code null}.
+	 * If the current highest priority registration was unregistered and there is no other
+	 * registration for the same service, the optional will be empty.
 	 * 
-	 * @return the updated registration, or {@code null} if there is none
+	 * @return the updated registration, or an empty optional if there is none
 	 */
-	Registration<T> getUpdated();
+	Optional<Registration<T>> getUpdated();
 	
 }

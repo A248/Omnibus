@@ -20,6 +20,7 @@ package space.arim.omnibus.defaultimpl.registry;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -84,7 +85,7 @@ public class DefaultRegistry implements Registry {
 		Registration<?>[] result = registry.compute(service, (s, registers) -> {
 			if (registers == null) {
 				// no existing registrations
-				eventQueue.offer(new ServiceChangeEventImpl<T>(service, null, registration));
+				eventQueue.offer(new ServiceChangeEventImpl<>(service, null, registration));
 				return new Registration<?>[] {registration};
 			}
 			for (Registration<?> existing : registers) {
@@ -97,7 +98,7 @@ public class DefaultRegistry implements Registry {
 			int insertionIndex = - (Arrays.binarySearch(registers, registration) + 1);
 			if (highPriorityIndex == insertionIndex) {
 				Registration<T> previous = (Registration<T>) registers[highPriorityIndex];
-				eventQueue.offer(new ServiceChangeEventImpl<T>(service, previous, registration));
+				eventQueue.offer(new ServiceChangeEventImpl<>(service, previous, registration));
 			}
 			return ArraysUtil.expandAndInsert(registers, registration, insertionIndex);
 		});
@@ -117,7 +118,7 @@ public class DefaultRegistry implements Registry {
 	@Override
 	public <T> Registration<T> registerAndGet(Class<T> service, byte priority, T provider, String name) {
 		service.cast(provider);
-		Registration<T> registration = new Registration<T>(priority, provider, name); // constructor checks for null params
+		Registration<T> registration = new Registration<>(priority, provider, name); // constructor checks for null params
 
 		Registration<T>[] updated = addRegistration(service, registration, provider);
 		return updated[updated.length - 1];
@@ -129,15 +130,21 @@ public class DefaultRegistry implements Registry {
 	}
 	
 	@Override
-	public <T> T getProvider(Class<T> service) {
+	public <T> Optional<T> getProvider(Class<T> service) {
 		Registration<T>[] registrations = getRegistered(service);
-		return (registrations == null) ? null : registrations[registrations.length - 1].getProvider();
+		if (registrations == null) {
+			return Optional.empty();
+		}
+		return Optional.of(registrations[registrations.length - 1].getProvider());
 	}
 	
 	@Override
-	public <T> Registration<T> getRegistration(Class<T> service) {
+	public <T> Optional<Registration<T>> getRegistration(Class<T> service) {
 		Registration<T>[] registrations = getRegistered(service);
-		return (registrations == null) ? null : registrations[registrations.length - 1];
+		if (registrations == null) {
+			return Optional.empty();
+		}
+		return Optional.of(registrations[registrations.length - 1]);
 	}
 	
 	@Override
@@ -160,7 +167,7 @@ public class DefaultRegistry implements Registry {
 				// silently ignore
 				return registers;
 			}
-			eventQueue.offer(new RegistrationRemoveEventImpl<T>(service, registration));
+			eventQueue.offer(new RegistrationRemoveEventImpl<>(service, registration));
 			if (registers.length == 1) {
 				eventQueue.offer(new ServiceChangeEventImpl<>(service, registration, null));
 				return null;
