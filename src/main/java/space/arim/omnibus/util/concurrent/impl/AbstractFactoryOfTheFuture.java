@@ -112,7 +112,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 
 	@Override
 	public <T> ReactionStage<T> completedStage(T value) {
-		return new MinimalReactionStage<>(completedFuture(value));
+		return completedFuture(value).minimalCompletionStage();
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 
 	@Override
 	public <T> ReactionStage<T> failedStage(Throwable ex) {
-		return new MinimalReactionStage<>(failedFuture(ex));
+		return this.<T>failedFuture(ex).minimalCompletionStage();
 	}
 	
 	private <T> CentralisedFuture<T> copyStage0(CompletionStage<T> completionStage) {
