@@ -159,7 +159,7 @@ public class DefaultRegistry implements Registry {
 	}
 	
 	@Override
-	public <T> Registration<T> unregister(Class<T> service, Registration<T> registration) {
+	public <T> Optional<Registration<T>> unregister(Class<T> service, Registration<T> registration) {
 		@SuppressWarnings("unchecked")
 		Registration<T>[] result = (Registration<T>[]) registry.computeIfPresent(service, (s, registers) -> {
 			int locationIndex = Arrays.binarySearch(registers, registration);
@@ -180,7 +180,10 @@ public class DefaultRegistry implements Registry {
 			return updated;
 		});
 		fireRegistryEvents();
-		return (result == null) ? null : result[result.length - 1];
+		if (result == null) {
+			return Optional.empty();
+		}
+		return Optional.of(result[result.length - 1]);
 	}
 	
 }

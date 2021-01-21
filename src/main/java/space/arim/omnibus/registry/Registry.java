@@ -82,26 +82,26 @@ public interface Registry {
 	
 	/**
 	 * Finds the highest priority registration for a service and returns its provider. <br>
-	 * If no registration for the service is found, <code>null</code> is returned. <br>
+	 * If no registration for the service is found, an empty optional is returned. <br>
 	 * <br>
-	 * The proper way to retrieve registrations is to call this method once,
-	 * and check if the returned value is nonnull. If nonnull, proceed normally.
-	 * If null, there is no registration for the service.
+	 * The proper way to retrieve registrations is to call this method once, and check
+	 * if the value is present. If the optional is empty, there is no registration
+	 * for the service.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
-	 * @return the highest priority provider or <code>null</code> if not found
+	 * @return the highest priority provider or an empty optional if not found
 	 */
 	<T> Optional<T> getProvider(Class<T> service);
 	
 	/**
 	 * Retrieves the highest priority registration for a service. <br>
 	 * <br>
-	 * If no registration for the service is found, <code>null</code> is returned.
+	 * If no registration for the service is found, an empty optional is returned.
 	 * 
 	 * @param <T> the service type
 	 * @param service the service class
-	 * @return the highest priority registration
+	 * @return the highest priority registration or an empty optional if not found
 	 */
 	<T> Optional<Registration<T>> getRegistration(Class<T> service);
 	
@@ -138,8 +138,8 @@ public interface Registry {
 	 * @param <T> the service type
 	 * @param service the service class
 	 * @param registration the registration to unregister
-	 * @return the updated highest priority registration for the service, or null if there is none
+	 * @return the updated highest priority registration for the service, or an empty optional if there is none
 	 */
-	<T> Registration<T> unregister(Class<T> service, Registration<T> registration);
+	<T> Optional<Registration<T>> unregister(Class<T> service, Registration<T> registration);
 	
 }
