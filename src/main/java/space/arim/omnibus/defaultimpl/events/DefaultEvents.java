@@ -140,7 +140,7 @@ public class DefaultEvents implements EventBus {
 			} else {
 				int nextIndex = n + 1;
 				AsynchronousListener<? super E> asyncListener = (AsynchronousListener<E>) listener;
-				AsynchronousEventConsumer<? super E> asyncEventConsumer = asyncListener.getAsyncEventConsumer();
+				AsynchronousEventConsumer<? super E> asyncEventConsumer = asyncListener.getEventConsumer();
 				EventFireController controller = new EventFireController() {
 
 					private final AtomicBoolean fired = new AtomicBoolean();
