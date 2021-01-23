@@ -36,6 +36,7 @@ import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.RegisteredListener;
 import space.arim.omnibus.util.ArraysUtil;
+import space.arim.omnibus.util.ThisClass;
 
 /**
  * The default implementation of {@link EventBus}.
@@ -55,6 +56,8 @@ public class DefaultEvents implements EventBus {
 	 * listeners
 	 */
 	private final ConcurrentMap<Class<?>, BakedListenerGroup> bakedListeners = new ConcurrentHashMap<>();
+
+	private static final System.Logger logger = System.getLogger(ThisClass.get().getName());
 
 	private static class BakedListenerGroup {
 
@@ -119,8 +122,11 @@ public class DefaultEvents implements EventBus {
 		EventConsumer<? super E> eventConsumer = invoke.getEventConsumer();
 		try {
 			eventConsumer.accept(event);
-		} catch (RuntimeException ex) {
-			ex.printStackTrace();
+		} catch (Exception ex) {
+			logger.log(
+					System.Logger.Level.WARNING,
+					"Exception while calling event " + event + " for listener " + invoke,
+					ex);
 		}
 	}
 
@@ -156,8 +162,11 @@ public class DefaultEvents implements EventBus {
 				try {
 					asyncEventConsumer.acceptAndContinue(event, controller);
 					return;
-				} catch (RuntimeException ex) {
-					ex.printStackTrace();
+				} catch (Exception ex) {
+					logger.log(
+							System.Logger.Level.WARNING,
+							"Exception while calling event " + event + " for async listener " + asyncListener,
+							ex);
 				}
 			}
 		}
