@@ -36,7 +36,6 @@ import space.arim.omnibus.events.EventConsumer;
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.RegisteredListener;
 import space.arim.omnibus.util.ArraysUtil;
-import space.arim.omnibus.util.ThisClass;
 
 /**
  * The default implementation of {@link EventBus}.
@@ -57,8 +56,6 @@ public class DefaultEvents implements EventBus {
 	 */
 	private final ConcurrentMap<Class<?>, BakedListenerGroup> bakedListeners = new ConcurrentHashMap<>();
 
-	private static final System.Logger logger = System.getLogger(ThisClass.get().getName());
-
 	private static class BakedListenerGroup {
 
 		final Set<Class<?>> eventClasses;
@@ -75,6 +72,12 @@ public class DefaultEvents implements EventBus {
 	 */
 	public DefaultEvents() {
 	}
+
+	/*
+	 *
+	 * Listener order computation and caching
+	 *
+	 */
 
 	@SuppressWarnings("unchecked")
 	private static <E extends Event> Listener<E>[] createGenericArray(int size) {
@@ -118,15 +121,25 @@ public class DefaultEvents implements EventBus {
 		bakedListeners.values().removeIf((listenerGroup) -> listenerGroup.eventClasses.contains(eventClass));
 	}
 
+	private <E extends Event> Listener<E>[] getListenersTo(E event) {
+		BakedListenerGroup listenerGroup = bakedListeners.computeIfAbsent(event.getClass(), this::computeListenersFor);
+		@SuppressWarnings("unchecked")
+		Listener<E>[] toInvoke = (Listener<E>[]) listenerGroup.listeners;
+		return toInvoke;
+	}
+
+	/*
+	 *
+	 * Listener invocation
+	 *
+	 */
+
 	private <E extends Event> void callSyncListener(SynchronousListener<E> invoke, E event) {
 		EventConsumer<? super E> eventConsumer = invoke.getEventConsumer();
 		try {
 			eventConsumer.accept(event);
 		} catch (Exception ex) {
-			logger.log(
-					System.Logger.Level.WARNING,
-					"Exception while calling event " + event + " for listener " + invoke,
-					ex);
+			logException(eventConsumer, event, ex);
 		}
 	}
 
@@ -163,10 +176,7 @@ public class DefaultEvents implements EventBus {
 					asyncEventConsumer.acceptAndContinue(event, controller);
 					return;
 				} catch (Exception ex) {
-					logger.log(
-							System.Logger.Level.WARNING,
-							"Exception while calling event " + event + " for async listener " + asyncListener,
-							ex);
+					logException(asyncEventConsumer, event, ex);
 				}
 			}
 		}
@@ -175,20 +185,41 @@ public class DefaultEvents implements EventBus {
 		}
 	}
 
-	private <E extends Event> Listener<E>[] getListenersTo(E event) {
-		BakedListenerGroup listenerGroup = bakedListeners.computeIfAbsent(event.getClass(), this::computeListenersFor);
-		@SuppressWarnings("unchecked")
-		Listener<E>[] toInvoke = (Listener<E>[]) listenerGroup.listeners;
-		return toInvoke;
+	/*
+	 *
+	 * Exception logging
+	 *
+	 */
+
+	private static class LoggerHolder {
+		static final System.Logger LOGGER = System.getLogger(DefaultEvents.class.getName());
 	}
+
+	private <E extends Event> void logException(Object eventConsumer, E event, Exception ex) {
+		String message;
+		try {
+			message = "Exception while calling event " + event + " for event consumer " + eventConsumer;
+		} catch (Exception suppressed) { // Someone poorly implemented toString
+			ex.addSuppressed(suppressed);
+			message = "Exception while calling event for event consumer";
+		}
+		LoggerHolder.LOGGER.log(System.Logger.Level.WARNING, message, ex);
+	}
+
+	/*
+	 *
+	 * Event firing
+	 *
+	 */
 
 	@Override
 	public <E extends Event> void fireEvent(E event) {
-		Objects.requireNonNull(event, "event");
+		if (event == null) {
+			throw new NullPointerException("event");
+		}
 		if (event instanceof AsyncEvent) {
 			throw new IllegalArgumentException("Cannot use EventBus#fireEvent with asynchronous capable events");
 		}
-
 		callSyncListeners(getListenersTo(event), event);
 	}
 
@@ -199,8 +230,9 @@ public class DefaultEvents implements EventBus {
 
 	@Override
 	public <E extends AsyncEvent> CompletableFuture<E> fireAsyncEvent(E event) {
-		Objects.requireNonNull(event, "event");
-
+		if (event == null) {
+			throw new NullPointerException("event");
+		}
 		CompletableFuture<E> future = new CompletableFuture<>();
 		fireAsyncEventCommon(event, future);
 		return future;
@@ -208,10 +240,17 @@ public class DefaultEvents implements EventBus {
 
 	@Override
 	public <E extends AsyncEvent> void fireAsyncEventWithoutFuture(E event) {
-		Objects.requireNonNull(event, "event");
-
+		if (event == null) {
+			throw new NullPointerException("event");
+		}
 		fireAsyncEventCommon(event, null);
 	}
+
+	/*
+	 *
+	 * Listener registration
+	 *
+	 */
 
 	@Override
 	public <E extends Event> RegisteredListener registerListener(Class<E> eventClass, byte priority,

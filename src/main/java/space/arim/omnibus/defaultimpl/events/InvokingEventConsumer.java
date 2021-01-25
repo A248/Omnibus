@@ -43,4 +43,10 @@ class InvokingEventConsumer<E extends Event> implements EventConsumer<E> {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "InvokingEventConsumer{" +
+				"methodHandle=" + methodHandle +
+				'}';
+	}
 }

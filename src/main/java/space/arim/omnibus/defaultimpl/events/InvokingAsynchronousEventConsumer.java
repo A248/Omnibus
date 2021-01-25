@@ -44,4 +44,10 @@ class InvokingAsynchronousEventConsumer<E extends AsyncEvent> implements Asynchr
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "InvokingAsynchronousEventConsumer{" +
+				"methodHandle=" + methodHandle +
+				'}';
+	}
 }
