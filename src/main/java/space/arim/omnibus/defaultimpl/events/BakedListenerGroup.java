@@ -50,11 +50,11 @@ class BakedListenerGroup {
 	}
 
 	void debugTo(CharSequence indentPrefix, Appendable output) throws IOException {
-		output.append('\n').append(indentPrefix).append("Event classes: \n");
+		output.append('\n').append(indentPrefix).append("Event classes: ");
 		for (Class<?> eventClass : eventClasses) {
 			output.append('\n').append(indentPrefix).append("  - ").append(eventClass.getName());
 		}
-		output.append('\n').append(indentPrefix).append("Event listeners: \n");
+		output.append('\n').append(indentPrefix).append("Event listeners: ");
 		for (Listener<?> listener : listeners) {
 			output.append('\n').append(indentPrefix).append("  - ").append(listener.toString());
 		}

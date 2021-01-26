@@ -245,49 +245,21 @@ class DefaultEventsDriver implements EventBusDriver {
 
 	@Override
 	public void debugRegisteredListeners(Class<?> eventClass, Appendable output) throws IOException {
-		debugEventClassInfo(
-				eventClass, eventListeners.get(eventClass), bakedListeners.get(eventClass),
-				output, true, "");
-	}
-
-	private void debugEventClassInfo(Class<?> eventClass, Listener<?>[] listeners, BakedListenerGroup listenerGroup,
-								 Appendable output, boolean verbose, CharSequence indentPrefix)
-			throws IOException {
-		output.append('\n').append(indentPrefix).append("Event class ").append(eventClass.getName());
-
-		output.append('\n').append(indentPrefix);
-		if (listeners == null) {
-			output.append("No directly specified listeners.");
-			if (verbose) {
-				output.append(" (This will necessarily be the case for encapsulated event implementations)");
-			}
-		} else {
-			output.append("Has directly specified listeners:");
-			for (Listener<?> listener : listeners) {
-				output.append('\n').append(indentPrefix).append("  - ").append(listener.toString());
-			}
-		}
-
-		output.append('\n').append(indentPrefix);
-		if (listenerGroup == null) {
-			output.append("No cached listeners.");
-			if (verbose) {
-				output.append(" (This will necessarily be the case for abstract event classes)");
-			}
-		} else {
-			output.append("Has cached listeners with the following information:");
-			listenerGroup.debugTo(indentPrefix + "  ", output);
-		}
+		new EventClassDebug(output, true, "").debugEventClass(
+				eventClass, eventListeners.get(eventClass), bakedListeners.get(eventClass));
 	}
 
 	@Override
 	public void debugEntireDriverState(Appendable output) throws IOException {
 		output.append("Entire state of ").append(this.toString());
+		EventClassDebug eventClassDebug = new EventClassDebug(output, false, "  ");
 		for (Map.Entry<Class<?>, Listener<?>[]> entry : eventListeners.entrySet()) {
 			Class<?> eventClass = entry.getKey();
-			debugEventClassInfo(
-					eventClass, entry.getValue(), bakedListeners.get(eventClass),
-					output, false, "  ");
+			eventClassDebug.debugEventClass(
+					eventClass, entry.getValue(), bakedListeners.get(eventClass));
+		}
+		if (!eventClassDebug.wroteAnything()) {
+			output.append('\n').append("(Empty)");
 		}
 	}
 
