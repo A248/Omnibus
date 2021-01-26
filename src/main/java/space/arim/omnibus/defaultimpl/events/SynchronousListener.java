@@ -19,22 +19,24 @@
 package space.arim.omnibus.defaultimpl.events;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
-import space.arim.omnibus.events.Event;
-import space.arim.omnibus.events.EventConsumer;
+final class SynchronousListener<E> extends Listener<E> {
 
-final class SynchronousListener<E extends Event> extends Listener<E> {
+	private final Consumer<? super E> eventConsumer;
 
-	private final EventConsumer<? super E> eventConsumer;
-	
-	SynchronousListener(Class<E> eventClass, byte priority, EventConsumer<? super E> eventConsumer) {
+	SynchronousListener(Class<E> eventClass, byte priority, Consumer<? super E> eventConsumer) {
 		super(eventClass, priority);
 		this.eventConsumer = Objects.requireNonNull(eventConsumer, "eventConsumer");
 	}
 
 	@Override
-	EventConsumer<? super E> getEventConsumer() {
+	Consumer<? super E> getEventConsumer() {
 		return eventConsumer;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Event consumer " + eventConsumer + " at priority " + priority();
+	}
 }

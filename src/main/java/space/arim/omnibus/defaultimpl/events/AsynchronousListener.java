@@ -37,4 +37,8 @@ final class AsynchronousListener<E extends AsyncEvent> extends Listener<E> {
 		return asyncEventConsumer;
 	}
 
+	@Override
+	public String toString() {
+		return "Asynchronous event consumer " + asyncEventConsumer + " at priority " + priority();
+	}
 }

@@ -178,4 +178,11 @@ public interface EventBus {
 	 */
 	void unregisterListeningMethods(Object annotatedListener);
 
+	/**
+	 * Gets the lower level event bus driver. Should not be used by most API users
+	 *
+	 * @return the event bus driver
+	 */
+	EventBusDriver getDriver();
+
 }

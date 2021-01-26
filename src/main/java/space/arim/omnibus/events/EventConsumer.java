@@ -18,6 +18,8 @@
  */
 package space.arim.omnibus.events;
 
+import java.util.function.Consumer;
+
 /**
  * A listener to an event
  * 
@@ -25,13 +27,14 @@ package space.arim.omnibus.events;
  *
  * @param <E> the event type
  */
-public interface EventConsumer<E extends Event> {
+public interface EventConsumer<E extends Event> extends Consumer<E> {
 
 	/**
 	 * Acts on the event listened to
 	 *
 	 * @param event the event
 	 */
+	@Override
 	void accept(E event);
 	
 }
