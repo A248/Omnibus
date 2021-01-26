@@ -19,39 +19,43 @@
 package space.arim.omnibus.defaultimpl.events;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static space.arim.omnibus.defaultimpl.events.DefaultEventsTesting.fireAndWait;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import space.arim.omnibus.events.EventBus;
 
-public class AsyncEventsTest extends DefaultEventsTestingBase {
+@ExtendWith(DefaultEventsExtension.class)
+public class AsyncEventsTest {
 
 	@Test
-	public void testAsynchronousResumption() {
+	public void asynchronousResumption(EventBus eventBus) {
 		ExecutorService executor = Executors.newFixedThreadPool(1);
-		events().registerListener(AsyncTestEventWithInteger.class, (byte) -10, (te) -> {
+		eventBus.registerListener(AsyncTestEventWithInteger.class, (byte) -10, (te) -> {
 			te.someValue += 1;
 		});
-		events().registerListener(AsyncTestEventWithInteger.class, (byte) -5, (te, controller) -> {
+		eventBus.registerListener(AsyncTestEventWithInteger.class, (byte) -5, (te, controller) -> {
 			executor.execute(() -> {
 				te.someValue *= 10;
 				controller.continueFire();
 			});
 		});
-		events().registerListener(AsyncTestEventWithInteger.class, (byte) 0, (te, controller) -> {
+		eventBus.registerListener(AsyncTestEventWithInteger.class, (byte) 0, (te, controller) -> {
 			executor.execute(() -> {
 				te.someValue -= 3;
 				controller.continueFire();
 			});
 		});
-		events().registerListener(AsyncTestEventWithInteger.class, (byte) 5, (te) -> {
+		eventBus.registerListener(AsyncTestEventWithInteger.class, (byte) 5, (te) -> {
 			te.someValue = te.someValue + 15;
 		});
 		int startValue = ThreadLocalRandom.current().nextInt();
 		AsyncTestEventWithInteger te = new AsyncTestEventWithInteger(startValue);
-		fireAndWait(te);
+		fireAndWait(eventBus, te);
 		assertEquals(((startValue + 1) * 10) - 3 + 15, te.someValue);
 
 		executor.shutdown();

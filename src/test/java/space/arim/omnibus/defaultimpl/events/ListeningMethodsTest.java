@@ -20,6 +20,7 @@ package space.arim.omnibus.defaultimpl.events;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static space.arim.omnibus.defaultimpl.events.DefaultEventsTesting.fireAndWait;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,59 +28,62 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.EventFireController;
 import space.arim.omnibus.events.ListenerPriorities;
 import space.arim.omnibus.events.ListeningMethod;
 
-public class ListeningMethodsTest extends DefaultEventsTestingBase {
+@ExtendWith(DefaultEventsExtension.class)
+public class ListeningMethodsTest {
 
 	@Test
-	public void testAnnotatedListeners() {
-		events().registerListeningMethods(new AnnotatedListener());
+	public void annotatedListeners(EventBus eventBus) {
+		eventBus.registerListeningMethods(new AnnotatedListener());
 
 		int startValue = ThreadLocalRandom.current().nextInt();
 		TestEventWithInteger te = new TestEventWithInteger(startValue);
-		events().fireEvent(te);
+		eventBus.fireEvent(te);
 		assertEquals(((startValue + 1) * 10) - 3, te.someValue);
 	}
 
 	@Test
-	public void testUnregisterAnnotated() {
+	public void unregisterAnnotated(EventBus eventBus) {
 		AnnotatedListener listener = new AnnotatedListener();
-		events().registerListeningMethods(listener);
-		events().unregisterListeningMethods(listener);
+		eventBus.registerListeningMethods(listener);
+		eventBus.unregisterListeningMethods(listener);
 
 		int startValue = ThreadLocalRandom.current().nextInt();
 		TestEventWithInteger te = new TestEventWithInteger(startValue);
-		events().fireEvent(te);
+		eventBus.fireEvent(te);
 		assertEquals(startValue, te.someValue, "No change should occur");
 	}
 
 	@Test
-	public void testAsyncAnnotated() {
+	public void asyncAnnotated(EventBus eventBus) {
 		try (AsyncAnnotatedListener asyncListener = new AsyncAnnotatedListener()) {
-			events().registerListeningMethods(asyncListener);
+			eventBus.registerListeningMethods(asyncListener);
 
 			int startValue = ThreadLocalRandom.current().nextInt();
 			AsyncTestEventWithInteger te = new AsyncTestEventWithInteger(startValue);
-			fireAndWait(te);
+			fireAndWait(eventBus, te);
 			assertEquals(((startValue + 1) * 10) - 3, te.someValue);
 		}
 	}
 
 	@Test
-	public void testDuplicateRegister() {
+	public void duplicateRegister(EventBus eventBus) {
 		AnnotatedListener listener = new AnnotatedListener();
-		events().registerListeningMethods(listener);
-		assertThrows(IllegalStateException.class, () -> events().registerListeningMethods(listener));
+		eventBus.registerListeningMethods(listener);
+		assertThrows(IllegalStateException.class, () -> eventBus.registerListeningMethods(listener));
 	}
 
 	@Test
-	public void testDuplicateUnregister() {
+	public void duplicateUnregister(EventBus eventBus) {
 		AnnotatedListener listener = new AnnotatedListener();
-		events().registerListeningMethods(listener);
-		events().unregisterListeningMethods(listener);
-		events().unregisterListeningMethods(listener); // No-op
+		eventBus.registerListeningMethods(listener);
+		eventBus.unregisterListeningMethods(listener);
+		eventBus.unregisterListeningMethods(listener); // No-op
 	}
 
 	public static class AnnotatedListener {

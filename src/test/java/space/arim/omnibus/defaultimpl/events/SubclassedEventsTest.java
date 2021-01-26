@@ -24,33 +24,36 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.events.ListenerPriorities;
 
-public class SubclassedEventsTest extends DefaultEventsTestingBase {
+@ExtendWith(DefaultEventsExtension.class)
+public class SubclassedEventsTest {
 	
 	@Test
-	public void testSubclassedEventsListenedTo() {
-		events().registerListener(TestEventWithInteger.class, ListenerPriorities.LOW, (te) -> te.someValue += 15);
+	public void subclassedEventsListenedTo(EventBus eventBus) {
+		eventBus.registerListener(TestEventWithInteger.class, ListenerPriorities.LOW, (te) -> te.someValue += 15);
 
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		int beginValue = random.nextInt();
 		TestEventWithInteger te = new TestEventWithIntegerAndBoolean(beginValue, random.nextBoolean());
-		events().fireEvent(te);
+		eventBus.fireEvent(te);
 		assertEquals(beginValue + 15, te.someValue);
 	}
 
 	@Test
-	public void testSubclassedPriorityMaintained() {
-		events().registerListener(TestEventWithIntegerAndBoolean.class, ListenerPriorities.LOWEST,
+	public void subclassedPriorityMaintained(EventBus eventBus) {
+		eventBus.registerListener(TestEventWithIntegerAndBoolean.class, ListenerPriorities.LOWEST,
 				(te) -> te.someValue += 1);
-		events().registerListener(TestEventWithInteger.class, ListenerPriorities.LOWER,
+		eventBus.registerListener(TestEventWithInteger.class, ListenerPriorities.LOWER,
 				(te) -> te.someValue *= 10);
-		events().registerListener(TestEventWithIntegerAndBoolean.class, ListenerPriorities.NORMAL,
+		eventBus.registerListener(TestEventWithIntegerAndBoolean.class, ListenerPriorities.NORMAL,
 				(te) -> te.someValue -= 3);
 
 		int startValue = ThreadLocalRandom.current().nextInt();
 		TestEventWithInteger te = new TestEventWithIntegerAndBoolean(startValue, false);
-		events().fireEvent(te);
+		eventBus.fireEvent(te);
 		assertEquals(((startValue + 1) * 10) - 3, te.someValue);
 	}
 	
