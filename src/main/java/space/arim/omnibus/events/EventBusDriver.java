@@ -52,6 +52,7 @@ public interface EventBusDriver {
 	 * @param eventConsumer the event consumer
 	 * @param <E>           the event type
 	 * @return a registered listener
+	 * @throws IllegalArgumentException if the event class is an array, a primitive, or {@code Object}
 	 */
 	<E> RegisteredListener registerListener(Class<E> eventClass, byte priority, Consumer<? super E> eventConsumer);
 

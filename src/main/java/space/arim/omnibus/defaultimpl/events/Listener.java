@@ -28,6 +28,9 @@ abstract class Listener<E> implements RegisteredListener, Comparable<Listener<?>
 	private final byte priority;
 	
 	Listener(Class<E> eventClass, byte priority) {
+		if (eventClass.isArray() || eventClass.isPrimitive() || eventClass.equals(Object.class)) {
+			throw new IllegalArgumentException("Event class cannot be an array, a primitive, or Object");
+		}
 		this.eventClass = Objects.requireNonNull(eventClass, "eventClass");
 		this.priority = priority;
 	}

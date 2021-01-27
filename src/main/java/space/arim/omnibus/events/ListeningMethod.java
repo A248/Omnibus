@@ -34,7 +34,9 @@ import java.lang.annotation.Target;
  * A listening method must ordinarily have a single parameter whose type is that
  * of the event listened to. If it is desired to be an asynchronous listener, it
  * should accept two parameters; first, the event, second, a
- * {@link EventFireController}.
+ * {@link EventFireController}. <br>
+ * <br>
+ * Event classes must not be array types, primitive types, or {@code Object}.
  * 
  * @author A248
  *

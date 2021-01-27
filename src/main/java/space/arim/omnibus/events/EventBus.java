@@ -112,6 +112,7 @@ public interface EventBus {
 	 * @param priority      the priority at which the listener is placed
 	 * @param eventConsumer the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
+	 * @throws IllegalArgumentException if the event class is an array, a primitive, or {@code Object}
 	 */
 	<E extends Event> RegisteredListener registerListener(Class<E> eventClass, byte priority,
 			EventConsumer<? super E> eventConsumer);
@@ -138,6 +139,7 @@ public interface EventBus {
 	 * @param priority           the priority at which the listener is placed
 	 * @param asyncEventConsumer the logic to run when the event fires
 	 * @return a listener which may be unregistered when necessary
+	 * @throws IllegalArgumentException if the event class is an array, a primitive, or {@code Object}
 	 */
 	<E extends AsyncEvent> RegisteredListener registerListener(Class<E> eventClass, byte priority,
 			AsynchronousEventConsumer<? super E> asyncEventConsumer);
