@@ -38,10 +38,21 @@ class EventClassDebug {
 	void debugEventClass(Class<?> eventClass, Listener<?>[] listeners, BakedListenerGroup listenerGroup)
 		throws IOException {
 		output.append('\n').append(indentPrefix).append("-- Event class ").append(eventClass.getName());
+		appendHierarchy(eventClass);
 		appendListeners(listeners);
 		appendListenerGroup(listenerGroup);
 
 		wroteAnything = true;
+	}
+
+	private void appendHierarchy(Class<?> eventClass) throws IOException {
+		output.append('\n').append(indentPrefix).append("  Detected Class Hierarchy");
+		if (verbose) {
+			output.append(" (No particular order)");
+		}
+		for (Class<?> hierarchy : new HierarchyScan(eventClass).scan()) {
+			output.append('\n').append(indentPrefix).append("    - ").append(hierarchy.getName());
+		}
 	}
 
 	private void appendListeners(Listener<?>[] listeners) throws IOException {

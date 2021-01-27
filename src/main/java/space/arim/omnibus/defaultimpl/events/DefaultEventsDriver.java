@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -77,19 +76,15 @@ class DefaultEventsDriver implements EventBusDriver {
 
 	private <E> BakedListenerGroup computeListenersFor(Class<?> eventClass) {
 		Listener<E>[] listeners = createGenericArray(0);
-		Set<Class<?>> eventClasses = new HashSet<>();
+		Set<Class<?>> eventClasses = new HierarchyScan(eventClass).scan();
 
-		for (Map.Entry<Class<?>, Listener<?>[]> entry : eventListeners.entrySet()) {
-
-			Class<?> thisEventClass = entry.getKey();
-			if (!thisEventClass.isAssignableFrom(eventClass)) {
+		for (Class<?> thisEventClass : eventClasses) {
+			@SuppressWarnings("unchecked")
+			Listener<E>[] fromThisEventClass = (Listener<E>[]) eventListeners.get(thisEventClass);
+			if (fromThisEventClass == null) {
 				continue;
 			}
-			eventClasses.add(thisEventClass);
-
-			@SuppressWarnings("unchecked")
-			Listener<E>[] fromThisEvt = (Listener<E>[]) entry.getValue();
-			listeners = combineListeners(listeners, fromThisEvt);
+			listeners = combineListeners(listeners, fromThisEventClass);
 		}
 		Arrays.sort(listeners);
 		return new BakedListenerGroup(eventClasses, listeners);
