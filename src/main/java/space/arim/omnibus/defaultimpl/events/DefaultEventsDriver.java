@@ -27,7 +27,6 @@ import space.arim.omnibus.events.RegisteredListener;
 import space.arim.omnibus.util.ArraysUtil;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Map;
@@ -229,11 +228,11 @@ class DefaultEventsDriver implements EventBusDriver {
 
 	@Override
 	public String debugRegisteredListeners(Class<?> eventClass) {
-		StringWriter output = new StringWriter();
+		StringBuilder output = new StringBuilder();
 		try {
 			debugRegisteredListeners(eventClass, output);
 		} catch (IOException ex) {
-			throw new UncheckedIOException("StringWriter should not throw IOException", ex);
+			throw new UncheckedIOException("StringBuilder should not throw IOException", ex);
 		}
 		return output.toString();
 	}
