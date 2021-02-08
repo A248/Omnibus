@@ -57,6 +57,37 @@ public interface EventBusDriver {
 	<E> RegisteredListener registerListener(Class<E> eventClass, byte priority, Consumer<? super E> eventConsumer);
 
 	/**
+	 * Gets the amount of registered listeners which would be called if an instance of
+	 * the specified event class is fired. <br>
+	 * <br>
+	 * This method is mainly designed for determining whether a concrete event would call any listeners.
+	 * For example: <br>
+	 * <pre>
+	 * {@code
+	 * // API
+	 * public interface MyEvent extends Event {
+	 *     String details();
+	 * }
+	 * // Implementation
+	 * record MyEventImpl(String details) implements MyEvent {
+	 * }
+	 *
+	 * void runEventIfNecessary(EventBus eventBus, String details) {
+	 *     if (eventBus.getDriver().getRegisteredListenerCount(MyEventImpl.class) == 0) {
+	 *         return;
+	 *     }
+	 *     eventBus.fireEvent(new MyEventImpl(details));
+	 * }
+	 * }
+	 * </pre>
+	 *
+	 * @param eventClass the concrete event class, an instance of which would be fired
+	 * @return the amount of listeners which would be called. Note that this value may
+	 * change as listeners are concurrently registered and unregistered.
+	 */
+	int getRegisteredListenerCount(Class<?> eventClass);
+
+	/**
 	 * Generates brief debug report for an event class. May yield information about
 	 * listeners registered for such event, cached listeners, etc. <br>
 	 * <br>

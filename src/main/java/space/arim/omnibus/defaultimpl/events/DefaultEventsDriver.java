@@ -93,11 +93,15 @@ class DefaultEventsDriver implements EventBusDriver {
 		bakedListeners.values().removeIf((listenerGroup) -> listenerGroup.eventClasses().contains(eventClass));
 	}
 
+	private Listener<?>[] getListenersTo(Class<?> eventClass) {
+		BakedListenerGroup listenerGroup = bakedListeners.computeIfAbsent(eventClass, this::computeListenersFor);
+		return listenerGroup.listeners();
+	}
+
 	<E> Listener<E>[] getListenersTo(E event) {
-		BakedListenerGroup listenerGroup = bakedListeners.computeIfAbsent(event.getClass(), this::computeListenersFor);
 		@SuppressWarnings("unchecked")
-		Listener<E>[] toInvoke = (Listener<E>[]) listenerGroup.listeners();
-		return toInvoke;
+		Listener<E>[] casted = (Listener<E>[]) getListenersTo(event.getClass());
+		return casted;
 	}
 
 	/*
@@ -224,6 +228,11 @@ class DefaultEventsDriver implements EventBusDriver {
 		Listener<E> listener = new SynchronousListener<>(eventClass, priority, eventConsumer);
 		registerListener(listener);
 		return listener;
+	}
+
+	@Override
+	public int getRegisteredListenerCount(Class<?> eventClass) {
+		return getListenersTo(eventClass).length;
 	}
 
 	@Override

@@ -50,6 +50,11 @@ public class DefaultEventsDriverTest {
 	}
 
 	@Test
+	public void getRegisteredListenerCount(EventBusDriver eventBusDriver) {
+		assertEquals(0, eventBusDriver.getRegisteredListenerCount(ForeignEvent.class));
+	}
+
+	@Test
 	public void debugRegisteredListeners(EventBusDriver eventBusDriver) throws IOException {
 		try (PrintStream output = new PrintStream(OutputStream.nullOutputStream())) {
 			assertDoesNotThrow(() -> {
