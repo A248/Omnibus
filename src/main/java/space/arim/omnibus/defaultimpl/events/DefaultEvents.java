@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author A248
  */
-public class DefaultEvents implements EventBus {
+public final class DefaultEvents implements EventBus {
 
 	private final DefaultEventsDriver driver = new DefaultEventsDriver();
 
@@ -65,7 +65,8 @@ public class DefaultEvents implements EventBus {
 
 	private <E extends AsyncEvent> void fireAsyncEventCommon(E event, CompletableFuture<E> future) {
 		Listener<E>[] toInvoke = driver.getListenersTo(event);
-		DefaultEventsDriver.callAsyncListeners(toInvoke, 0, event, future);
+		EventFire<E> eventFire = new EventFire<>(toInvoke, event, future);
+		eventFire.callAsyncListeners(0);
 	}
 
 	@Override

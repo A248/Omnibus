@@ -20,9 +20,7 @@
 package space.arim.omnibus.defaultimpl.events;
 
 import space.arim.omnibus.events.AsyncEvent;
-import space.arim.omnibus.events.AsynchronousEventConsumer;
 import space.arim.omnibus.events.EventBusDriver;
-import space.arim.omnibus.events.EventFireController;
 import space.arim.omnibus.events.RegisteredListener;
 import space.arim.omnibus.util.ArraysUtil;
 
@@ -31,13 +29,11 @@ import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-class DefaultEventsDriver implements EventBusDriver {
+final class DefaultEventsDriver implements EventBusDriver {
 
 	/**
 	 * The listeners themselves, a map of usually abstract event classes to event
@@ -105,73 +101,6 @@ class DefaultEventsDriver implements EventBusDriver {
 	}
 
 	/*
-	 * Listener invocation
-	 */
-
-	private static <E> void callSyncListener(SynchronousListener<E> invoke, E event) {
-		Consumer<? super E> eventConsumer = invoke.getEventConsumer();
-		try {
-			eventConsumer.accept(event);
-		} catch (Exception ex) {
-			logException(eventConsumer, event, ex);
-		}
-	}
-
-	private static <E> void callSyncListeners(Listener<E>[] toInvoke, E event) {
-		for (Listener<E> listener : toInvoke) {
-			callSyncListener((SynchronousListener<E>) listener, event);
-		}
-	}
-
-	static <E extends AsyncEvent> void callAsyncListeners(final Listener<E>[] toInvoke, final int invokeIndex,
-														  final E event, final CompletableFuture<E> future) {
-		for (int n = invokeIndex; n < toInvoke.length; n++) {
-			Listener<E> listener = toInvoke[n];
-			if (listener instanceof SynchronousListener) {
-				callSyncListener((SynchronousListener<E>) listener, event);
-
-			} else {
-				int nextIndex = n + 1;
-				AsynchronousListener<? super E> asyncListener = (AsynchronousListener<E>) listener;
-				AsynchronousEventConsumer<? super E> asyncEventConsumer = asyncListener.getEventConsumer();
-				EventFireController controller = new EventFireController() {
-
-					private final AtomicBoolean fired = new AtomicBoolean();
-
-					@Override
-					public void continueFire() {
-						if (!fired.compareAndSet(false, true)) {
-							throw new IllegalStateException("Already fired");
-						}
-						callAsyncListeners(toInvoke, nextIndex, event, future);
-					}
-				};
-				try {
-					asyncEventConsumer.acceptAndContinue(event, controller);
-					return;
-				} catch (Exception ex) {
-					logException(asyncEventConsumer, event, ex);
-				}
-			}
-		}
-		if (future != null) {
-			future.complete(event);
-		}
-	}
-
-	// Exception logging
-
-	private static void logException(Object eventConsumer, Object event, Exception ex) {
-		LoggerHolder.LOGGER.log(System.Logger.Level.WARNING,
-				"Exception while calling event " + event + " for event consumer " + eventConsumer,
-				ex);
-	}
-
-	private static final class LoggerHolder {
-		static final System.Logger LOGGER = System.getLogger(DefaultEventsDriver.class.getName());
-	}
-
-	/*
 	 * Listener registration
 	 */
 
@@ -219,7 +148,7 @@ class DefaultEventsDriver implements EventBusDriver {
 		if (event instanceof AsyncEvent) {
 			throw new IllegalArgumentException("Cannot use #fireEvent with asynchronous capable events");
 		}
-		callSyncListeners(getListenersTo(event), event);
+		EventFire.callSyncListeners(getListenersTo(event), event);
 	}
 
 	@Override
