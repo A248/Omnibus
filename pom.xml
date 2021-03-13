@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim.omnibus</groupId>
 	<artifactId>omnibus</artifactId>
-	<version>1.1.0-M1</version>
+	<version>1.1.0-M2</version>
 	
 	<name>Omnibus</name>
 	<description>Events, services, and concurrency frameworks</description>
