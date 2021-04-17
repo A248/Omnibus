@@ -94,10 +94,9 @@ public class DefaultRegistry implements Registry {
 							"Provider " + provider + " already registered for service " + service);
 				}
 			}
-			int highPriorityIndex = registers.length - 1;
 			int insertionIndex = - (Arrays.binarySearch(registers, registration) + 1);
-			if (highPriorityIndex == insertionIndex) {
-				Registration<T> previous = (Registration<T>) registers[highPriorityIndex];
+			if (registers.length == insertionIndex) {
+				Registration<T> previous = (Registration<T>) registers[registers.length - 1];
 				eventQueue.offer(new ServiceChangeEventImpl<>(service, previous, registration));
 			}
 			return ArraysUtil.expandAndInsert(registers, registration, insertionIndex);

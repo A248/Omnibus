@@ -19,18 +19,47 @@
 package space.arim.omnibus.defaultimpl.registry;
 
 import space.arim.omnibus.registry.Registration;
+import space.arim.omnibus.registry.RegistryEvent;
 
-class RegistrationAddRemoveEventImpl<T> extends RegistryEventImpl<T> {
+class RegistrationAddRemoveEventImpl<T> implements RegistryEvent<T> {
 
+	private final Class<T> service;
 	private final Registration<T> registration;
 
 	RegistrationAddRemoveEventImpl(Class<T> service, Registration<T> registration) {
-		super(service);
+		this.service = service;
 		this.registration = registration;
+	}
+
+	@Override
+	public Class<T> getService() {
+		return service;
 	}
 
 	public Registration<T> getRegistration() {
 		return registration;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		RegistrationAddRemoveEventImpl<?> that = (RegistrationAddRemoveEventImpl<?>) o;
+		return service.equals(that.service) && registration.equals(that.registration);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = service.hashCode();
+		result = 31 * result + registration.hashCode();
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "RegistrationAddRemoveEventImpl{" +
+				"service=" + service +
+				", registration=" + registration +
+				'}';
+	}
 }
