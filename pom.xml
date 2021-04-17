@@ -5,7 +5,7 @@
 	
 	<groupId>space.arim.omnibus</groupId>
 	<artifactId>omnibus</artifactId>
-	<version>1.1.0-M2</version>
+	<version>1.1.0-SNAPSHOT</version>
 	
 	<name>Omnibus</name>
 	<description>Events, services, and concurrency frameworks</description>
@@ -16,6 +16,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>5.7.0</junit.version>
 	</properties>
+
+	<scm>
+		<developerConnection>scm:git:https://github.com/A248/Omnibus.git</developerConnection>
+	</scm>
 
 	<licenses>
 		<license>
@@ -45,8 +49,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>11</source>
-					<target>11</target>
+					<release>11</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -92,6 +95,11 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>3.0.0-M1</version>
 			</plugin>
 		</plugins>
 	</build>
