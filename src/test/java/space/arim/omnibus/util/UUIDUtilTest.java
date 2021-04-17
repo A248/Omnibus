@@ -19,6 +19,7 @@
 
 package space.arim.omnibus.util;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -51,12 +52,12 @@ public class UUIDUtilTest {
 		assertEquals(uuid, UUIDUtil.fromByteArray(bytes, offset));
 	}
 
-	@Test
+	@RepeatedTest(5)
 	public void toFromShortString() {
 		assertEquals(uuid, UUIDUtil.fromShortString(UUIDUtil.toShortString(uuid)));
 	}
 
-	@Test
+	@RepeatedTest(5)
 	public void shortStringLength() {
 		assertEquals(32, UUIDUtil.toShortString(uuid).length());
 	}

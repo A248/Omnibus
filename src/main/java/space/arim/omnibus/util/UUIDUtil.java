@@ -119,12 +119,17 @@ public final class UUIDUtil {
 	 * @return the short uuid string
 	 */
 	public static String toShortString(UUID uuid) {
-		return formatAsHex(uuid.getMostSignificantBits()) + formatAsHex(uuid.getLeastSignificantBits());
+		StringBuilder builder = new StringBuilder();
+		formatAsHex(uuid.getMostSignificantBits(), builder);
+		formatAsHex(uuid.getLeastSignificantBits(), builder);
+		return builder.toString();
 	}
 
-	private static String formatAsHex(long bits) {
+	private static void formatAsHex(long bits, StringBuilder builder) {
 		String hex = Long.toHexString(bits);
-		return ("0000000000000000" + hex).substring(hex.length());
+		int leadingZeroes = 16 - hex.length();
+		builder.append("0".repeat(leadingZeroes));
+		builder.append(hex);
 	}
 
 	/**
