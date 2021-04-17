@@ -148,7 +148,7 @@ public interface EventBus {
 	 * Registers all methods on the target listener object which are annotated with
 	 * {@link ListeningMethod}. Inherited methods are included. <br>
 	 * <br>
-	 * The runtime type of the listener object must be public. Additionally, it is
+	 * The runtime type of the listener object must be public. Additionally, if it is
 	 * in a named module, the module must be unconditionally exported.
 	 * 
 	 * @param annotatedListener the listener whose annotated methods to register

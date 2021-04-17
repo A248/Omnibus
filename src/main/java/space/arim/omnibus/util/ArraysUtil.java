@@ -35,7 +35,7 @@ public final class ArraysUtil {
 	/**
 	 * Creates a new array of the source array's length plus 1, then copies all the elements before the insertion index
 	 * from the source array to the new array, and copies all elements after the insertion index to the new array.
-	 * Then the element at the insertion index is set to the specified array.
+	 * Then the element at the insertion index is set to the specified element.
 	 * 
 	 * @param <T> the array type
 	 * @param sourceArray the source array
