@@ -46,7 +46,7 @@ public class UUIDUtilTest {
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		int bufferSize = random.nextInt(16, 128);
 		byte[] bytes = new byte[bufferSize];
-		int offset = random.nextInt(bufferSize - 16);
+		int offset = (bufferSize == 16) ? 0 : random.nextInt(bufferSize - 16);
 
 		UUIDUtil.toByteArray(uuid, bytes, offset);
 		assertEquals(uuid, UUIDUtil.fromByteArray(bytes, offset));
