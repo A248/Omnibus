@@ -21,6 +21,7 @@ package space.arim.omnibus.defaultimpl.registry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -184,6 +185,16 @@ public class DefaultRegistryTest {
 		});
 	}
 
+	@Test
+	public void duplicateUnregister() {
+		TestService provider = new TestServiceImpl();
+		Registration<TestService> regis = register(randomPriority(), provider, "impl");
+		assertEquals(Optional.empty(), unregister(regis));
+		assertNoRegistrations();
+		assertEquals(Optional.empty(), unregister(regis));
+		assertNoRegistrations();
+	}
+
 	@ParameterizedTest
 	@ValueSource(booleans = {true, false})
 	public void multipleRegistrations(boolean useRegisterAndGet) {
@@ -206,6 +217,7 @@ public class DefaultRegistryTest {
 		assertRegistrations(List.of(regis1, regis3));
 
 		assertEquals(Optional.of(regis3), unregister(regis1));
+		assertEquals(Optional.of(regis3), unregister(regis1), "Extra unregister is a no-op");
 		assertTopRegistration(regis3);
 		assertRegistrations(List.of(regis3));
 
