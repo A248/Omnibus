@@ -6,7 +6,7 @@
 	<groupId>space.arim.omnibus</groupId>
 	<artifactId>omnibus</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
-	
+
 	<name>Omnibus</name>
 	<description>Events, services, and concurrency frameworks</description>
 	<url>https://github.com/A248/Omnibus</url>
@@ -17,6 +17,7 @@
 		<junit.version>5.7.1</junit.version>
 		<mockito.version>3.9.0</mockito.version>
 		<maven.compiler.release>11</maven.compiler.release>
+		<jacoco.argLine></jacoco.argLine>
 	</properties>
 
 	<scm>
@@ -57,7 +58,7 @@
 				<version>3.0.0-M5</version>
 				<configuration>
 					<trimStackTrace>false</trimStackTrace>
-					<argLine>-XX:TieredStopAtLevel=1 -XX:-TieredCompilation
+					<argLine>@{jacoco.argLine} -XX:TieredStopAtLevel=1 -XX:-TieredCompilation
 					--add-opens space.arim.omnibus/space.arim.omnibus.defaultimpl.registry=ALL-UNNAMED</argLine>
 				</configuration>
 				<dependencies>
@@ -68,6 +69,39 @@
 						<scope>runtime</scope>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<version>3.2.2</version>
+				<executions>
+					<execution>
+						<id>install-artifacts</id>
+						<goals>
+							<goal>install</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-api-consumers</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+						<configuration>
+							<goals>verify</goals>
+						</configuration>
+					</execution>
+					<execution>
+						<id>verify-api-consumers</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+					<localRepositoryPath>${project.build.directory}/local-it-repo</localRepositoryPath>
+					<parallelThreads>2</parallelThreads>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -104,20 +138,11 @@
 		</plugins>
 	</build>
 
-
 	<profiles>
 		<profile>
 			<id>codecov</id>
 			<build>
 				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<configuration>
-							<argLine>@{argLine} -XX:TieredStopAtLevel=1 -XX:-TieredCompilation
-								--add-opens space.arim.omnibus/space.arim.omnibus.defaultimpl.registry=ALL-UNNAMED</argLine>
-						</configuration>
-					</plugin>
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
@@ -128,6 +153,9 @@
 								<goals>
 									<goal>prepare-agent</goal>
 								</goals>
+								<configuration>
+									<propertyName>jacoco.argLine</propertyName>
+								</configuration>
 							</execution>
 							<execution>
 								<id>default-report</id>
