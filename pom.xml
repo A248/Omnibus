@@ -101,6 +101,7 @@
 					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 					<localRepositoryPath>${project.build.directory}/local-it-repo</localRepositoryPath>
 					<parallelThreads>2</parallelThreads>
+					<settingsFile>src/it/settings.xml</settingsFile>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -134,6 +135,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>3.0.0-M1</version>
+				<configuration>
+					<tagNameFormat>@{project.version}</tagNameFormat>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
