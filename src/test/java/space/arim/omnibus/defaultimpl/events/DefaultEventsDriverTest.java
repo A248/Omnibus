@@ -22,7 +22,6 @@ package space.arim.omnibus.defaultimpl.events;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import space.arim.omnibus.events.EventBusDriver;
-import space.arim.omnibus.events.ListenerPriorities;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,13 +29,15 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static space.arim.omnibus.events.ListenerPriorities.NORMAL;
 
 @ExtendWith(DefaultEventsExtension.class)
 public class DefaultEventsDriverTest {
 
 	@Test
 	public void listenToForeignEvent(EventBusDriver eventBusDriver) {
-		eventBusDriver.registerListener(ForeignEvent.class, ListenerPriorities.NORMAL, (fe) -> {
+		eventBusDriver.registerListener(ForeignEvent.class, NORMAL, (fe) -> {
 			fe.value = 5;
 		});
 		ForeignEvent fe = new ForeignEvent();
@@ -58,9 +59,9 @@ public class DefaultEventsDriverTest {
 	public void debugRegisteredListeners(EventBusDriver eventBusDriver) throws IOException {
 		try (PrintStream output = new PrintStream(OutputStream.nullOutputStream())) {
 			assertDoesNotThrow(() -> {
-				eventBusDriver.registerListener(ForeignEvent.class, ListenerPriorities.NORMAL, (fe) -> {
+				eventBusDriver.registerListener(ForeignEvent.class, NORMAL, (fe) -> {
 				});
-				eventBusDriver.registerListener(ForeignEvent.class, ListenerPriorities.NORMAL, (fe) -> {
+				eventBusDriver.registerListener(ForeignEvent.class, NORMAL, (fe) -> {
 				});
 				eventBusDriver.debugRegisteredListeners(ForeignEvent.class, output);
 				output.println();
@@ -77,9 +78,9 @@ public class DefaultEventsDriverTest {
 			assertDoesNotThrow(() -> {
 				eventBusDriver.debugEntireDriverState(output);
 				output.println();
-				eventBusDriver.registerListener(ForeignEvent.class, ListenerPriorities.NORMAL, (fe) -> {
+				eventBusDriver.registerListener(ForeignEvent.class, NORMAL, (fe) -> {
 				});
-				eventBusDriver.registerListener(ForeignEvent.class, ListenerPriorities.NORMAL, (fe) -> {
+				eventBusDriver.registerListener(ForeignEvent.class, NORMAL, (fe) -> {
 				});
 				eventBusDriver.debugEntireDriverState(output);
 				output.println();
@@ -88,6 +89,24 @@ public class DefaultEventsDriverTest {
 				output.println();
 			});
 		}
+	}
+
+	@Test
+	public void objectEventClass(EventBusDriver eventBusDriver) {
+		assertThrows(IllegalArgumentException.class,
+				() -> eventBusDriver.registerListener(Object.class, NORMAL, (e) -> {}));
+	}
+
+	@Test
+	public void arrayEventClass(EventBusDriver eventBusDriver) {
+		assertThrows(IllegalArgumentException.class,
+				() -> eventBusDriver.registerListener(TestEventWithInteger[].class, NORMAL, (e) -> {}));
+	}
+
+	@Test
+	public void primitiveEventClass(EventBusDriver eventBusDriver) {
+		assertThrows(IllegalArgumentException.class,
+				() -> eventBusDriver.registerListener(int.class, NORMAL, (e) -> {}));
 	}
 
 }

@@ -93,6 +93,10 @@ final class EventFire<E extends AsyncEvent> {
 					return;
 				} catch (Exception ex) {
 					logException(asyncEventConsumer, event, ex);
+					if (continuationIndex != currentIndex) {
+						// Listener called continueFire before throwing
+						return;
+					}
 				}
 			}
 		}
