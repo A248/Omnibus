@@ -94,12 +94,13 @@ public class ListeningMethodsTest {
 		}
 
 		@ListeningMethod
-		public void timesTen(TestEventWithInteger te) {
+		public void timesTen(TestEventWithInteger te)
+				throws RuntimeException /* Declare unchecked exception */ {
 			te.someValue *= 10;
 		}
 
 		@ListeningMethod(priority = ListenerPriorities.HIGH)
-		public void minus3(TestEventWithInteger te) {
+		public void minus3(TestEventWithInteger te) throws Error {
 			te.someValue -= 3;
 		}
 
