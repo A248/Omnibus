@@ -32,9 +32,11 @@ class ListeningMethodValidator {
 
 	private static final Lookup LOOKUP = MethodHandles.lookup();
 
+	private final AccessChecker accessChecker;
 	private final Method method;
 
-	ListeningMethodValidator(Method method) {
+	ListeningMethodValidator(AccessChecker accessChecker, Method method) {
+		this.accessChecker = accessChecker;
 		this.method = method;
 	}
 
@@ -42,6 +44,7 @@ class ListeningMethodValidator {
 		validateMethodSignature();
 		detectCheckedExceptions();
 
+		getClass().getModule().addReads(method.getDeclaringClass().getModule());
 		try {
 			return LOOKUP.unreflect(method);
 		} catch (IllegalAccessException ex) {
@@ -54,7 +57,7 @@ class ListeningMethodValidator {
 			throw badAnnotatedMethod("non-void return type");
 		}
 		int modifiers = method.getModifiers();
-		if (!Modifier.isPublic(modifiers)) { // May be redundant but is future-proof
+		if (!Modifier.isPublic(modifiers)) {
 			throw badAnnotatedMethod("non-public access");
 		}
 		if (Modifier.isStatic(modifiers) || method.isDefault()) {
@@ -70,6 +73,7 @@ class ListeningMethodValidator {
 		if (!Event.class.isAssignableFrom(parameterTypes[0])) {
 			throw badAnnotatedMethod("first parameter is not subclass of Event");
 		}
+		accessChecker.checkClassAccess(parameterTypes[0]);
 		if (parameterTypes.length == 2) {
 			if (parameterTypes[1] != EventFireController.class) {
 				throw badAnnotatedMethod("second parameter is not EventFireController");

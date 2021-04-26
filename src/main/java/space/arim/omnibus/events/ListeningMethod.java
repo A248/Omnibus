@@ -37,6 +37,7 @@ import java.lang.annotation.Target;
  * {@link EventFireController}. <br>
  * <br>
  * Event classes must not be array types, primitive types, or {@code Object}.
+ * The event type declared by the method must be public and unconditionally exported.
  * 
  * @author A248
  *

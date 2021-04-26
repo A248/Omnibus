@@ -20,7 +20,6 @@ package space.arim.omnibus.defaultimpl.events;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +31,8 @@ class ListeningMethodScanner {
 
 	private final Object listener;
 	private final Class<?> listenerClass;
+
+	private final AccessChecker accessChecker = new AccessChecker();
 	
 	ListeningMethodScanner(Object listener) {
 		this.listener = listener;
@@ -39,7 +40,7 @@ class ListeningMethodScanner {
 	}
 	
 	Set<Listener<?>> scanAndTransformAnnotatedMethods() {
-		checkAccess();
+		accessChecker.checkClassAccess(listenerClass);
 
 		Set<Listener<?>> transformedListeners = new HashSet<>();
 		for (Method method : listenerClass.getMethods()) {
@@ -54,7 +55,7 @@ class ListeningMethodScanner {
 	}
 	
 	private Listener<?> transformAnnotatedMethod(Method method, ListeningMethod annotation) {
-		MethodHandle methodHandle = new ListeningMethodValidator(method).validateAndUnreflect();
+		MethodHandle methodHandle = new ListeningMethodValidator(accessChecker, method).validateAndUnreflect();
 
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		Class<? extends Event> eventClass = parameterTypes[0].asSubclass(Event.class);
@@ -70,22 +71,6 @@ class ListeningMethodScanner {
 					new InvokingAsynchronousEventConsumer<>(listener, methodHandle));
 		}
 		return transformedListener;
-	}
-	
-	private void checkAccess() {
-		if (!Modifier.isPublic(listenerClass.getModifiers())) {
-			throw new IllegalArgumentException(className() + " is not public");
-		}
-		String listenerPackage = listenerClass.getPackageName();
-		boolean packageVisible = listenerClass.getModule().isExported(listenerPackage)
-				|| listenerPackage.equals(getClass().getPackageName()); // whitelist own package for unit tests
-		if (!packageVisible) {
-			throw new IllegalArgumentException(className() + " is not unconditionally exported");
-		}
-	}
-	
-	private String className() {
-		return "Class " + listenerClass.getName();
 	}
 	
 }

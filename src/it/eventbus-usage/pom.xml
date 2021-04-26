@@ -24,7 +24,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>space.arim.omnibus</groupId>
-    <artifactId>it-multi-provider</artifactId>
+    <artifactId>eventbus-usage</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
     <properties>
