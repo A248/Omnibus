@@ -51,6 +51,21 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
+				<executions>
+					<execution>
+						<id>compile-concurrency-test</id>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<release>16</release>
+							<outputDirectory>${project.build.directory}/concurrency-test-classes</outputDirectory>
+							<compileSourceRoots>
+								<compileSourceRoot>src/test/java-concurrency</compileSourceRoot>
+							</compileSourceRoots>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -60,6 +75,40 @@
 					<trimStackTrace>false</trimStackTrace>
 					<argLine>@{jacoco.argLine} -XX:TieredStopAtLevel=1 -XX:-TieredCompilation
 					--add-opens space.arim.omnibus/space.arim.omnibus.defaultimpl.registry=ALL-UNNAMED</argLine>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.junit.jupiter</groupId>
+						<artifactId>junit-jupiter-engine</artifactId>
+						<version>${junit.version}</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>3.0.0-M5</version>
+				<executions>
+					<execution>
+						<id>test-concurrency</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+						<configuration>
+							<testSourceDirectory>src/test/java-concurrency</testSourceDirectory>
+							<testClassesDirectory>${project.build.directory}/concurrency-test-classes</testClassesDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<trimStackTrace>false</trimStackTrace>
+					<argLine>@{jacoco.argLine}</argLine>
 				</configuration>
 				<dependencies>
 					<dependency>

@@ -18,19 +18,16 @@
  */
 package space.arim.omnibus.defaultimpl.registry;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import space.arim.omnibus.events.EventBus;
 import space.arim.omnibus.registry.DuplicateRegistrationException;
 import space.arim.omnibus.registry.Registration;
 import space.arim.omnibus.registry.Registry;
-import space.arim.omnibus.registry.RegistryEvent;
 import space.arim.omnibus.util.ArraysUtil;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The default implementation of {@link Registry}
@@ -52,13 +49,7 @@ public class DefaultRegistry implements Registry {
 	 */
 	private final EventBus eventBus;
 	
-	/**
-	 * A list of registration events we'll fire. <br>
-	 * We don't want to spend time firing events inside computation lambdas,
-	 * particularly if listeners spend a long time.
-	 * 
-	 */
-	private final Queue<RegistryEvent<?>> eventQueue = new ConcurrentLinkedQueue<>();
+	private final FifoEventQueue eventQueue = new FifoEventQueue();
 	
 	/**
 	 * Creates from an event bus
@@ -70,12 +61,7 @@ public class DefaultRegistry implements Registry {
 	}
 	
 	private void fireRegistryEvents() {
-		synchronized (eventQueue) {
-			RegistryEvent<?> event;
-			while ((event = eventQueue.poll()) != null) {
-				eventBus.fireAsyncEventWithoutFuture(event);
-			}
-		}
+		eventQueue.fireEvents(eventBus);
 	}
 	
 	@SuppressWarnings("unchecked")
