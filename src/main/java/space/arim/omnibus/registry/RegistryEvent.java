@@ -28,10 +28,13 @@ import space.arim.omnibus.events.AsyncEvent;
  * <br>
  * It is guaranteed that {@code RegistryEvent}s relating to a certain service will happen in an order consistent with
  * the state of the service; i.e., that they will be fired sequentially, but not necessarily on the same thread. <br>
- * However, no such guarantee is made for events relating to different services.
+ * However, no such guarantee is made for events relating to different services. <br>
+ * <br>
+ * Although {@code RegistryEvent}s are indeed {@code AsyncEvent}s, it is not recommended to use
+ * async listeners with it, as doing so may lead to a surprising order of execution in later listeners.
  *
  * @author A248
- * @param <T> the generic type
+ * @param <T> the service type
  */
 public interface RegistryEvent<T> extends AsyncEvent {
 
