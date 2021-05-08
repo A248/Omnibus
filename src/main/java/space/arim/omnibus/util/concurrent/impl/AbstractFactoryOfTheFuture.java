@@ -58,6 +58,10 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 
 	@Override
 	public void execute(Runnable command) {
+		// DEFAULT_EXECUTOR does not always null-check (JDK-8254973)
+		if (command == null) {
+			throw new NullPointerException("command");
+		}
 		DEFAULT_EXECUTOR.execute(command);
 	}
 	

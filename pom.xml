@@ -148,7 +148,7 @@
 				<configuration>
 					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 					<localRepositoryPath>${project.build.directory}/local-it-repo</localRepositoryPath>
-					<parallelThreads>4</parallelThreads>
+					<parallelThreads>5</parallelThreads>
 					<settingsFile>src/it/settings.xml</settingsFile>
 				</configuration>
 			</plugin>
