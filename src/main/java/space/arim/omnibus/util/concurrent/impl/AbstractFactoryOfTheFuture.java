@@ -152,13 +152,8 @@ public abstract class AbstractFactoryOfTheFuture implements FactoryOfTheFuture {
 	
 	@Override
 	public CentralisedFuture<?> allOf(CentralisedFuture<?>...futures) {
-		switch (futures.length) { // Null check
-		case 0:
+		if (futures.length == 0) { // Null check
 			return completedFuture(null);
-		case 1:
-			return Objects.requireNonNull(futures[0], "futures element");
-		default:
-			break;
 		}
 		return copyFuture(CompletableFuture.allOf(futures));
 	}
