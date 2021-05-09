@@ -21,10 +21,13 @@ package space.arim.omnibus.defaultimpl.events;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import space.arim.omnibus.events.AsynchronousEventConsumer;
 import space.arim.omnibus.events.EventBus;
+import space.arim.omnibus.events.EventConsumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static space.arim.omnibus.events.ListenerPriorities.NORMAL;
 
 @ExtendWith(DefaultEventsExtension.class)
 public class DefaultEventsTest {
@@ -38,6 +41,31 @@ public class DefaultEventsTest {
 	public void nullAsyncEvent(EventBus eventBus) {
 		assertThrows(NullPointerException.class, () -> eventBus.fireAsyncEvent(null));
 		assertThrows(NullPointerException.class, () -> eventBus.fireAsyncEventWithoutFuture(null));
+	}
+
+	@Test
+	public void registerNullListener(EventBus eventBus) {
+		assertThrows(NullPointerException.class,
+				() -> eventBus.registerListener(TestEventWithInteger.class, NORMAL, null));
+		assertThrows(NullPointerException.class,
+				() -> eventBus.registerListener(AsyncTestEventWithInteger.class, NORMAL,
+						(EventConsumer<AsyncTestEventWithInteger>) null));
+		assertThrows(NullPointerException.class,
+				() -> eventBus.registerListener(AsyncTestEventWithInteger.class, NORMAL,
+						(AsynchronousEventConsumer<AsyncTestEventWithInteger>) null));
+		assertThrows(NullPointerException.class, () -> eventBus.unregisterListener(null));
+	}
+
+	@Test
+	public void registerToNullEvent(EventBus eventBus) {
+		assertThrows(NullPointerException.class, () -> eventBus.registerListener(null, NORMAL, (e) -> {}));
+		assertThrows(NullPointerException.class, () -> eventBus.registerListener(null, NORMAL, (e, c) -> {}));
+	}
+
+	@Test
+	public void registerNullAnnotatedListener(EventBus eventBus) {
+		assertThrows(NullPointerException.class, () -> eventBus.registerListeningMethods(null));
+		assertThrows(NullPointerException.class, () -> eventBus.unregisterListeningMethods(null));
 	}
 
 	@Test
