@@ -202,13 +202,7 @@ public final class UUIDUtil {
 	 * @throws IndexOutOfBoundsException if the byte array is not of the right size
 	 */
 	public static UUID fromByteArray(byte[] byteArray) {
-		return new UUID(
-				longFromBytes(
-						byteArray[0], byteArray[1], byteArray[2], byteArray[3],
-						byteArray[4], byteArray[5], byteArray[6], byteArray[7]),
-				longFromBytes(
-						byteArray[8], byteArray[9], byteArray[10], byteArray[11],
-						byteArray[12], byteArray[13], byteArray[14], byteArray[15]));
+		return fromByteArray(byteArray, 0);
 	}
 
 	/**
@@ -230,10 +224,9 @@ public final class UUIDUtil {
 						byteArray[offset + 6], byteArray[offset + 7]),
 				longFromBytes(
 						byteArray[offset + 8], byteArray[offset + 9],
-						byteArray[offset + 10],
-						byteArray[offset + 11], byteArray[offset + 12],
-						byteArray[offset + 13], byteArray[offset + 14],
-						byteArray[offset + 15]));
+						byteArray[offset + 10], byteArray[offset + 11],
+						byteArray[offset + 12], byteArray[offset + 13],
+						byteArray[offset + 14], byteArray[offset + 15]));
 	}
 
 	private static long longFromBytes(byte b1, byte b2, byte b3, byte b4, byte b5, byte b6, byte b7, byte b8) {

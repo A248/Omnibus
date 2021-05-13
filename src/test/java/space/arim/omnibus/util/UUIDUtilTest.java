@@ -22,10 +22,13 @@ package space.arim.omnibus.util;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 public class UUIDUtilTest {
 
@@ -34,6 +37,26 @@ public class UUIDUtilTest {
 	@Test
 	public void toFromByteArray() {
 		assertEquals(uuid, UUIDUtil.fromByteArray(UUIDUtil.toByteArray(uuid)));
+	}
+
+	@Test
+	public void toBytesWrittenUsingByteBuffer() {
+		ByteBuffer byteBuffer = ByteBuffer.allocate(16);
+		byteBuffer.putLong(uuid.getMostSignificantBits());
+		byteBuffer.putLong(uuid.getLeastSignificantBits());
+		assumeTrue(byteBuffer.hasArray());
+		assertArrayEquals(byteBuffer.array(), UUIDUtil.toByteArray(uuid));
+	}
+	
+	@Test
+	public void toBytesRereadUsingByteBuffer() {
+		int offset = ThreadLocalRandom.current().nextInt(0, 64);
+		byte[] bytes = new byte[offset + 16];
+		UUIDUtil.toByteArray(uuid, bytes, offset);
+		ByteBuffer byteBuffer = ByteBuffer.wrap(bytes, offset, 16);
+		long msb = byteBuffer.getLong();
+		long lsb = byteBuffer.getLong();
+		assertEquals(uuid, new UUID(msb, lsb));
 	}
 
 	@Test
@@ -50,6 +73,23 @@ public class UUIDUtilTest {
 
 		UUIDUtil.toByteArray(uuid, bytes, offset);
 		assertEquals(uuid, UUIDUtil.fromByteArray(bytes, offset));
+	}
+
+	@Test
+	public void toBytesOffsetUsingByteBuffer() {
+		int offset = ThreadLocalRandom.current().nextInt(0, 64);
+
+		ByteBuffer byteBuffer = ByteBuffer.allocate(16 + offset);
+		byteBuffer.position(offset);
+		byteBuffer.putLong(uuid.getMostSignificantBits());
+		byteBuffer.putLong(uuid.getLeastSignificantBits());
+		assumeTrue(byteBuffer.hasArray());
+		byte[] byteBufferBytes = byteBuffer.array();
+
+		byte[] verifyBytes = new byte[16 + offset];
+		UUIDUtil.toByteArray(uuid, verifyBytes, offset);
+
+		assertArrayEquals(byteBufferBytes, verifyBytes);
 	}
 
 	@RepeatedTest(5)
@@ -69,6 +109,7 @@ public class UUIDUtilTest {
 
 		assertEquals(fullUuid.replace("-", ""), shortUuid);
 		assertEquals(fullUuid, UUIDUtil.expandShortString(shortUuid));
+		assertEquals(shortUuid, UUIDUtil.toShortString(uuid));
 		assertEquals(32, shortUuid.length());
 		assertEquals(uuid, UUIDUtil.fromShortString(shortUuid));
 	}
