@@ -185,6 +185,7 @@
 				<version>3.0.0-M1</version>
 				<configuration>
 					<tagNameFormat>@{project.version}</tagNameFormat>
+					<pushChanges>false</pushChanges>
 				</configuration>
 			</plugin>
 		</plugins>
