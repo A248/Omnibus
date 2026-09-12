@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Omnibus
-  ~ Copyright © 2021 Anand Beh
+  ~ Copyright © 2026 Anand Beh
   ~
   ~ Omnibus is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Lesser General Public License as published by
@@ -23,7 +23,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>space.arim.omnibus</groupId>
+    <groupId>org.libertybans.omnibus</groupId>
     <artifactId>it-multi-provider</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
@@ -62,7 +62,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>space.arim.omnibus</groupId>
+            <groupId>org.libertybans</groupId>
             <artifactId>omnibus</artifactId>
             <version>@project.version@</version>
         </dependency>
