@@ -18,6 +18,6 @@ jobs:
       with:
         java-version: 16
         distribution: 'zulu'
-        show-distribution-progress: true
+        show-download-progress: true
     - name: Build with Maven
       run: mvn -B verify
